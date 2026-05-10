@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>מלכודות תימורים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  /* Deep navy with indigo→cyan accent */
+  --bg:#0a0f1f;
+  --bg-grad: radial-gradient(1200px 600px at 100% -10%, rgba(99,102,241,0.18), transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, rgba(56,189,248,0.12), transparent 60%),
+             linear-gradient(180deg, #0a0f1f 0%, #0b1226 100%);
+  --card:rgba(22,30,52,0.78);
+  --card-solid:#161e34;
+  --card2:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);
+  --border-strong:rgba(255,255,255,0.14);
+  --accent:#38bdf8; --accent-2:#6366f1; --accent-dk:#0ea5e9;
+  --accent-grad:linear-gradient(135deg,#6366f1 0%,#38bdf8 100%);
+  --live:#10b981; --warn:#f59e0b; --danger:#ef4444; --trap:#a78bfa;
+  --text:#f1f5f9; --text2:#a8b3cf; --muted:#64708d;
+  --nav-bg:rgba(10,15,31,0.78);
+  --radius:18px; --radius-sm:12px; --radius-xs:8px;
+  --header-h:62px; --nav-h:74px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.25);
+  --shadow:0 8px 24px -8px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.25);
+  --shadow-lg:0 24px 60px -20px rgba(0,0,0,0.55), 0 8px 24px -12px rgba(0,0,0,0.35);
+  --ring:0 0 0 3px rgba(56,189,248,0.25);
+}
+body.light {
+  --bg:#f6f8fc;
+  --bg-grad: radial-gradient(1000px 500px at 100% -10%, rgba(99,102,241,0.10), transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, rgba(56,189,248,0.08), transparent 60%),
+             linear-gradient(180deg,#f6f8fc 0%,#eef2f9 100%);
+  --card:rgba(255,255,255,0.85);
+  --card-solid:#ffffff;
+  --card2:#f1f5f9;
+  --border:rgba(15,23,42,0.08);
+  --border-strong:rgba(15,23,42,0.14);
+  --accent:#0284c7; --accent-2:#4f46e5; --accent-dk:#0369a1;
+  --accent-grad:linear-gradient(135deg,#4f46e5 0%,#0284c7 100%);
+  --live:#059669; --warn:#d97706; --danger:#dc2626; --trap:#7c3aed;
+  --text:#0f172a; --text2:#334155; --muted:#94a3b8;
+  --nav-bg:rgba(255,255,255,0.78);
+  --shadow:0 8px 24px -8px rgba(15,23,42,0.18), 0 2px 6px rgba(15,23,42,0.06);
+  --shadow-lg:0 24px 60px -20px rgba(15,23,42,0.22), 0 8px 24px -12px rgba(15,23,42,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100dvh}
+body{
+  font-family:'Heebo',sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  background-image:var(--bg-grad);
+  background-attachment:fixed;
+  min-height:100dvh;overflow-x:hidden;
+  transition:background 0.3s,color 0.3s;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+.header{
+  height:var(--header-h);
+  background:linear-gradient(180deg, color-mix(in srgb,var(--bg) 85%, transparent), color-mix(in srgb,var(--bg) 60%, transparent));
+  border-bottom:1px solid var(--border);
+  padding:0 18px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:1000;
+  backdrop-filter:saturate(140%) blur(18px);-webkit-backdrop-filter:saturate(140%) blur(18px);
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-icon{
+  width:36px;height:36px;border-radius:12px;
+  background:var(--accent-grad);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 6px 18px -4px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.25);
+  position:relative;
+}
+.brand-icon::after{content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(255,255,255,0.2);pointer-events:none}
+body.light .brand-icon{box-shadow:0 6px 18px -4px rgba(2,132,199,0.35), inset 0 1px 0 rgba(255,255,255,0.5)}
+.brand-name{font-size:17px;font-weight:900;letter-spacing:-0.4px}
+.brand-name span{
+  background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.header-right{display:flex;align-items:center;gap:10px}
+.sync-text{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync-text::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+.theme-btn{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--card2);border:1px solid var(--border);color:var(--text2);
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .15s ease, background .15s, border-color .15s;
+}
+.theme-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.theme-btn:active{transform:scale(0.94)}
+
+.page{display:none;animation:fadeUp 0.32s cubic-bezier(0.16,1,0.3,1);padding-bottom:calc(var(--nav-h) + 18px)}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+#map{height:calc(100dvh - var(--header-h) - var(--nav-h));width:100%}
+.map-wrap{position:relative}
+.map-controls{position:absolute;top:14px;right:14px;z-index:800;display:flex;flex-direction:column;gap:8px}
+.ctrl-btn{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;padding:8px 13px;color:var(--text);
+  font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:7px;
+  transition:opacity .2s, transform .12s, border-color .15s;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.ctrl-btn:hover{border-color:var(--border-strong)}
+.ctrl-btn:active{transform:scale(0.97)}
+.ctrl-btn.off{opacity:0.4}
+.map-fabs{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18px;z-index:800;pointer-events:none}
+.fab{
+  width:56px;height:56px;border-radius:20px;border:1px solid rgba(255,255,255,0.14);
+  font-size:24px;cursor:pointer;position:relative;isolation:isolate;
+  display:flex;align-items:center;justify-content:center;pointer-events:all;
+  box-shadow:0 14px 30px -10px rgba(0,0,0,0.6), 0 3px 8px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.28);
+  transition:transform .15s ease, box-shadow .25s ease, filter .15s;
+  overflow:hidden;
+}
+.fab::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,0.22),transparent 55%);pointer-events:none;z-index:1}
+.fab > *{position:relative;z-index:2}
+.fab:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.fab:active{transform:scale(0.92)}
+.fab-add{background:var(--accent-grad);color:#fff;font-size:28px;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,0.18)}
+.fab-add::after{content:"";position:absolute;inset:-2px;border-radius:inherit;background:var(--accent-grad);filter:blur(14px);opacity:0.45;z-index:-1;animation:fabPulse 2.6s ease-in-out infinite}
+@keyframes fabPulse{0%,100%{opacity:0.35;transform:scale(0.96)}50%{opacity:0.6;transform:scale(1.05)}}
+.fab-report{background:linear-gradient(135deg,#fb7185,#ef4444);color:#fff}
+.fab-vol{background:linear-gradient(135deg,#22c55e,#10b981);color:#fff;font-size:26px}
+
+.nav-bar{
+  position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);
+  background:var(--nav-bg);
+  backdrop-filter:saturate(160%) blur(22px);-webkit-backdrop-filter:saturate(160%) blur(22px);
+  border-top:1px solid var(--border);
+  display:flex;z-index:1000;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;
+  transition:color .2s;text-transform:uppercase;letter-spacing:0.5px;position:relative;
+}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none;transition:stroke .2s, transform .2s}
+.nav-item:active svg{transform:scale(0.92)}
+.nav-item.active{color:var(--accent)}
+.nav-item.active svg{stroke:var(--accent)}
+.nav-item.active::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:32px;height:3px;border-radius:0 0 4px 4px;background:var(--accent-grad);
+  box-shadow:0 4px 12px rgba(56,189,248,0.45);
+}
+
+.page-pad{padding:18px}
+.page-title{font-size:24px;font-weight:900;margin-bottom:18px;letter-spacing:-0.6px;background:linear-gradient(180deg,var(--text),color-mix(in srgb,var(--text) 70%, var(--muted)));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+.gcard{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:12px;overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  transition:transform .15s ease, border-color .15s, box-shadow .2s;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.gcard:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
+.gcard:active{transform:scale(0.995)}
+.gcard-body{padding:16px}
+.gcard-row{padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.gcard-row:active{background:var(--card2)}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.stat-box::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.05), transparent 40%);
+}
+.stat-box.full{grid-column:1/-1}
+.stat-val{font-size:32px;font-weight:900;line-height:1;margin-bottom:4px;letter-spacing:-1.2px}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:800}
+.stat-sub{font-size:13px;color:var(--text2);margin-top:6px;line-height:1.5}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bar-lbl{width:30px;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:var(--card2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent-grad);transition:width 1s ease}
+.bar-val{font-size:10px;color:var(--muted);width:16px}
+
+.s-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 18%, transparent)}
+.s-info{flex:1;min-width:0}
+.s-name{font-size:15px;font-weight:800;letter-spacing:-0.3px}
+.s-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.s-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.s-arrow{color:var(--muted);font-size:14px;transition:transform .15s}
+.gcard-row:hover .s-arrow{transform:translateX(-3px)}
+
+.badge{padding:4px 9px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;border:1px solid transparent}
+.bg-green{background:rgba(16,185,129,0.12);color:var(--live);border-color:rgba(16,185,129,0.25)}
+.bg-yellow{background:rgba(245,158,11,0.12);color:var(--warn);border-color:rgba(245,158,11,0.25)}
+.bg-red{background:rgba(239,68,68,0.12);color:var(--danger);border-color:rgba(239,68,68,0.25)}
+.bg-blue{background:rgba(56,189,248,0.12);color:var(--accent);border-color:rgba(56,189,248,0.25)}
+.bg-purple{background:rgba(167,139,250,0.12);color:var(--trap);border-color:rgba(167,139,250,0.28)}
+.bg-grey{background:var(--card2);color:var(--muted);border-color:var(--border)}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.55);backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%);z-index:2000;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.overlay.open{display:flex}
+.sheet,.sheet-full{
+  background:var(--card-solid);
+  border:1px solid var(--border-strong);
+  border-bottom:none;border-radius:24px 24px 0 0;width:100%;max-width:560px;overflow-y:auto;
+  padding:14px 22px 44px;
+  animation:slideUp .32s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:var(--shadow-lg);
+  position:relative;
+}
+.sheet::before,.sheet-full::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), transparent 30%);
+}
+.sheet{max-height:90vh}
+.sheet-full{height:90vh}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.handle{width:42px;height:4px;background:var(--border-strong);border-radius:2px;margin:6px auto 18px}
+.sheet-title{font-size:19px;font-weight:900;margin-bottom:16px;display:flex;align-items:center;gap:9px;letter-spacing:-0.4px}
+.sheet-close{margin-right:auto;background:var(--card2);border:1px solid var(--border);border-radius:10px;width:34px;height:34px;color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s, color .15s}
+.sheet-close:hover{color:var(--text);background:var(--border)}
+
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.fi{
+  width:100%;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:13px 14px;color:var(--text);
+  font-family:'Heebo',sans-serif;font-size:15px;outline:none;
+  transition:border-color .15s, box-shadow .15s, background .15s;
+}
+.fi:hover{border-color:var(--border-strong)}
+.fi:focus{border-color:var(--accent);box-shadow:var(--ring)}
+textarea.fi{resize:vertical;min-height:78px;line-height:1.5}
+
+.sev-group{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sev-btn{
+  padding:12px 4px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--border);background:var(--card2);color:var(--text2);
+  font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center;
+  transition:all .18s ease;
+}
+.sev-btn .si{font-size:20px;display:block;margin-bottom:4px}
+.sev-btn:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+.sev-btn:active{transform:scale(0.97)}
+.sev-btn.sel-low{border-color:var(--live);background:rgba(16,185,129,0.12);color:var(--live);box-shadow:0 0 0 3px rgba(16,185,129,0.15)}
+.sev-btn.sel-med{border-color:var(--warn);background:rgba(245,158,11,0.12);color:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,0.15)}
+.sev-btn.sel-high{border-color:var(--danger);background:rgba(239,68,68,0.12);color:var(--danger);box-shadow:0 0 0 3px rgba(239,68,68,0.15)}
+.sev-btn.sel-critical{border-color:var(--danger);background:rgba(239,68,68,0.16);color:var(--danger);box-shadow:0 0 0 3px rgba(239,68,68,0.2)}
+
+.loc-btns{display:flex;gap:8px}
+.loc-btn{flex:1;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.loc-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.loc-btn.ok{border-color:var(--live);background:rgba(16,185,129,0.1);color:var(--live)}
+.loc-status{font-size:11px;color:var(--muted);margin-top:6px;min-height:16px}
+.loc-status.ok{color:var(--live)}
+.loc-status.err{color:var(--danger)}
+
+.photo-area{border:1.5px dashed var(--border-strong);border-radius:var(--radius-sm);padding:22px;text-align:center;cursor:pointer;position:relative;color:var(--muted);font-size:13px;transition:border-color .15s, background .15s}
+.photo-area:hover{border-color:var(--accent);background:rgba(56,189,248,0.04)}
+.photo-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-sm);margin-top:10px;display:none;border:1px solid var(--border)}
+
+.btn{
+  --btn-glow: 99,102,241;
+  width:100%;padding:15px 18px;border-radius:14px;border:1px solid rgba(255,255,255,0.10);
+  font-family:'Heebo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;
+  letter-spacing:-0.2px;position:relative;overflow:hidden;isolation:isolate;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform .14s ease, box-shadow .25s ease, filter .15s;
+  text-shadow:0 1px 0 rgba(0,0,0,0.12);
+}
+/* Glossy highlight */
+.btn::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 45%);
+  z-index:1;
+}
+/* Shine sweep */
+.btn::after{
+  content:"";position:absolute;top:0;bottom:0;width:55%;
+  left:-70%;
+  background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.28) 50%, transparent 80%);
+  transform:skewX(-18deg);transition:left .65s ease;pointer-events:none;z-index:2;
+}
+.btn:hover::after{left:130%}
+.btn > *{position:relative;z-index:3}
+.btn:hover{filter:brightness(1.05);transform:translateY(-1px);box-shadow:0 14px 30px -10px rgba(var(--btn-glow),0.55), 0 4px 10px rgba(0,0,0,0.18)}
+.btn:active{transform:translateY(0) scale(0.985);filter:brightness(0.97)}
+.btn:disabled{opacity:0.45;cursor:not-allowed;filter:grayscale(0.4);transform:none;box-shadow:none}
+.btn:disabled::after{display:none}
+
+.btn-primary{--btn-glow:99,102,241;background:linear-gradient(135deg,#6366f1 0%,#38bdf8 100%);color:#fff;box-shadow:0 10px 24px -10px rgba(99,102,241,0.6), inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn-green{--btn-glow:16,185,129;background:linear-gradient(135deg,#22c55e 0%,#10b981 100%);color:#fff;box-shadow:0 10px 24px -10px rgba(16,185,129,0.55), inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn-yellow{--btn-glow:245,158,11;background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%);color:#1a1303;text-shadow:none;box-shadow:0 10px 24px -10px rgba(245,158,11,0.55), inset 0 1px 0 rgba(255,255,255,0.4)}
+.btn-red{--btn-glow:239,68,68;background:linear-gradient(135deg,#fb7185 0%,#ef4444 100%);color:#fff;box-shadow:0 10px 24px -10px rgba(239,68,68,0.55), inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn-purple{--btn-glow:139,92,246;background:linear-gradient(135deg,#a78bfa 0%,#8b5cf6 100%);color:#fff;box-shadow:0 10px 24px -10px rgba(139,92,246,0.55), inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn-sparkle{--btn-glow:139,92,246;background:linear-gradient(135deg,#a855f7 0%,#6366f1 50%,#3b82f6 100%);background-size:200% 200%;animation:sparkleShift 6s ease infinite;color:#fff;box-shadow:0 10px 24px -10px rgba(139,92,246,0.6), inset 0 1px 0 rgba(255,255,255,0.25)}
+@keyframes sparkleShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.btn-grey{background:var(--card2);color:var(--text);border:1px solid var(--border);box-shadow:none;text-shadow:none}
+.btn-grey::before,.btn-grey::after{display:none}
+.btn-grey:hover{border-color:var(--border-strong);background:color-mix(in srgb,var(--card2) 70%, var(--border));transform:none;box-shadow:none;filter:none}
+
+/* Make emoji / symbol prefixes feel like icons */
+.btn{font-feature-settings:"ss01";}
+.btn .btn-ico, .btn::first-letter{}
+
+.status-bar{display:flex;gap:7px;padding:11px 18px;background:var(--card2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.status-bar::-webkit-scrollbar{display:none}
+.status-pill{padding:5px 11px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:0.4px;border:1px solid var(--border)}
+.trap-section-title{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin:16px 18px 8px}
+.trap-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);margin:0 18px 8px;overflow:hidden;transition:border-color .15s}
+.trap-card:hover{border-color:var(--border-strong)}
+.trap-header{padding:14px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.trap-header:active{background:var(--card2)}
+.trap-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 18%, transparent)}
+.trap-info{flex:1;min-width:0}
+.trap-name{font-size:14px;font-weight:800;letter-spacing:-0.2px}
+.trap-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.trap-chevron{color:var(--muted);font-size:12px;transition:transform .25s}
+.trap-chevron.open{transform:rotate(180deg)}
+.trap-body{display:none;border-top:1px solid var(--border);padding:13px 14px;background:rgba(0,0,0,0.12)}
+body.light .trap-body{background:rgba(0,0,0,0.02)}
+.trap-body.open{display:block}
+.tl-item{display:flex;gap:11px;margin-bottom:8px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.tl-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.tl-body{flex:1;min-width:0}
+.tl-sev{font-size:12px;font-weight:800}
+.tl-note{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5}
+.tl-meta{font-size:11px;color:var(--muted);margin-top:4px}
+.tl-img{width:54px;height:54px;border-radius:var(--radius-sm);object-fit:cover;flex-shrink:0;cursor:pointer;border:1px solid var(--border)}
+.add-update-btn{width:100%;padding:11px;border-radius:var(--radius-sm);border:1.5px dashed var(--border-strong);background:transparent;color:var(--accent);font-family:'Heebo',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:6px;transition:background .15s, border-color .15s}
+.add-update-btn:hover{border-color:var(--accent);background:rgba(56,189,248,0.06)}
+.add-trap-btn{display:block;width:calc(100% - 36px);margin:6px 18px 0;padding:13px;border-radius:var(--radius-sm);border:1.5px dashed var(--border-strong);background:transparent;color:var(--trap);font-family:'Heebo',sans-serif;font-size:13px;font-weight:800;cursor:pointer;text-align:center;transition:background .15s, border-color .15s}
+.add-trap-btn:hover{border-color:var(--trap);background:rgba(167,139,250,0.06)}
+.ss-action-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:border-color .15s, color .15s}
+.ss-action-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.ss-action-btn:active{background:var(--border)}
+.share-btns{display:flex;gap:8px;margin-bottom:14px}
+.share-btn{flex:1;padding:11px 6px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px;transition:border-color .15s, color .15s}
+.share-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.share-btn:active{background:var(--border)}
+
+.instr-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:17px;margin-bottom:12px;box-shadow:var(--shadow-sm);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.instr-card-title{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;letter-spacing:-0.2px}
+.instr-step{display:flex;gap:11px;margin-bottom:9px;align-items:flex-start}
+.instr-num{width:22px;height:22px;border-radius:50%;background:var(--accent-grad);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;box-shadow:0 4px 10px -2px rgba(99,102,241,0.4)}
+.instr-text{font-size:13px;line-height:1.55;color:var(--text2)}
+.instr-note{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-sm);padding:11px 13px;font-size:12px;color:var(--warn);margin-top:10px;line-height:1.55;font-weight:600}
+
+.toast{position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:12px;font-size:13px;font-weight:800;opacity:0;transition:all .25s cubic-bezier(0.16,1,0.3,1);z-index:5000;white-space:nowrap;pointer-events:none;box-shadow:0 12px 32px -8px rgba(0,0,0,0.45)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+#map-picker-overlay{display:none;position:fixed;inset:0;z-index:3000;flex-direction:column;background:var(--bg)}
+.mp-header{background:var(--card-solid);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.mp-close{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);width:38px;height:38px;color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mp-title{font-family:'Heebo',sans-serif;color:var(--text);font-size:15px;font-weight:800}
+.mp-map-wrap{position:relative;flex:1;overflow:hidden}
+#map-picker-map{width:100%;height:100%;position:absolute;inset:0}
+.mp-pin{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);pointer-events:none;z-index:1000;font-size:42px;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6))}
+.mp-coords{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--card-solid);border:1px solid var(--border);padding:6px 14px;border-radius:999px;font-family:'Heebo',sans-serif;font-size:11px;color:var(--text2);pointer-events:none;white-space:nowrap;z-index:1000;box-shadow:var(--shadow)}
+.mp-footer{background:var(--card-solid);border-top:1px solid var(--border);padding:14px 18px 30px;flex-shrink:0}
+.mp-confirm{width:100%;padding:14px;border-radius:var(--radius-sm);border:none;background:var(--accent-grad);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 22px -8px rgba(99,102,241,0.55)}
+
+.ai-box{background:linear-gradient(135deg, rgba(168,85,247,0.10), rgba(99,102,241,0.08));border:1px solid rgba(168,85,247,0.25);border-radius:14px;padding:14px 14px 14px 40px;margin-bottom:14px;position:relative;overflow:hidden;line-height:1.55}
+.ai-box::before{content:'✨';position:absolute;left:12px;top:12px;opacity:0.55;font-size:20px}
+.vol-list-item{background:var(--card2);padding:11px;border-radius:12px;margin-bottom:8px;display:flex;align-items:center;gap:11px;cursor:pointer;border:1px solid var(--border);transition:background .15s, border-color .15s}
+.vol-list-item:hover{border-color:var(--border-strong)}
+
+.loading-spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:52px 20px;color:var(--muted)}
+.empty-icon{font-size:42px;margin-bottom:12px;opacity:0.7}
+.status-inactive{opacity:0.4}
+.c-green{color:var(--live)}.c-yellow{color:var(--warn)}.c-red{color:var(--danger)}.c-blue{color:var(--accent)}.c-purple{color:var(--trap)}.c-muted{color:var(--muted)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+::-webkit-scrollbar-track{background:transparent}
+
+.vol-completed{opacity:0.55;filter:grayscale(0.5)}
+.station-group-title{font-size:12px;font-weight:900;color:var(--accent);margin:14px 0 8px 0;text-transform:uppercase;letter-spacing:0.8px;display:flex;align-items:center;gap:8px}
+.station-group-title::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--accent-grad)}
+
+/* Map Selection Mode UI */
+#vol-map-ui{display:none;position:absolute;inset:0;z-index:900;pointer-events:none;flex-direction:column;justify-content:space-between}
+.vmu-header{background:var(--card-solid);border-bottom:1px solid var(--border);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;pointer-events:all;box-shadow:var(--shadow);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.vmu-footer{padding:18px;pointer-events:all;padding-bottom:20px}
+
+/* Leaflet polish */
+.leaflet-container{font-family:'Heebo',sans-serif !important;background:var(--bg) !important}
+.leaflet-control-zoom a{background:var(--card-solid) !important;color:var(--text) !important;border-color:var(--border) !important}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card-solid) !important;color:var(--text) !important;box-shadow:var(--shadow-lg) !important;border-radius:14px !important}
+.leaflet-popup-content{font-family:'Heebo',sans-serif !important;font-size:13px !important}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <div class="brand-icon">🪰</div>
+    <div class="brand-name">תימורים <span>Pro</span></div>
+  </div>
+  <div class="header-right">
+    <div class="sync-text" id="last-sync">טוען...</div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+  </div>
+</header>
+
+<div id="page-map" class="page active">
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="map-controls">
+      <button class="ctrl-btn" onclick="toggleLayer('stations',this)">📍 עמדות</button>
+      <button class="ctrl-btn" onclick="toggleLayer('reports',this)">🚨 מפגעים</button>
+      <button class="ctrl-btn" onclick="toggleLayer('volunteers',this)">🙋 מתנדבים</button>
+    </div>
+    <div class="map-fabs">
+      <!-- שמאל: התנדב + דיווח -->
+      <div style="display:flex;gap:10px">
+        <button class="fab fab-vol" onclick="openOverlay('vol-type')" title="התנדב"><i data-lucide="hand-helping" style="width:24px;height:24px"></i></button>
+        <button class="fab fab-report" onclick="openOverlay('report')" title="דווח מפגע"><i data-lucide="alert-triangle" style="width:24px;height:24px"></i></button>
+      </div>
+      <!-- ימין: מיקום + הוסף עמדה -->
+      <div style="display:flex;gap:10px">
+        <button onclick="locateMe()" id="locate-btn" style="width:52px;height:52px;border-radius:16px;border:none;background:white;box-shadow:0 4px 16px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0" title="המיקום שלי">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+          </svg>
+        </button>
+        <button class="fab fab-add" onclick="openAddStation()" title="הוסף עמדה"><i data-lucide="plus" style="width:26px;height:26px"></i></button>
+      </div>
+    </div>
+    
+    <!-- UI למצב בחירת התנדבות מהמפה -->
+    <div id="vol-map-ui">
+      <div class="vmu-header">
+        <div>
+          <div style="font-weight:900; font-size:15px; color:var(--text)">🗺️ בחר עמדות לפינוי</div>
+          <div style="font-size:11px; color:var(--muted)">לחץ על עמדות אדומות/צהובות במפה</div>
+        </div>
+        <button onclick="exitVolMapMode()" class="btn-grey" style="padding:6px 12px; border-radius:8px; font-size:12px; margin:0; width:auto">ביטול</button>
+      </div>
+      <div class="vmu-footer">
+        <button id="vol-map-continue-btn" class="btn btn-primary" onclick="proceedVolPickup()" disabled style="box-shadow:0 4px 16px rgba(0,0,0,0.4)">המשך (0 שקיות נבחרו)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-list" class="page">
+  <div class="page-pad">
+    <div class="page-title">עמדות בשטח</div>
+    <div id="stations-list"></div>
+  </div>
+</div>
+
+<div id="page-stats" class="page">
+  <div class="page-pad">
+    <div class="page-title">דוח מצב</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val c-blue" id="d-stations">—</div><div class="stat-lbl">עמדות פעילות</div></div>
+      <div class="stat-box"><div class="stat-val c-purple" id="d-traps">—</div><div class="stat-lbl">מלכודות פעילות</div></div>
+      <div class="stat-box"><div class="stat-val c-red" id="d-urgent">—</div><div class="stat-lbl">דחוף — מעל 14 יום</div></div>
+      <div class="stat-box"><div class="stat-val c-yellow" id="d-soon">—</div><div class="stat-lbl">בקרוב — 10-14 יום</div></div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">🔥 אזור הכי עמוס</div><div class="stat-sub" id="d-hotspot">טוען...</div></div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:8px">📅 עדכונים לפי חודש</div><div id="d-chart"></div></div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:20px 0 10px">🚨 ארכיון דיווחים</div>
+    <div id="reports-history-list"></div>
+  </div>
+</div>
+
+<!-- VOLUNTEERS PAGE -->
+<div id="page-volunteers" class="page">
+  <div class="page-pad">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="page-title" style="margin:0">יומן אחריות</div>
+      <button onclick="openOverlay('vol-type')" style="background:var(--live);border:none;border-radius:10px;padding:8px 14px;color:#0f172a;font-family:Heebo,sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ התנדב</button>
+    </div>
+    <div class="ai-box" id="community-insight" style="display:none; font-size:13px; color:var(--text);"></div>
+    <button class="btn btn-sparkle" id="ai-insight-btn" onclick="generateCommunityInsight()">✨ סיכום מצב קהילתי AI</button>
+    <div id="volunteers-list" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<div id="page-info" class="page">
+  <div class="page-pad">
+    <div class="page-title">מדריך שימוש</div>
+    <div class="instr-card">
+      <div class="instr-card-title">🗺️ הוספת עמדה חדשה</div>
+      <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ + בפינת המפה או החזק לחוץ על המפה</div></div>
+      <div class="instr-step"><div class="instr-num">2</div><div class="instr-text">בחר מיקום — GPS אוטומטי או סמן על מפה</div></div>
+      <div class="instr-step"><div class="instr-num">3</div><div class="instr-text">תן שם לעמדה ולחץ שמור</div></div>
+    </div>
+    <div class="instr-card">
+      <div class="instr-card-title">🪤 הוספת מלכודת לעמדה</div>
+      <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ על עמדה במפה או ברשימה</div></div>
+      <div class="instr-step"><div class="instr-num">2</div><div class="instr-text">לחץ "הוסף מלכודת חדשה"</div></div>
+      <div class="instr-step"><div class="instr-num">3</div><div class="instr-text">השם נוצר אוטומטית — שם עמדה + תאריך</div></div>
+      <div class="instr-step"><div class="instr-num">4</div><div class="instr-text">הכנס שמך — חובה</div></div>
+    </div>
+    <div class="instr-card">
+      <div class="instr-card-title">📸 עדכון מלכודת</div>
+      <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ על שם המלכודת לפתיחת ציר זמן</div></div>
+      <div class="instr-step"><div class="instr-num">2</div><div class="instr-text">לחץ "הוסף עדכון"</div></div>
+      <div class="instr-step"><div class="instr-num">3</div><div class="instr-text">בחר סטטוס + תמונה + שמך</div></div>
+    </div>
+    <div class="instr-card">
+      <div class="instr-card-title">📅 לוח פינויים</div>
+      <div class="instr-note">⚠️ פינוי זבל ימי ב׳ וה׳ — פנה מלכודות ביום שלפני</div>
+      <div class="instr-step" style="margin-top:10px"><div class="instr-num">!</div><div class="instr-text">מעל 14 יום = 🔴 דחוף בדוח</div></div>
+      <div class="instr-step"><div class="instr-num">!</div><div class="instr-text">10–14 יום = 🟡 בקרוב</div></div>
+    </div>
+  </div>
+</div>
+
+<nav class="nav-bar">
+  <div class="nav-item active" onclick="navigate('map',this)">
+    <i data-lucide="map" style="width:24px;height:24px"></i>מפה
+  </div>
+  <div class="nav-item" onclick="navigate('list',this)">
+    <i data-lucide="map-pin" style="width:24px;height:24px"></i>עמדות
+  </div>
+  <div class="nav-item" onclick="navigate('stats',this)">
+    <i data-lucide="bar-chart-2" style="width:24px;height:24px"></i>דוח
+  </div>
+  <div class="nav-item" onclick="navigate('volunteers',this)">
+    <i data-lucide="users" style="width:24px;height:24px"></i>מתנדבים
+  </div>
+  <div class="nav-item" onclick="navigate('info',this)">
+    <i data-lucide="book-open" style="width:24px;height:24px"></i>מדריך
+  </div>
+</nav>
+
+<div class="overlay" id="overlay-station">
+  <div class="sheet-full">
+    <div class="handle"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <button class="sheet-close" onclick="closeOverlay('station')">✕</button>
+      <div class="sheet-title" style="margin:0" id="ss-title">עמדה</div>
+    </div>
+    <div id="station-site-content"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-add-station">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">📍 עמדה חדשה</div>
+    <div class="fg"><label class="fl">שם העמדה</label><input class="fi" id="ns-name" placeholder="לדוגמה: מעבר הרחבה למכולת"></div>
+    <div class="fg"><label class="fl">מיקום</label>
+      <div class="loc-btns">
+        <button class="loc-btn" id="ns-gps-btn" onclick="getGPS('ns')">📍 GPS שלי</button>
+        <button class="loc-btn" id="ns-map-btn" onclick="togglePinMap('ns')"><i data-lucide="map" style="width:14px;height:14px;vertical-align:middle;margin-left:4px"></i> סמן על מפה</button>
+      </div>
+      <div class="loc-status" id="ns-loc-status">לא נבחר מיקום</div>
+    </div>
+    <div class="fg"><label class="fl">שמך</label><input class="fi" id="ns-reporter" placeholder="ישראל ישראלי"></div>
+    <button class="btn btn-primary" onclick="saveStation()" id="ns-save-btn">📍 שמור עמדה</button>
+    <button class="btn btn-grey" onclick="closeOverlay('add-station')">ביטול</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-add-trap">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">🪤 מלכודת חדשה</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="at-station-name"></div>
+    <div class="fg"><label class="fl">שם המלכודת</label><input class="fi" id="at-name" placeholder="נוצר אוטומטי"><div style="font-size:11px;color:var(--muted);margin-top:4px">ניתן לשנות</div></div>
+    <div class="fg"><label class="fl">תאריך הצבה</label><input type="date" class="fi" id="at-date"></div>
+    <div class="fg"><label class="fl">סטטוס התחלתי</label>
+      <div class="sev-group">
+        <button class="sev-btn" onclick="setSev('at','low',this)"><span class="si"><i data-lucide="circle-check" style="width:20px;height:20px;display:block;margin:0 auto 3px;color:var(--live)"></i></span>ריקה</button>
+        <button class="sev-btn" onclick="setSev('at','med',this)"><span class="si"><i data-lucide="circle-alert" style="width:20px;height:20px;display:block;margin:0 auto 3px;color:var(--warn)"></i></span>קצת</button>
+        <button class="sev-btn" onclick="setSev('at','high',this)"><span class="si"><i data-lucide="circle-x" style="width:20px;height:20px;display:block;margin:0 auto 3px;color:var(--danger)"></i></span>מלאה</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">תמונה (אופציונלי)</label>
+      <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('at',this)"><div id="at-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="at-photo-prev" class="photo-preview"></div>
+    </div>
+    <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="at-reporter" placeholder="ישראל ישראלי"></div>
+    <button class="btn btn-purple" onclick="saveTrap()" id="at-save-btn">🪤 הוסף מלכודת</button>
+    <button class="btn btn-grey" onclick="closeOverlay('add-trap')">ביטול</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-add-update">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">📸 עדכון מלכודת</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="au-trap-name"></div>
+    <div class="fg"><label class="fl">סטטוס</label>
+      <div class="sev-group" style="grid-template-columns:repeat(2,1fr)">
+        <button class="sev-btn" onclick="setSev('au','low',this)"><span class="si"><i data-lucide="circle-check" style="width:20px;height:20px;display:block;margin:0 auto 3px;color:var(--live)"></i></span>ריקה</button>
+        <button class="sev-btn" onclick="setSev('au','med',this)"><span class="si"><i data-lucide="circle-alert" style="width:20px;height:20px;display:block;margin:0 auto 3px;color:var(--warn)"></i></span>קצת מלאה</button>
+        <button class="sev-btn" onclick="setSev('au','high',this)"><span class="si"><i data-lucide="circle-x" style="width:20px;height:20px;display:block;margin:0 auto 3px;color:var(--danger)"></i></span>מלאה</button>
+        <button class="sev-btn" onclick="setSev('au','done',this)"><span class="si"><i data-lucide="trash-2" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>הושלכה לפח</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">תמונה (אופציונלי)</label>
+      <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('au',this)"><div id="au-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="au-photo-prev" class="photo-preview">
+      <button class="btn btn-sparkle" id="au-analyze-btn" onclick="analyzePhoto('au-photo-prev', 'au-note', 'au-analyze-btn')" style="margin-top:10px; display:none; padding:8px; font-size:12px; position:relative; z-index:5;">✨ נתח תמונה עם AI</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">הערה (אופציונלי)</label><textarea class="fi" id="au-note" placeholder="תאר את המצב..."></textarea></div>
+    <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="au-reporter" placeholder="ישראל ישראלי"></div>
+    <button class="btn btn-primary" onclick="saveUpdate()" id="au-save-btn">✅ שלח עדכון</button>
+    <button class="btn btn-grey" onclick="closeOverlay('add-update')">ביטול</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-report">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">🚨 דיווח מפגע</div>
+    <div class="fg"><label class="fl">סוג דיווח</label>
+      <div class="sev-group" style="grid-template-columns:1fr 1fr">
+        <button class="sev-btn" onclick="setSev('rep','flies',this)"><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:block;margin:0 auto 3px"><ellipse cx="12" cy="12" rx="3" ry="5"/><path d="M9 8c-2-2-5-2-6 0s1 5 3 5"/><path d="M15 8c2-2 5-2 6 0s-1 5-3 5"/><path d="M9 16c-1 1-2 3-1 4"/><path d="M15 16c1 1 2 3 1 4"/><circle cx="10" cy="7" r="1" fill="currentColor"/><circle cx="14" cy="7" r="1" fill="currentColor"/></svg></span>זבובים</button>
+        <button class="sev-btn" onclick="setSev('rep','bag',this)"><span class="si"><i data-lucide="shopping-bag" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>שקית מלאה</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">חומרה</label>
+      <div class="sev-group">
+        <button class="sev-btn" onclick="setSev2('rep','low',this)"><span class="si"><i data-lucide="meh" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>רגיל</button>
+        <button class="sev-btn" onclick="setSev2('rep','med',this)"><span class="si"><i data-lucide="frown" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>מציק</button>
+        <button class="sev-btn" onclick="setSev2('rep','high',this)"><span class="si"><i data-lucide="angry" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>בלתי נסבל</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">מיקום</label>
+      <div class="loc-btns">
+        <button class="loc-btn" id="rep-gps-btn" onclick="getGPS('rep')"><i data-lucide="locate" style="width:14px;height:14px;vertical-align:middle;margin-left:4px"></i> מיקום שלי</button>
+        <button class="loc-btn" id="rep-map-btn" onclick="togglePinMap('rep')"><i data-lucide="map" style="width:14px;height:14px;vertical-align:middle;margin-left:4px"></i> סמן על מפה</button>
+      </div>
+      <div class="loc-status" id="rep-loc-status">לא נבחר מיקום</div>
+    </div>
+    <div class="fg"><label class="fl">תמונה (אופציונלי)</label>
+      <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('rep',this)"><div id="rep-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="rep-photo-prev" class="photo-preview">
+      <button class="btn btn-sparkle" id="report-ai-btn" onclick="analyzePhoto('rep-photo-prev', 'rep-note', 'report-ai-btn')" style="margin-top:10px; display:none; padding:8px; font-size:12px; position:relative; z-index:5;">✨ נתח תמונה עם AI</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">הערה (אופציונלי)</label><textarea class="fi" id="rep-note" placeholder="תאר את הבעיה..."></textarea></div>
+    <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="rep-reporter" placeholder="ישראל ישראלי"></div>
+    <div class="fg"><label class="fl">מייל לעדכון (אופציונלי)</label><input type="email" class="fi" id="rep-email" placeholder="example@gmail.com"><div style="font-size:11px;color:var(--muted);margin-top:4px">נשלח מייל אוטומטי כשהדיווח יטופל</div></div>
+    <button class="btn btn-yellow" onclick="saveReport()" id="rep-save-btn">🚨 שלח דיווח</button>
+    <button class="btn btn-grey" onclick="closeOverlay('report')">ביטול</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-station-options">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title" id="so-title">אפשרויות עמדה</div>
+    <button class="btn btn-yellow" onclick="toggleStationStatus('suspend')">⏸️ השהה עמדה</button>
+    <button class="btn btn-green" style="display:none" id="so-activate-btn" onclick="toggleStationStatus('activate')">✅ הפעל מחדש</button>
+    <button class="btn btn-red" onclick="toggleStationStatus('delete')">🗑️ הסתר עמדה</button>
+    <button class="btn btn-red" style="background:#7f1d1d;margin-top:4px" onclick="confirmPermanentDeleteStation()">⚠️ מחק לצמיתות — לא ניתן לשחזר!</button>
+    <button class="btn btn-grey" onclick="closeOverlay('station-options')">ביטול</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-confirm">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title" id="confirm-title">אישור</div>
+    <div style="font-size:14px;color:var(--text);margin-bottom:16px" id="confirm-msg"></div>
+    <button class="btn btn-red" onclick="confirmYes()">✅ כן, אשר</button>
+    <button class="btn btn-grey" onclick="closeOverlay('confirm')">ביטול</button>
+  </div>
+</div>
+
+<!-- PHOTO LIGHTBOX -->
+<div id="photo-lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:4000;align-items:center;justify-content:center;flex-direction:column" onclick="closeLightbox()">
+  <button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:40px;height:40px;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+  <img id="lightbox-img" style="max-width:95vw;max-height:80vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.8)">
+  <div id="lightbox-caption" style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:12px;font-family:Heebo,sans-serif;text-align:center"></div>
+</div>
+
+<!-- DELETE TRAP CHOICE MODAL -->
+<div class="overlay" id="overlay-delete-trap-choice">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">🗑️ מחיקת מלכודת</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:16px" id="dtc-trap-name"></div>
+    <button class="btn btn-yellow" onclick="deleteTrapChoice('trash')">✅ פונתה לאשפה — שמור בהיסטוריה</button>
+    <button class="btn btn-red" onclick="deleteTrapChoice('permanent')" style="margin-top:8px;background:#7f1d1d">⚠️ מחק לצמיתות — לא ניתן לשחזר!</button>
+    <button class="btn btn-grey" onclick="closeOverlay('delete-trap-choice')">ביטול</button>
+  </div>
+</div>
+
+<!-- VOLUNTEER TYPE MODAL -->
+<div class="overlay" id="overlay-vol-type">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">🙋 התנדבות — בחר סוג</div>
+    <button class="btn" style="background:var(--card2);border:2px solid var(--border);color:var(--text);margin-top:8px;padding:20px;border-radius:14px;text-align:right;font-size:15px" onclick="startVolMapMode()">
+      <div style="margin-bottom:8px;display:flex;justify-content:center"><i data-lucide="trash-2" style="width:28px;height:28px"></i></div>
+      <div style="font-weight:800">פינוי מלכודות</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">בחר עמדות ומלכודות מהמפה לפינוי</div>
+    </button>
+    <button class="btn" style="background:var(--card2);border:2px solid var(--border);color:var(--text);margin-top:10px;padding:20px;border-radius:14px;text-align:right;font-size:15px" onclick="openVolunteerForm('hang')">
+      <div style="margin-bottom:8px;display:flex;justify-content:center"><i data-lucide="package-plus" style="width:28px;height:28px"></i></div>
+      <div style="font-weight:800">תליית מלכודת</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">תלה מלכודת בעמדה קיימת או חדשה</div>
+    </button>
+    <button class="btn btn-grey" onclick="closeOverlay('vol-type')">ביטול</button>
+  </div>
+</div>
+
+<!-- VOL STATION PICK (MAP MODE) -->
+<div class="overlay" id="overlay-vol-station-pick">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title" id="vsp-title">📍 בחירת שקיות לפינוי</div>
+    <div id="vsp-list" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;padding-right:4px;margin-bottom:16px"></div>
+    <button class="btn btn-primary" onclick="closeOverlay('vol-station-pick')">אישור וסגירה</button>
+  </div>
+</div>
+
+<!-- VOLUNTEER PICKUP FINAL MODAL -->
+<div class="overlay" id="overlay-vol-pickup-final">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">📝 פרטי התנדבות (פינוי)</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:16px" id="vol-pickup-summary"></div>
+    <div class="fg"><label class="fl">תאריך ביצוע מתוכנן</label>
+      <input type="date" class="fi" id="vol-pickup-datetime">
+    </div>
+    <div class="fg"><label class="fl">שמך (חובה)</label>
+      <input class="fi" id="vol-pickup-name" placeholder="ישראל ישראלי">
+    </div>
+    <div class="fg"><label class="fl">הערה (אופציונלי)</label>
+      <textarea class="fi" id="vol-pickup-note" placeholder="פרטים נוספים..."></textarea>
+    </div>
+    <button class="btn btn-yellow" onclick="saveVolPickup()" id="vol-pickup-save-btn">🗑️ אשר התנדבות</button>
+    <button class="btn btn-grey" onclick="closeOverlay('vol-pickup-final')">חזור למפה</button>
+  </div>
+</div>
+
+<!-- VOLUNTEER HANG MODAL -->
+<div class="overlay" id="overlay-vol-hang">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">🪤 תליית מלכודת</div>
+    <div class="fg">
+      <label class="fl">באיזו עמדה?</label>
+      <div class="sev-group" style="grid-template-columns:1fr 1fr;margin-bottom:8px">
+        <button class="sev-btn sel-low" onclick="setHangMode('existing',this)"><span class="si"><i data-lucide="map-pin" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>עמדה קיימת</button>
+        <button class="sev-btn" onclick="setHangMode('new',this)"><span class="si"><i data-lucide="plus-circle" style="width:20px;height:20px;display:block;margin:0 auto 3px"></i></span>עמדה חדשה</button>
+      </div>
+      <div id="vol-hang-existing" style="display:block">
+        <select class="fi" id="vol-hang-station-select">
+          <option value="">בחר עמדה...</option>
+        </select>
+      </div>
+      <div id="vol-hang-new" style="display:none">
+        <input class="fi" id="vol-hang-new-name" placeholder="שם העמדה החדשה">
+      </div>
+    </div>
+    <div class="fg"><label class="fl">תאריך ביצוע מתוכנן</label>
+      <input type="date" class="fi" id="vol-hang-datetime">
+    </div>
+    <div class="fg"><label class="fl">שמך (חובה)</label>
+      <input class="fi" id="vol-hang-name" placeholder="ישראל ישראלי">
+    </div>
+    <div class="fg"><label class="fl">הערה (אופציונלי)</label>
+      <textarea class="fi" id="vol-hang-note" placeholder="פרטים נוספים..."></textarea>
+    </div>
+    <button class="btn btn-green" onclick="saveVolHang()" id="vol-hang-save-btn">🪤 אני מתנדב לתלות</button>
+    <button class="btn btn-grey" onclick="closeOverlay('vol-hang')">ביטול</button>
+  </div>
+</div>
+
+<!-- VOLUNTEER COMPLETE MODAL -->
+<div class="overlay" id="overlay-vol-complete">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title" id="vol-complete-title">✅ סימון ביצוע</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="vol-complete-desc"></div>
+    <div class="fg"><label class="fl">תמונה (אופציונלי אך מומלץ)</label>
+      <div class="photo-area">
+        <input type="file" accept="image/*" capture="environment" onchange="handlePhoto('volc',this)">
+        <div id="volc-photo-ph"><i data-lucide="camera" style="width:20px;height:20px;vertical-align:middle;margin-left:6px"></i> צלם הוכחה</div>
+        <img id="volc-photo-prev" class="photo-preview">
+      </div>
+    </div>
+    <div class="fg"><label class="fl">הערה (אופציונלי)</label>
+      <textarea class="fi" id="vol-complete-note" placeholder="איך הלך?"></textarea>
+    </div>
+    <button class="btn btn-green" onclick="confirmVolComplete()" id="vol-complete-btn">✅ בוצע!</button>
+    <button class="btn btn-grey" onclick="closeOverlay('vol-complete')">ביטול</button>
+  </div>
+</div>
+
+<div id="map-picker-overlay">
+  <div class="mp-header">
+    <button class="mp-close" onclick="closeMapPicker()">✕</button>
+    <div class="mp-title">גלול למיקום הנכון</div>
+  </div>
+  <div class="mp-map-wrap">
+    <div id="map-picker-map"></div>
+    <div class="mp-pin">📍</div>
+    <div class="mp-coords" id="map-picker-coords"></div>
+  </div>
+  <div class="mp-footer">
+    <button class="mp-confirm" onclick="confirmMapPicker()">✅ אשר מיקום זה</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz00cvPOLtHggVbyPsfn67ORXFlw7n9E4rRlBr6ALik5wKCQ-mSHIEN46vfPYhbo7CP/exec';
+const apiKey = ""; 
+let db={stations:[],traps:[],updates:[],reports:[],volunteers:[]};
+let map,pinMaps={},pinData={};
+let currentStationId=null,currentTrapId=null;
+let formSev={},formSev2={};
+let layerGroups={stations:null,reports:null,volunteers:null};
+let confirmCallback=null,mapPickerMap=null,mapPickerCallback=null;
+
+// MAP MODE FOR VOLUNTEER
+let isVolMapMode = false;
+let selectedVolTraps = new Set();
+
+// --- AI Gemini Call ---
+async function geminiCall(prompt, base64Image = null) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  const contents = [{ parts: [{ text: prompt }] }];
+  if (base64Image) {
+    contents[0].parts.push({ inlineData: { mimeType: "image/png", data: base64Image.split(',')[1] } });
+  }
+  const payload = { contents };
+  let retries = 0;
+  while (retries < 5) {
+    try {
+      const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || "לא התקבלה תשובה מה-AI";
+    } catch (e) {
+      retries++;
+      await new Promise(r => setTimeout(r, Math.pow(2, retries) * 1000));
+    }
+  }
+  return "שגיאה בתקשורת עם ה-AI";
+}
+
+async function analyzePhoto(imgId, targetId, btnId) {
+  const img = document.getElementById(imgId);
+  const btn = document.getElementById(btnId);
+  if (!img.src) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spin"></span> מנתח...';
+  const prompt = "Please analyze this photo of a fly trap or hazard in an Israeli village (Moshav). Tell me in Hebrew: 1. Estimate how full it is (0-100%). 2. Give a very short observation. Keep it friendly and concise.";
+  const result = await geminiCall(prompt, img.src);
+  document.getElementById(targetId).value = result;
+  btn.disabled = false;
+  btn.innerHTML = '✨ נתח תמונה עם AI';
+  showToast("✨ ה-AI ניתח את התמונה");
+}
+
+async function generateCommunityInsight() {
+  const btn = document.getElementById('ai-insight-btn');
+  const box = document.getElementById('community-insight');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spin"></span> מחשב תובנות...';
+  
+  const dataContext = `Stations: ${db.stations.length}, Traps: ${db.traps.length}, Active Volunteers: ${db.volunteers.filter(v=>v.status==='בתהליך').length}`;
+  const prompt = `Based on this data for a Moshav fly control app: ${dataContext}. Write a short, friendly Hebrew update for the village board. Encourage volunteering if there are full traps. Use emojis.`;
+  
+  const result = await geminiCall(prompt);
+  box.innerHTML = `<strong>✨ עדכון קהילתי AI:</strong><br>${result.replace(/\n/g, '<br>')}`;
+  box.style.display = 'block';
+  btn.disabled = false;
+  btn.innerHTML = '✨ רענן תובנות AI';
+}
+
+function navigate(pageId,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('page-'+pageId).classList.add('active');
+  el.classList.add('active');
+  if(pageId==='map')setTimeout(()=>map&&map.invalidateSize(),100);
+  if(pageId==='list')renderStationsList();
+  if(pageId==='stats')renderDashboard();
+  if(pageId==='volunteers')renderVolunteersList();
+}
+
+function initMap(){
+  const isDark=!document.body.classList.contains('light');
+  const tile=isDark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  map=L.map('map',{zoomControl:false}).setView([31.7154,34.7586],16);
+  L.tileLayer(tile,{attribution:'© CartoDB © OSM'}).addTo(map);
+  layerGroups.stations=L.layerGroup().addTo(map);
+  layerGroups.reports=L.layerGroup().addTo(map);
+  layerGroups.volunteers=L.layerGroup().addTo(map);
+  let lpTimer=null;
+  function startLP(latlng){lpTimer=setTimeout(()=>{haptic('medium');pinData['ns']={lat:latlng.lat,lng:latlng.lng};openAddStation();setTimeout(()=>{const s=document.getElementById('ns-loc-status');if(s){s.textContent='✅ מיקום נבחר מהמפה';s.className='loc-status ok';}const btn=document.getElementById('ns-gps-btn');if(btn)btn.classList.add('ok');},200);},600);}
+  function cancelLP(){clearTimeout(lpTimer);}
+  map.on('mousedown',e=>startLP(e.latlng));
+  map.on('mouseup mousemove drag',cancelLP);
+  map.on('touchstart',e=>{if(e.originalEvent.touches.length===1)startLP(e.latlng);});
+  map.on('touchend touchmove',cancelLP);
+  loadData();
+}
+
+async function markReportDone(reportId) {
+  await fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify({rowType:'reportStatus', id:reportId, status:'done'})
+  });
+  if (map) map.closePopup();
+  showToast('✅ דיווח סומן כטופל');
+  setTimeout(() => { loadData(); if(document.getElementById('page-stats').classList.contains('active')) renderReportsHistory(); }, 1500);
+}
+
+async function deleteReport(reportId) {
+  await permanentDelete('reports', reportId);
+  map.closePopup();
+  showToast('🗑️ דיווח נמחק');
+  setTimeout(loadData, 1500);
+}
+
+function locateMe() {
+  if (!navigator.geolocation) { showToast('⚠️ GPS לא זמין'); return; }
+  showToast('⏳ מאתר מיקום...');
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    map.setView([lat, lng], 18);
+
+    // Remove old marker if exists
+    if (window._locMarker) map.removeLayer(window._locMarker);
+
+    // Add pulsing marker
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:16px;height:16px;border-radius:50%;background:#38bdf8;border:3px solid white;box-shadow:0 0 0 4px rgba(56,189,248,0.3),0 2px 8px rgba(0,0,0,0.4)"></div>`,
+      iconSize: [16,16], iconAnchor: [8,8]
+    });
+    window._locMarker = L.marker([lat, lng], {icon}).addTo(map);
+    window._locMarker.bindPopup('<div dir="rtl" style="font-family:Heebo,sans-serif">📍 המיקום שלי</div>').openPopup();
+    showToast('✅ מיקום נמצא');
+  }, () => {
+    showToast('❌ לא ניתן לאתר מיקום');
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+function toggleLayer(name,btn){const lg=layerGroups[name];if(!lg)return;if(map.hasLayer(lg)){map.removeLayer(lg);btn.classList.add('off');}else{lg.addTo(map);btn.classList.remove('off');}}
+
+function loadData(){
+  const old=document.getElementById('jsonp-loader');if(old)old.remove();
+  window._cb=function(raw){parseSheets(raw);renderMap();renderStationsList();renderDashboard();if(document.getElementById('page-volunteers').classList.contains('active'))renderVolunteersList();document.getElementById('last-sync').textContent='עודכן '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});};
+  const s=document.createElement('script');s.id='jsonp-loader';s.src=SCRIPT_URL+'?callback=_cb&t='+Date.now();document.body.appendChild(s);
+}
+
+function parseSheets(raw){
+  if(!raw)return;
+  function pr(rows,mapper){if(!rows||rows.length<2)return[];return rows.slice(1).filter(r=>r[0]).map(mapper);}
+  db.stations=pr(raw.stations,r=>({id:String(r[2]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),reporter:r[10],status:r[11]||'active',date:r[0]}));
+  db.traps=pr(raw.traps,r=>({id:String(r[2]),stationId:String(r[3]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],status:r[11]||'active',date:r[0],extra:r[12]}));
+  db.updates=pr(raw.updates,r=>({id:String(r[2]),trapId:String(r[3]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],date:r[0]}));
+  db.reports=pr(raw.reports,r=>({id:String(r[2]),email:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],subtype:r[12],note:r[8],reporter:r[10],status:r[11]||'active',date:r[0]}));
+  db.volunteers=pr(raw.volunteers||[],r=>({id:String(r[2]),parentId:String(r[3]),name:r[4],severity:r[7],note:r[8],reporter:r[10],status:r[11]||'active',extra:r[12],date:r[0]}));
+}
+
+function renderMap(){
+  layerGroups.stations.clearLayers();layerGroups.reports.clearLayers();
+  db.stations.filter(s=>s.status==='active'&&!isNaN(s.lat)).forEach(station=>{
+    const traps=db.traps.filter(t=>t.stationId===station.id&&t.status==='active');
+    const urgent=traps.filter(t=>getDaysOld(t)>=14).length;
+    const color=urgent>0?'#ef4444':traps.length>0?'#38bdf8':'#475569';
+    
+    // Dim stations in volunteer map mode if they have no needy traps
+    let opacity = 1;
+    if (isVolMapMode) {
+        const needyTraps = traps.filter(t => t.severity === 'high' || getDaysOld(t) >= 10);
+        if (needyTraps.length === 0) opacity = 0.4;
+    }
+
+    const icon=L.divIcon({className:'',html:`<div style="position:relative;width:32px;height:32px;opacity:${opacity}"><div style="position:absolute;inset:0;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:2px solid rgba(255,255,255,0.8);box-shadow:0 3px 10px rgba(0,0,0,0.4)"></div>${traps.length>0?`<div style="position:absolute;top:-4px;right:-4px;background:${urgent>0?'#ef4444':'#10b981'};color:white;width:15px;height:15px;border-radius:50%;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;border:1.5px solid white">${traps.length}</div>`:''}</div>`,iconSize:[32,40],iconAnchor:[16,40]});
+    const m=L.marker([station.lat,station.lng],{icon}).addTo(layerGroups.stations);
+    m.on('click',()=> {
+        if (isVolMapMode) openVolStationPick(station.id);
+        else openStationSite(station.id);
+    });
+  });
+  db.reports.filter(r=>!isNaN(r.lat)&&r.status!=='done'&&r.status!=='deleted').forEach(rep=>{
+    const color=rep.severity==='high'?'#ef4444':rep.severity==='med'?'#f59e0b':'#10b981';
+    const repMarker = L.circleMarker([rep.lat,rep.lng],{radius:8,fillColor:color,color:'#fff',weight:2,fillOpacity:0.85}).addTo(layerGroups.reports);
+    repMarker.bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif;min-width:160px">
+      <strong>${rep.subtype==='bag'?'🛍️ שקית':'🚨 זבובים'}</strong><br>
+      <small style="color:#888">${new Date(rep.date).toLocaleDateString('he-IL')}</small>
+      ${rep.note?`<br><span style="font-size:12px">${rep.note}</span>`:''}
+      ${rep.reporter?`<br><small>👤 ${rep.reporter}</small>`:''}
+      <br><div style="display:flex;gap:6px;margin-top:8px">
+        <button onclick="markReportDone('${rep.id}')" style="flex:1;padding:6px;background:#10b981;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">✅ טופל</button>
+        <button onclick="deleteReport('${rep.id}')" style="flex:1;padding:6px;background:#ef4444;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️ מחק</button>
+      </div>
+    </div>`);
+  });
+}
+
+function openStationSite(stationId){
+  currentStationId=stationId;
+  const station=db.stations.find(s=>s.id===stationId);if(!station)return;
+  document.getElementById('ss-title').textContent=station.name;
+  const traps=db.traps.filter(t=>t.stationId===stationId&&t.status==='active');
+  const allTraps=db.traps.filter(t=>t.stationId===stationId);
+  const urgent=traps.filter(t=>getDaysOld(t)>=14);
+  const soon=traps.filter(t=>{const d=getDaysOld(t);return d>=10&&d<14;});
+  const statusBar=`<div class="status-bar"><div class="status-pill bg-blue">🪤 ${traps.length} פעילות</div>${urgent.length?`<div class="status-pill bg-red">🔴 ${urgent.length} דחוף</div>`:''} ${soon.length?`<div class="status-pill bg-yellow">🟡 ${soon.length} בקרוב</div>`:''}<div class="status-pill bg-grey">${allTraps.length} סה"כ</div></div>`;
+  const shareHtml=`<div class="share-btns"><a class="share-btn" href="https://waze.com/ul?ll=${station.lat},${station.lng}&navigate=yes" target="_blank">🚗 Waze</a><a class="share-btn" href="https://maps.google.com/?q=${station.lat},${station.lng}" target="_blank">🗺️ Maps</a><button class="share-btn" onclick="copyLink(${station.lat},${station.lng})">🔗 העתק</button></div>`;
+  const trapsHtml=traps.length===0?`<div class="empty"><div class="empty-icon">🪤</div><div>אין מלכודות פעילות</div></div>`:traps.map(t=>renderTrapCard(t)).join('');
+  const doneTraps=allTraps.filter(t=>t.status!=='active');
+  const doneSec=doneTraps.length?`<div class="trap-section-title" style="margin-top:16px">✅ הושלכו (${doneTraps.length})</div>${doneTraps.map(t=>renderTrapCard(t,true)).join('')}`:'';
+  document.getElementById('station-site-content').innerHTML=`${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">⚙️ נהל עמדה</button></div><div class="trap-section-title">🪤 מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
+  openOverlay('station');
+}
+
+function renderTrapCard(trap,done=false){
+  const updates=db.updates.filter(u=>u.trapId===trap.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const lastUpdate=updates[0];const currentSev=lastUpdate?lastUpdate.severity:trap.severity;
+  const days=getDaysOld(trap);
+  const sc={low:'var(--live)',med:'var(--warn)',high:'var(--danger)',done:'var(--muted)'}[currentSev]||'var(--muted)';
+  const sl={low:'🟢 ריקה',med:'🟡 קצת מלאה',high:'🔴 מלאה',done:'✅ הושלכה'}[currentSev]||currentSev;
+  const ub=!done&&days>=14?`<span class="badge bg-red">🔴 ${days}י׳ — דחוף</span>`:!done&&days>=10?`<span class="badge bg-yellow">🟡 ${days} יום</span>`:!done?`<span class="badge bg-grey">${days} יום</span>`:'';
+  const tlHtml=updates.map(u=>{const uc={low:'var(--live)',med:'var(--warn)',high:'var(--danger)',done:'var(--muted)'}[u.severity]||'var(--muted)';const ul={low:'🟢 ריקה',med:'🟡 קצת מלאה',high:'🔴 מלאה',done:'✅ הושלכה לפח'}[u.severity]||u.severity;const ds=new Date(u.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});return `<div class="tl-item"><div class="tl-icon">📸</div><div class="tl-body"><div class="tl-sev" style="color:${uc}">${ul}</div>${u.note?`<div class="tl-note">${u.note}</div>`:''}<div class="tl-meta">${ds}${u.reporter?' · '+u.reporter:''}</div></div>${u.photoUrl?`<img class="tl-img" src="${u.photoUrl}" onclick="event.stopPropagation();openLightbox('${u.photoUrl}','${u.severity||''} · ${u.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;}).join('');
+  const fe=`<div class="tl-item"><div class="tl-icon">🪤</div><div class="tl-body"><div class="tl-sev" style="color:var(--accent)">הותקנה</div>${trap.note?`<div class="tl-note">${trap.note}</div>`:''}<div class="tl-meta">${new Date(trap.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${trap.reporter?' · '+trap.reporter:''}</div></div>${trap.photoUrl?`<img class="tl-img" src="${trap.photoUrl}" onclick="event.stopPropagation();openLightbox('${trap.photoUrl}','הותקנה · ${trap.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;
+  return `<div class="trap-card"><div class="trap-header" onclick="toggleTrapBody('${trap.id}')"><div class="trap-dot" style="background:${sc}"></div><div class="trap-info"><div class="trap-name">${trap.name}</div><div class="trap-meta" style="color:${sc}">${sl} ${ub}</div></div><div class="trap-chevron" id="chev-${trap.id}">▾</div></div><div class="trap-body" id="body-${trap.id}">${tlHtml}${fe}<button class="add-update-btn" data-action="add-update" data-trap-id="${trap.id}" data-trap-name="${trap.name}">📸 הוסף עדכון / שנה סטטוס</button>${done ? `<button class="add-update-btn" data-action="restore-trap" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--live);border-color:var(--live);margin-top:5px">♻️ שחזר כפעילה</button>` : ""}<button class="add-update-btn" data-action="delete-trap-choice" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--danger);border-color:var(--danger);margin-top:5px">🗑️ מחק מלכודת</button></div></div>`;
+}
+
+function toggleTrapBody(trapId){
+  const body = document.getElementById('body-'+trapId);
+  const chev = document.getElementById('chev-'+trapId);
+  if (body) body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
+function renderStationsList(){
+  const el=document.getElementById('stations-list');
+  if(!db.stations.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📍</div><div>אין עמדות — הוסף מהמפה</div></div>`;return;}
+  el.innerHTML=db.stations.map(station=>{
+    const traps=db.traps.filter(t=>t.stationId===station.id&&t.status==='active');
+    const urgent=traps.filter(t=>getDaysOld(t)>=14).length;
+    const soon=traps.filter(t=>{const d=getDaysOld(t);return d>=10&&d<14;}).length;
+    const color=urgent>0?'var(--danger)':traps.length>0?'var(--accent)':'var(--muted)';
+    const inactive=station.status!=='active';
+    return `<div class="gcard ${inactive?'status-inactive':''}" onclick="openStationSite('${station.id}')"><div class="gcard-row"><div class="s-dot" style="background:${color}"></div><div class="s-info"><div class="s-name">${station.name}${inactive?' <span style="font-size:11px;color:var(--muted)">(מושהית)</span>':''}</div><div class="s-meta">${new Date(station.date).toLocaleDateString('he-IL')} · ${station.reporter||''}</div><div class="s-badges">${traps.length?`<span class="badge bg-blue">🪤 ${traps.length}</span>`:'<span class="badge bg-grey">אין</span>'}${urgent?`<span class="badge bg-red">🔴 ${urgent} דחוף</span>`:''}${soon?`<span class="badge bg-yellow">🟡 ${soon} בקרוב</span>`:''}</div></div><div class="s-arrow">›</div></div></div>`;
+  }).join('');
+}
+
+function renderReportsHistory() {
+  const el = document.getElementById('reports-history-list');
+  if (!el) return;
+  const all = [...db.reports].reverse();
+  if (!all.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>אין דיווחים</div></div>';
+    return;
+  }
+  const typeLabel = {flies:'🪰 זבובים', bag:'🛍️ שקית'};
+  const sevLabel = {low:'קל', med:'מציק', high:'בלתי נסבל'};
+  el.innerHTML = all.map(r => {
+    const isDone = r.status === 'done';
+    const dateStr = new Date(r.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div class="gcard" style="${isDone?'opacity:0.55':''}">
+      <div class="gcard-body" style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700">${typeLabel[r.subtype]||'🚨 דיווח'}</span>
+            <span class="badge ${isDone?'bg-green':'bg-red'}">${isDone?'✅ טופל':'⚠️ פעיל'}</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">${sevLabel[r.severity]||''} ${r.reporter?'· '+r.reporter:''}</div>
+          ${r.note?`<div style="font-size:12px;color:var(--text2);margin-top:2px">${r.note}</div>`:''}
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">${dateStr}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+          ${!isDone?`<button onclick="markReportDone('${r.id}')" style="background:var(--live);border:none;border-radius:8px;padding:6px 10px;color:#0f172a;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">✅ טופל</button>`:''}
+          <button onclick="deleteReport('${r.id}')" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--danger);font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDashboard(){
+  const active=db.stations.filter(s=>s.status==='active');
+  const aT=db.traps.filter(t=>t.status==='active');
+  const urgent=aT.filter(t=>getDaysOld(t)>=14);
+  const soon=aT.filter(t=>{const d=getDaysOld(t);return d>=10&&d<14;});
+  document.getElementById('d-stations').textContent=active.length;
+  document.getElementById('d-traps').textContent=aT.length;
+  document.getElementById('d-urgent').textContent=urgent.length;
+  document.getElementById('d-soon').textContent=soon.length;
+  let hotspot='—';
+  if(active.length){const ranked=active.map(s=>({name:s.name,score:db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=14).length*2+db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=10).length})).sort((a,b)=>b.score-a.score);hotspot=ranked[0].score>0?`${ranked[0].name} (${ranked[0].score} נקודות)`:'הכל תקין ✅';}
+  document.getElementById('d-hotspot').textContent=hotspot;
+  const months=['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'];
+  const counts=Array(12).fill(0);
+  [...db.traps,...db.updates].forEach(d=>{if(d.date)counts[new Date(d.date).getMonth()]++;});
+  const max=Math.max(...counts,1);
+  document.getElementById('d-chart').innerHTML=counts.map((c,i)=>`<div class="bar-row"><div class="bar-lbl">${months[i]}</div><div class="bar-track"><div class="bar-fill" style="width:${c/max*100}%"></div></div><div class="bar-val">${c||''}</div></div>`).join('');
+  renderReportsHistory();
+}
+
+// ── VOLUNTEER MAP & FUNCTIONS ──
+
+function startVolMapMode() {
+  closeOverlay('vol-type');
+  navigate('map', document.querySelector('.nav-item')); // עובר לטאב מפה
+  isVolMapMode = true;
+  selectedVolTraps.clear();
+  document.getElementById('vol-map-ui').style.display = 'flex';
+  document.querySelector('.map-fabs').style.display = 'none';
+  document.querySelector('.map-controls').style.display = 'none';
+  updateVolMapFooter();
+  renderMap(); 
+  showToast('🗺️ בחר עמדות מהמפה כדי לפנות מלכודות');
+}
+
+function exitVolMapMode() {
+  isVolMapMode = false;
+  selectedVolTraps.clear();
+  document.getElementById('vol-map-ui').style.display = 'none';
+  document.querySelector('.map-fabs').style.display = 'flex';
+  document.querySelector('.map-controls').style.display = 'flex';
+  renderMap();
+}
+
+function updateVolMapFooter() {
+  const btn = document.getElementById('vol-map-continue-btn');
+  const count = selectedVolTraps.size;
+  btn.textContent = `המשך (${count} שקיות נבחרו)`;
+  btn.disabled = count === 0;
+}
+
+function openVolStationPick(stationId) {
+  const station = db.stations.find(s => s.id === stationId);
+  if(!station) return;
+  document.getElementById('vsp-title').textContent = '📍 ' + station.name;
+  const traps = db.traps.filter(t => t.stationId === stationId && t.status === 'active');
+  const needy = traps.filter(t => t.severity === 'high' || getDaysOld(t) >= 10);
+
+  // מזהה מלכודות שכבר בטיפול ע"י מתנדבים אחרים
+  const claimedTraps = {};
+  db.volunteers.filter(v => v.status === 'בתהליך' && v.severity === 'pickup').forEach(v => {
+    if(v.parentId) {
+      v.parentId.split(',').forEach(tid => {
+        claimedTraps[tid] = { name: v.reporter, date: v.extra || v.date };
+      });
+    }
+  });
+
+  const list = document.getElementById('vsp-list');
+  if (needy.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted);padding:10px;text-align:center">הכל תקין כאן! אין מלכודות דחופות לפינוי בעמדה זו.</div>';
+  } else {
+    list.innerHTML = needy.map(t => {
+      const isChecked = selectedVolTraps.has(t.id) ? 'checked' : '';
+      const claim = claimedTraps[t.id];
+      const safeName = claim ? claim.name.replace(/"/g, '&quot;') : '';
+      const claimAttrs = claim ? `data-claimed-by="${safeName}" data-claimed-date="${claim.date}"` : '';
+      const claimHtml = claim ? `<div style="font-size:11px;color:var(--warn);margin-top:3px;font-weight:700">🔒 מתוכנן לפינוי ע"י ${safeName}</div>` : '';
+
+      return `
+      <label class="vol-list-item" style="cursor:pointer; ${getDaysOld(t) >= 14 || t.severity === 'high' ? 'border:1px solid var(--danger);background:rgba(239,68,68,0.05);' : ''}">
+        <input type="checkbox" id="v-trap-${t.id}" value="${t.id}" ${isChecked} ${claimAttrs} onchange="handleTrapCheck(this, '${t.id}')" style="transform:scale(1.2)">
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${t.name}</div>
+          <div style="font-size:11px;color:var(--muted)">
+            ${t.severity === 'high' ? '🔴 מלאה' : t.severity === 'med' ? '🟡 קצת מלאה' : '🟢 ריקה'} · ${getDaysOld(t)} ימים בשטח
+          </div>
+          ${claimHtml}
+        </div>
+      </label>`;
+    }).join('');
+  }
+  openOverlay('vol-station-pick');
+}
+
+function handleTrapCheck(cb, trapId) {
+  if (cb.checked && cb.dataset.claimedBy) {
+    cb.checked = false; // מונע בחירה מיידית
+    showConfirm('⚠️ מלכודת תפוסה',
+      `מלכודת זו כבר מתוכננת לפינוי ע"י ${cb.dataset.claimedBy} בתאריך ${new Date(cb.dataset.claimedDate).toLocaleDateString('he-IL')}.\nהאם ברצונך לקחת אחריות ולפנות במקומו?`,
+      () => {
+        const actualCb = document.getElementById('v-trap-' + trapId);
+        if(actualCb) {
+          actualCb.checked = true;
+          actualCb.dataset.claimedBy = ''; // מנקה כדי שלא יקפוץ שוב
+          toggleVolTrap(trapId, true);
+        }
+      }
+    );
+  } else {
+    toggleVolTrap(trapId, cb.checked);
+  }
+}
+
+function toggleVolTrap(trapId, isChecked) {
+  if (isChecked) selectedVolTraps.add(trapId);
+  else selectedVolTraps.delete(trapId);
+  updateVolMapFooter();
+}
+
+function proceedVolPickup() {
+  if (selectedVolTraps.size === 0) return;
+  document.getElementById('vol-pickup-summary').innerHTML = 'בחרת <strong>' + selectedVolTraps.size + '</strong> מלכודות (שקיות) לפינוי מהשטח.';
+  document.getElementById('vol-pickup-datetime').value = new Date().toISOString().split('T')[0];
+  openOverlay('vol-pickup-final');
+}
+
+function setHangMode(mode, btn) {
+  document.getElementById('vol-hang-existing').style.display = mode === 'existing' ? 'block' : 'none';
+  document.getElementById('vol-hang-new').style.display = mode === 'new' ? 'block' : 'none';
+  btn.closest('.sev-group').querySelectorAll('.sev-btn').forEach(b => b.classList.remove('sel-low'));
+  btn.classList.add('sel-low');
+}
+
+function openVolunteerForm(type) {
+  closeOverlay('vol-type');
+  if (type === 'hang') {
+    const select = document.getElementById('vol-hang-station-select');
+    select.innerHTML = '<option value="">בחר עמדה...</option>' + db.stations.filter(s=>s.status==='active').map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    document.getElementById('vol-hang-datetime').value = new Date().toISOString().split('T')[0];
+    setHangMode('existing', document.querySelector('#overlay-vol-hang .sev-btn'));
+    openOverlay('vol-hang');
+  }
+}
+
+async function saveVolPickup() {
+  const name = document.getElementById('vol-pickup-name').value.trim();
+  const date = document.getElementById('vol-pickup-datetime').value;
+  const note = document.getElementById('vol-pickup-note').value.trim();
+  const selected = Array.from(selectedVolTraps);
+
+  if (!name || !date || selected.length === 0) { showToast('⚠️ נא למלא שם ותאריך'); return; }
+
+  const btn = document.getElementById('vol-pickup-save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="loading-spin"></span> רושם התנדבות...';
+
+  await postData({
+      rowType: 'volunteer', id: 'V'+Date.now(), name: "פינוי מלכודות: " + selected.length + (note ? " | " + note : ""),
+      reporter: name, extra: date, parentId: selected.join(','), status: 'בתהליך', severity: 'pickup'
+  });
+
+  showToast('✅ תודה רבה! התנדבותך נרשמה.');
+  closeOverlay('vol-pickup-final');
+  exitVolMapMode();
+  btn.disabled = false; btn.innerHTML = '🗑️ אשר התנדבות';
+  loadData();
+}
+
+async function saveVolHang() {
+  const name = document.getElementById('vol-hang-name').value.trim();
+  const date = document.getElementById('vol-hang-datetime').value;
+  const note = document.getElementById('vol-hang-note').value.trim();
+  const mode = document.getElementById('vol-hang-existing').style.display === 'block' ? 'existing' : 'new';
+
+  let stationId = '';
+  let stationName = '';
+
+  if (mode === 'existing') {
+      stationId = document.getElementById('vol-hang-station-select').value;
+      if (!stationId) { showToast('⚠️ נא לבחור עמדה להתנדבות'); return; }
+  } else {
+      stationName = document.getElementById('vol-hang-new-name').value.trim();
+      if (!stationName) { showToast('⚠️ נא להכניס שם לעמדה החדשה'); return; }
+      stationId = 'NEW|||' + stationName; 
+  }
+
+  if (!name || !date) { showToast('⚠️ נא למלא שם ותאריך'); return; }
+
+  const btn = document.getElementById('vol-hang-save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="loading-spin"></span> רושם התנדבות...';
+
+  let actionName = mode === 'existing' 
+      ? `תליית מלכודת בעמדה: ${db.stations.find(s=>s.id === stationId)?.name || ''}` 
+      : `תליית מלכודת בעמדה חדשה: ${stationName}`;
+  
+  if (note) actionName += ` | ${note}`;
+
+  await postData({
+      rowType: 'volunteer', id: 'V'+Date.now(), name: actionName,
+      reporter: name, extra: date, parentId: stationId, status: 'בתהליך', severity: 'hang'
+  });
+
+  showToast('✅ תודה רבה! התנדבותך נרשמה.');
+  closeOverlay('vol-hang');
+  btn.disabled = false; btn.innerHTML = '🪤 אני מתנדב לתלות';
+  loadData();
+}
+
+function renderVolunteersList() {
+  const list = document.getElementById('volunteers-list');
+  if(!db.volunteers.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🙋</div><div>אין התנדבויות עדיין. מי יהיה הראשון?</div></div>';
+    return;
+  }
+  
+  const sortedVolunteers = [...db.volunteers].sort((a,b) => (a.status === 'בוצע' ? 1 : 0) - (b.status === 'בוצע' ? 1 : 0));
+  
+  list.innerHTML = sortedVolunteers.map(v => {
+    const isDone = v.status === 'בוצע';
+    const dimClass = isDone ? 'vol-completed' : '';
+    
+    // בונה את פירוט השקיות/עמדות עבור הכרטיסייה
+    let detailsHtml = '';
+    if (v.severity === 'pickup' && v.parentId) {
+       const tIds = v.parentId.split(',');
+       const traps = tIds.map(tid => db.traps.find(t => t.id === tid)).filter(Boolean);
+       if(traps.length > 0) {
+          detailsHtml = `<div style="margin-top:8px; padding:10px; background:var(--bg); border-radius:8px; font-size:12px; color:var(--text2); border:1px solid var(--border)">
+            <strong style="color:var(--text)">${traps.length} שקיות לפינוי:</strong><br>
+            <div style="margin-top:4px; line-height:1.6">
+              ${traps.map(t => {
+                 const s = db.stations.find(st => st.id === t.stationId);
+                 const sName = s ? s.name : 'כללי';
+                 return `• ${t.name} <span style="color:var(--muted)">(${sName})</span>`;
+              }).join('<br>')}
+            </div>
+          </div>`;
+       }
+    } else if (v.severity === 'hang' && v.parentId) {
+       let sName = '';
+       if(v.parentId.startsWith('NEW|||')) sName = v.parentId.split('|||')[1] + ' (עמדה חדשה)';
+       else {
+           const s = db.stations.find(st => st.id === v.parentId);
+           sName = s ? s.name : 'עמדה לא ידועה';
+       }
+       detailsHtml = `<div style="margin-top:8px; padding:8px; background:var(--bg); border-radius:8px; font-size:12px; color:var(--text2)">
+          <strong>עמדה מיועדת:</strong> ${sName}
+       </div>`;
+    }
+
+    const safeDesc = v.name.replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
+    return `
+    <div class="gcard ${dimClass}" style="padding:15px">
+      <div style="font-size:12px;color:var(--accent);font-weight:900;text-transform:uppercase">${v.severity === 'pickup' ? '🗑️ פינוי מלכודות' : '🪤 תליית מלכודת'}</div>
+      <div style="font-size:16px;font-weight:700;margin:4px 0">${v.reporter}</div>
+      <div style="font-size:13px;color:var(--text2)">${v.name}</div>
+      ${detailsHtml}
+      <div style="font-size:11px;color:var(--muted);margin:8px 0">מתוכנן ל: ${new Date(v.extra || v.date).toLocaleDateString('he-IL')}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+        ${!isDone ? 
+          `<button class="btn btn-green" style="padding:8px;font-size:13px;margin:0" data-action="complete-vol" data-vol-id="${v.id}" data-vol-desc="${safeDesc}">סימנתי שביצעתי ✅</button>` 
+          : `<div style="font-weight:bold; color:var(--live); flex:1; font-size:13px;">✅ משימה בוצעה</div>`
+        }
+        <button class="btn btn-red" style="padding:8px;font-size:13px;flex:0 0 auto;width:auto;margin:0;background:transparent;border:1px solid var(--danger);color:var(--danger)" data-action="delete-vol" data-vol-id="${v.id}">🗑️ מחיקה</button>
+      </div>
+    </div>
+  `}).join('');
+}
+
+let currentVolId = null;
+function openVolComplete(id, desc) {
+  currentVolId = id;
+  document.getElementById('vol-complete-desc').textContent = desc;
+  document.getElementById('volc-photo-ph').style.display = 'block';
+  document.getElementById('volc-photo-prev').style.display = 'none';
+  if(window._photoData) delete window._photoData['volc'];
+  document.getElementById('vol-complete-note').value = '';
+  openOverlay('vol-complete');
+}
+
+async function confirmVolComplete() {
+  const btn = document.getElementById('vol-complete-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="loading-spin"></span> מעדכן מערכת...';
+
+  const note = document.getElementById('vol-complete-note').value.trim();
+  const photoBase64 = (window._photoData && window._photoData['volc']) || '';
+  if(window._photoData) delete window._photoData['volc'];
+
+  const vol = db.volunteers.find(v => v.id === currentVolId);
+  if (vol) vol.status = 'בוצע'; // עדכון מקומי מהיר
+  renderVolunteersList();
+  
+  let finalPhotoUrl = '';
+  if (photoBase64 && photoBase64.length > 100) {
+      showToast('⏳ מעלה תמונה לענן...');
+      const dateStr = new Date().toLocaleDateString('he-IL');
+      finalPhotoUrl = await uploadToCloudinary(photoBase64, 'התנדבות', dateStr);
+  }
+
+  await postData({
+      rowType: 'volunteerStatus', id: currentVolId, parentId:'', name:'', lat:'', lng:'', severity:'', status: 'בוצע', note: note, photoUrl: finalPhotoUrl, reporter:'', extra:''
+  });
+
+  if (vol && vol.severity === 'pickup' && vol.parentId) {
+      const trapIds = vol.parentId.split(',');
+      for(const tid of trapIds) {
+          await postData({rowType:'trapStatus', id:tid, parentId:'', name:'', lat:'', lng:'', severity:'done', note:note||'פונתה ע"י מתנדב', photoUrl:finalPhotoUrl, reporter:vol.reporter, status:'done', extra:''});
+      }
+  } else if (vol && vol.severity === 'hang' && vol.parentId) {
+      let stationId = vol.parentId;
+      let stationName = '';
+      
+      if (stationId.startsWith('NEW|||')) {
+          stationName = stationId.split('|||')[1];
+          stationId = 'ST' + Date.now();
+          await postData({rowType:'station', id:stationId, parentId:'', name:stationName, lat:'', lng:'', severity:'', note:'נוצרה מהתנדבות', photoUrl:'', reporter:vol.reporter, status:'active', extra:''});
+      } else {
+          stationName = db.stations.find(s => s.id === stationId)?.name || 'כללי';
+      }
+
+      const dateStrForName = new Date().toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'});
+      const newTrapName = `${stationName} ${dateStrForName}`;
+      
+      await postData({
+          rowType: 'trap', id: 'TR'+Date.now(), parentId: stationId,
+          name: newTrapName, severity: 'low', reporter: vol.reporter,
+          status: 'active', extra: new Date().toISOString().split('T')[0], photoUrl: finalPhotoUrl,
+          stationName: stationName
+      });
+  }
+
+  showToast('✅ כל הכבוד! הפעולה בוצעה והמערכת עודכנה.');
+  closeOverlay('vol-complete');
+  btn.disabled = false; btn.innerHTML = '✅ בוצע!';
+  loadData();
+}
+
+async function permanentDeleteVol(id) {
+  showConfirm('⚠️ מחיקת התנדבות', 'האם למחוק התנדבות זו לצמיתות מיומן הרישום?', async () => {
+    // עדכון חזותי מיידי במסך
+    db.volunteers = db.volunteers.filter(v => v.id !== id);
+    renderVolunteersList();
+    
+    await permanentDelete('volunteers', id);
+    showToast('🗑️ התנדבות נמחקה');
+    setTimeout(loadData, 1000);
+  });
+}
+
+// ── CORE FUNCTIONS ──
+function openAddStation(){openOverlay('add-station');}
+async function saveStation(){
+  const name=document.getElementById('ns-name').value.trim();
+  const reporter=document.getElementById('ns-reporter').value.trim();
+  const loc=pinData['ns'];
+  if(!name){showToast('⚠️ נא להכניס שם');return;}
+  if(!loc){showToast('⚠️ נא לבחור מיקום');return;}
+  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  const btn=document.getElementById('ns-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שומר...';
+  await postData({rowType:'station',id:'ST'+Date.now(),parentId:'',name,lat:loc.lat,lng:loc.lng,severity:'',note:'',photoUrl:'',reporter,status:'active',extra:''});
+  showToast('✅ עמדה נוצרה!');closeOverlay('add-station');
+  document.getElementById('ns-name').value='';document.getElementById('ns-reporter').value='';pinData['ns']=null;
+  btn.disabled=false;btn.textContent='📍 שמור עמדה';setTimeout(loadData,1500);
+}
+
+function openAddTrap(stationId){
+  currentStationId=stationId;
+  const station=db.stations.find(s=>s.id===stationId);
+  document.getElementById('at-station-name').textContent='📍 '+(station?station.name:'');
+  document.getElementById('at-date').value=new Date().toISOString().split('T')[0];
+  const di=document.getElementById('at-date');const ni=document.getElementById('at-name');
+  function un(){const d=di.value?new Date(di.value):new Date();const ds=d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'}).slice(0,5);ni.value=station?`${station.name} ${ds}`:ds;}
+  un();di.onchange=un;
+  formSev['at']='low';
+  document.querySelectorAll('#overlay-add-trap .sev-btn').forEach(b=>b.className='sev-btn');
+  document.querySelector('#overlay-add-trap .sev-btn').classList.add('sel-low');
+  openOverlay('add-trap');
+}
+async function saveTrap(){
+  const name=document.getElementById('at-name').value.trim();
+  const reporter=document.getElementById('at-reporter').value.trim();
+  const dateVal=document.getElementById('at-date').value;
+  const sev=formSev['at'];
+  if(!name){showToast('⚠️ נא להכניס שם');return;}
+  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  if(!sev){showToast('⚠️ נא לבחור סטטוס');return;}
+  const station=db.stations.find(s=>s.id===currentStationId);
+  const btn=document.getElementById('at-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שומר...';
+  const station2=station;
+  const photoBase64=(window._photoData&&window._photoData['at'])||'';
+  if(window._photoData)delete window._photoData['at'];
+  await postData({rowType:'trap',id:'TR'+Date.now(),parentId:currentStationId,name,lat:station2?station2.lat:'',lng:station2?station2.lng:'',severity:sev,note:'',photoBase64,stationName:station2?station2.name:'',reporter,status:'active',extra:dateVal});
+  showToast('✅ מלכודת נוספה!');closeOverlay('add-trap');
+  document.getElementById('at-reporter').value='';btn.disabled=false;btn.textContent='🪤 הוסף מלכודת';
+  setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
+}
+
+function openAddUpdate(trapId,trapName){
+  currentTrapId=trapId;
+  document.getElementById('au-trap-name').textContent='🪤 '+trapName;
+  document.getElementById('au-note').value='';document.getElementById('au-reporter').value='';
+  document.getElementById('au-photo-ph').style.display='';document.getElementById('au-photo-prev').style.display='none';
+  document.getElementById('au-analyze-btn').style.display='none';
+  formSev['au']=null;document.querySelectorAll('#overlay-add-update .sev-btn').forEach(b=>b.className='sev-btn');
+  openOverlay('add-update');
+}
+async function saveUpdate(){
+  const reporter=document.getElementById('au-reporter').value.trim();
+  const note=document.getElementById('au-note').value.trim();
+  const sev=formSev['au'];
+  if(!sev){showToast('⚠️ נא לבחור סטטוס');return;}
+  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  const btn=document.getElementById('au-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שולח...';
+  const photoBase64Au=(window._photoData&&window._photoData['au'])||'';if(window._photoData)delete window._photoData['au'];
+  const trapForStation=db.traps.find(t=>t.id===currentTrapId);
+  const stationForPhoto=trapForStation?db.stations.find(s=>s.id===trapForStation.stationId):null;
+  const stationNameForPhoto=stationForPhoto?stationForPhoto.name:'כללי';
+  if(sev==='done')await postData({rowType:'trapStatus',id:currentTrapId,parentId:'',name:'',lat:'',lng:'',severity:'done',note,photoUrl:'',reporter,status:'done',extra:''});
+  await postData({rowType:'update',id:'UP'+Date.now(),parentId:currentTrapId,name:'',lat:'',lng:'',severity:sev,note,photoBase64:photoBase64Au,stationName:stationNameForPhoto,reporter,status:'',extra:''});
+  showToast('✅ עדכון נשלח!');closeOverlay('add-update');
+  btn.disabled=false;btn.textContent='✅ שלח עדכון';
+  setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
+}
+
+async function saveReport(){
+  const reporter=document.getElementById('rep-reporter').value.trim();
+  const note=document.getElementById('rep-note').value.trim();
+  const loc=pinData['rep'];const sev=formSev['rep'];const sev2=formSev2['rep'];
+  if(!sev){showToast('⚠️ נא לבחור סוג');return;}
+  if(!sev2){showToast('⚠️ נא לבחור חומרה');return;}
+  if(!loc){showToast('⚠️ נא לבחור מיקום');return;}
+  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  const btn=document.getElementById('rep-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שולח...';
+  const photoBase64Rep=(window._photoData&&window._photoData['rep'])||'';if(window._photoData)delete window._photoData['rep'];
+  const repEmail=(document.getElementById('rep-email')?.value||'').trim();
+  await postData({rowType:'report',id:'RP'+Date.now(),parentId:'',name:repEmail,lat:loc.lat,lng:loc.lng,severity:sev2,note,photoBase64:photoBase64Rep,reporter,status:'',extra:sev});
+  showToast('✅ דיווח נשלח!');closeOverlay('report');
+  document.getElementById('rep-reporter').value='';document.getElementById('rep-note').value='';
+  if(document.getElementById('rep-email'))document.getElementById('rep-email').value='';
+  pinData['rep']=null;
+  document.getElementById('rep-photo-prev').style.display='none'; document.getElementById('report-ai-btn').style.display='none';
+  btn.disabled=false;btn.textContent='🚨 שלח דיווח';setTimeout(loadData,1500);
+}
+
+function openManageStation(){
+  const station=db.stations.find(s=>s.id===currentStationId);
+  document.getElementById('so-title').textContent=station?station.name:'עמדה';
+  const inactive=station&&station.status!=='active';
+  document.getElementById('so-activate-btn').style.display=inactive?'block':'none';
+  openOverlay('station-options');
+}
+async function toggleStationStatus(action){
+  if(action==='delete'){
+    const station=db.stations.find(s=>s.id===currentStationId);
+    showConfirm('🗑️ הסתרת עמדה',`להסתיר את "${station?station.name:'העמדה'}"?`,async()=>{
+      await postData({rowType:'stationStatus',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'deleted',extra:''});
+      closeOverlay('station-options');closeOverlay('station');showToast('🗑️ עמדה הוסתרה');setTimeout(loadData,1500);
+    });return;
+  }
+  const newStatus=action==='suspend'?'suspended':'active';
+  await postData({rowType:'stationStatus',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:newStatus,extra:''});
+  closeOverlay('station-options');closeOverlay('station');
+  showToast(action==='suspend'?'⏸️ עמדה הושהתה':'✅ עמדה הופעלה');setTimeout(loadData,1500);
+}
+
+function deleteTrapChoice(choice){
+  closeOverlay('delete-trap-choice');
+  if(choice==='trash'){
+    saveUpdateForTrash();
+  }else{
+    showConfirm('⚠️ מחיקה לצמיתות', `למחוק לצמיתות? לא ניתן לשחזר!`, async()=>{
+      await permanentDeleteTrap(currentTrapId, 'מלכודת');
+    });
+  }
+}
+async function saveUpdateForTrash(){
+  const trap=db.traps.find(t=>t.id===currentTrapId);
+  if(!trap)return;
+  showToast('⏳ מעדכן סטטוס...');
+  await postData({rowType:'trapStatus',id:currentTrapId,parentId:'',name:'',lat:'',lng:'',severity:'done',note:'הושלכה לפח',photoUrl:'',reporter:'מערכת',status:'done',extra:''});
+  setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
+}
+
+// ── PERMANENT DELETE FUNCTIONS ──
+async function permanentDelete(sheetName, rowId) {
+  const url = `${SCRIPT_URL}?action=deleteRow&sheet=${sheetName}&id=${rowId}&t=${Date.now()}`;
+  await fetch(url, { method: 'GET', mode: 'no-cors' });
+}
+
+async function permanentDeleteTrap(trapId, trapName) {
+  await permanentDelete('traps', trapId);
+  const updates = db.updates.filter(u => u.trapId === trapId);
+  for (const u of updates) await permanentDelete('updates', u.id);
+  showToast('🗑️ נמחק לצמיתות');
+  setTimeout(() => { loadData(); setTimeout(() => openStationSite(currentStationId), 1600); }, 200);
+}
+
+function confirmPermanentDeleteStation() {
+  const station = db.stations.find(s => s.id === currentStationId);
+  showConfirm('⚠️ מחיקה לצמיתות', `למחוק את "${station?.name}" + כל המלכודות לצמיתות? פעולה זו אינה הפיכה!`, async () => {
+    await permanentDeleteStation(currentStationId);
+  });
+}
+
+async function permanentDeleteStation(stationId) {
+  await permanentDelete('stations', stationId);
+  const traps = db.traps.filter(t => t.stationId === stationId);
+  for (const t of traps) {
+    await permanentDelete('traps', t.id);
+    const updates = db.updates.filter(u => u.trapId === t.id);
+    for (const u of updates) await permanentDelete('updates', u.id);
+  }
+  closeOverlay('station-options');
+  closeOverlay('station');
+  showToast('🗑️ עמדה נמחקה לצמיתות');
+  setTimeout(loadData, 1500);
+}
+
+async function restoreTrap(trapId, trapName) {
+  showConfirm('♻️ שחזור מלכודת', `לשחזר את "${trapName}" כפעילה?`, async () => {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({rowType:'trapStatus', id:trapId, parentId:'', name:'', lat:'', lng:'', severity:'', note:'', photoUrl:'', reporter:'שחזור', status:'active', extra:''})
+    });
+    showToast('♻️ מלכודת שוחזרה!');
+    setTimeout(() => { loadData(); setTimeout(() => openStationSite(currentStationId), 1600); }, 200);
+  });
+}
+
+async function deleteUpdate(updateId) {
+  showConfirm('🗑️ מחיקת עדכון', 'למחוק את העדכון לצמיתות?', async () => {
+    await permanentDelete('updates', updateId);
+    showToast('🗑️ עדכון נמחק');
+    setTimeout(() => { loadData(); setTimeout(() => openStationSite(currentStationId), 1600); }, 200);
+  });
+}
+
+const CLOUDINARY_CLOUD = 'dd1qiuokr';
+const CLOUDINARY_PRESET = 'ml_default';
+
+async function uploadToCloudinary(base64Data, trapName, dateStr) {
+  try {
+    const formData = new FormData();
+    formData.append('file', base64Data);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+      { method: 'POST', body: formData }
+    );
+    const data = await res.json();
+    if (!data.public_id) return '';
+
+    const label = encodeURIComponent((trapName||'מלכודת') + ' | ' + (dateStr||new Date().toLocaleDateString('he-IL')));
+    const url = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/l_text:Arial_28_bold:${label},co_white,g_south_west,x_10,y_10,bo_5px_solid_black/${data.public_id}.jpg`;
+    console.log('Cloudinary upload:', url);
+    return url;
+  } catch(e) {
+    console.log('Cloudinary error:', e);
+    return '';
+  }
+}
+
+async function postData(data) {
+  try {
+    const photoBase64 = data.photoBase64 || '';
+    const payload = {
+      rowType: data.rowType, id: data.id, parentId: data.parentId, name: data.name, lat: data.lat, lng: data.lng, severity: data.severity, note: data.note, reporter: data.reporter, status: data.status, extra: data.extra, trapDate: data.trapDate, stationName: data.stationName, photoUrl: data.photoUrl || ''
+    };
+    if (photoBase64 && photoBase64.length > 100) {
+      console.log('Uploading photo to Cloudinary...');
+      showToast('⏳ מעלה תמונה לענן...');
+      const dateStr = new Date().toLocaleDateString('he-IL');
+      payload.photoUrl = await uploadToCloudinary(photoBase64, data.name || data.stationName, dateStr);
+      console.log('Photo uploaded:', payload.photoUrl);
+    }
+    const body = JSON.stringify(payload);
+    console.log('Sending data type:', payload.rowType);
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: body
+    });
+    console.log('POST sent');
+  } catch(e) { console.log('Post error:', e); }
+}
+
+function getGPS(prefix){
+  const btn=document.getElementById(prefix+'-gps-btn');const status=document.getElementById(prefix+'-loc-status');
+  btn.textContent='⏳...';btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(
+    pos=>{pinData[prefix]={lat:pos.coords.latitude,lng:pos.coords.longitude};status.textContent=`✅ מיקום נמצא (${Math.round(pos.coords.accuracy)}מ׳)`;status.className='loc-status ok';btn.textContent='📍 ✅';btn.disabled=false;btn.classList.add('ok');},
+    ()=>{status.textContent='❌ לא ניתן — נסה סמן על מפה';status.className='loc-status err';btn.textContent='📍 GPS';btn.disabled=false;},
+    {enableHighAccuracy:true,timeout:10000}
+  );
+}
+
+function togglePinMap(prefix){
+  openMapPicker(loc=>{
+    pinData[prefix]=loc;
+    const s=document.getElementById(prefix+'-loc-status');if(s){s.textContent='✅ מיקום נבחר מהמפה';s.className='loc-status ok';}
+    const btn=document.getElementById(prefix+'-map-btn');if(btn){btn.classList.add('ok');btn.textContent='🗺️ ✅';}
+    showToast('✅ מיקום אושר!');
+  });
+}
+
+function openMapPicker(callback){
+  mapPickerCallback=callback;
+  const overlay=document.getElementById('map-picker-overlay');overlay.style.display='flex';
+  setTimeout(()=>{
+    if(mapPickerMap){mapPickerMap.remove();mapPickerMap=null;}
+    mapPickerMap=L.map('map-picker-map',{tap:true,dragging:true,touchZoom:true}).setView([31.7154,34.7586],17);
+    const isDark=!document.body.classList.contains('light');
+    L.tileLayer(isDark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© CartoDB'}).addTo(mapPickerMap);
+    setTimeout(()=>mapPickerMap.invalidateSize(),100);
+    mapPickerMap.on('move',()=>{const c=mapPickerMap.getCenter();document.getElementById('map-picker-coords').textContent=c.lat.toFixed(5)+', '+c.lng.toFixed(5);});
+    if(navigator.geolocation)navigator.geolocation.getCurrentPosition(pos=>mapPickerMap.setView([pos.coords.latitude,pos.coords.longitude],18),()=>{},{timeout:5000});
+  },50);
+}
+function closeMapPicker(){document.getElementById('map-picker-overlay').style.display='none';}
+function confirmMapPicker(){if(!mapPickerMap)return;const c=mapPickerMap.getCenter();haptic('success');closeMapPicker();if(mapPickerCallback)mapPickerCallback({lat:c.lat,lng:c.lng});}
+
+function handlePhoto(prefix,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const prev=document.getElementById(prefix+'-photo-prev');
+    const ph=document.getElementById(prefix+'-photo-ph');
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const MAX=1200;
+      let w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/jpeg',0.7);
+      if(prev){prev.src=compressed;prev.style.display='block';}
+      if(ph)ph.style.display='none';
+      if(!window._photoData)window._photoData={};
+      window._photoData[prefix]=compressed;
+      
+      if(prefix === 'au') {
+          const aiBtn = document.getElementById('au-analyze-btn');
+          if(aiBtn) aiBtn.style.display = 'flex';
+      }
+      if(prefix === 'rep') {
+          const aiBtn = document.getElementById('report-ai-btn');
+          if(aiBtn) aiBtn.style.display = 'flex';
+      }
+      
+      console.log('Photo compressed:',Math.round(compressed.length/1024),'KB');
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function setSev(prefix,val,btn){
+  const g=btn.closest('.sev-group');if(g)g.querySelectorAll('.sev-btn').forEach(b=>b.className='sev-btn');
+  btn.classList.add({low:'sel-low',med:'sel-med',high:'sel-high',done:'sel-critical',flies:'sel-low',bag:'sel-med'}[val]||'sel-low');
+  formSev[prefix]=val;
+}
+function setSev2(prefix,val,btn){
+  btn.closest('.sev-group').querySelectorAll('.sev-btn').forEach(b=>b.className='sev-btn');
+  btn.classList.add({low:'sel-low',med:'sel-med',high:'sel-high'}[val]||'sel-low');
+  formSev2[prefix]=val;
+}
+
+function openOverlay(name){document.getElementById('overlay-'+name).classList.add('open');setTimeout(()=>{if(window.lucide)lucide.createIcons();},50);}
+function closeOverlay(name){document.getElementById('overlay-'+name).classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.classList.contains('overlay'))e.target.classList.remove('open');});
+
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-action]');if(!btn)return;
+  const action=btn.dataset.action;
+  const trapId=btn.dataset.trapId;
+  const trapName=btn.dataset.trapName;
+  
+  if(action==='add-update'){e.stopPropagation();openAddUpdate(trapId,trapName);}
+  if(action==='delete-trap-choice'){e.stopPropagation();currentTrapId=trapId;document.getElementById('dtc-trap-name').textContent=trapName;openOverlay('delete-trap-choice');}
+  if(action==='delete-trap-permanent'){e.stopPropagation();permanentDeleteTrap(trapId,trapName);}
+  if(action==='restore-trap'){e.stopPropagation();restoreTrap(trapId,trapName);}
+  if(action==='delete-update'){e.stopPropagation();deleteUpdate(btn.dataset.updateId);}
+  if(action==='complete-vol'){e.stopPropagation();openVolComplete(btn.dataset.volId, btn.dataset.volDesc);}
+  if(action==='delete-vol'){e.stopPropagation();permanentDeleteVol(btn.dataset.volId);}
+});
+
+function showConfirm(title,msg,cb){document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-msg').textContent=msg;confirmCallback=cb;openOverlay('confirm');}
+async function confirmYes(){closeOverlay('confirm');if(confirmCallback){await confirmCallback();confirmCallback=null;}}
+
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light');
+  document.getElementById('theme-btn').textContent=isLight?'☀️':'🌙';
+  localStorage.setItem('theme',isLight?'light':'dark');
+  haptic('light');
+  if(map){map.eachLayer(l=>{if(l instanceof L.TileLayer)map.removeLayer(l);});const tile=isLight?'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';L.tileLayer(tile,{attribution:'© CartoDB © OSM'}).addTo(map);}
+}
+
+function haptic(type){if(!navigator.vibrate)return;const p={light:[10],medium:[20],success:[10,50,10],error:[50,30,50]};if(p[type])navigator.vibrate(p[type]);}
+function getDaysOld(trap){const d=trap.extra||trap.date;if(!d)return 0;return Math.floor((Date.now()-new Date(d))/86400000);}
+function copyLink(lat,lng){navigator.clipboard.writeText(`https://maps.google.com/?q=${lat},${lng}`).then(()=>showToast('🔗 קישור הועתק!'));}
+function openLightbox(src, caption) {
+  const lb = document.getElementById('photo-lightbox');
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-caption').textContent = caption || '';
+  lb.style.display = 'flex';
+  haptic('light');
+}
+function closeLightbox() {
+  document.getElementById('photo-lightbox').style.display = 'none';
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');if(msg.includes('✅'))haptic('success');setTimeout(()=>t.classList.remove('show'),2500);}
+
+window.addEventListener('load',()=>{
+  if(window.lucide)lucide.createIcons();
+  const saved = localStorage.getItem('theme');
+  if(saved === 'dark'){ /* keep dark */ } else {
+    document.body.classList.add('light');
+    document.getElementById('theme-btn').textContent='☀️';
+  }
+  initMap();
+});
+setInterval(loadData,90000);
+</script>
+</body>
+</html>
