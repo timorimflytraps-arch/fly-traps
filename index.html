@@ -418,6 +418,28 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 .filter-btn{flex-shrink:0;padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
 .filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
 #stations-filter-bar::-webkit-scrollbar{display:none}
+/* volunteer CTA */
+.vol-cta-btn{display:block;width:calc(100% - 32px);margin:14px 16px 4px;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Heebo',sans-serif;font-size:16px;font-weight:900;cursor:pointer;text-align:center;box-shadow:0 6px 20px rgba(16,185,129,0.4);animation:pulse-green 2s ease-in-out infinite}
+@keyframes pulse-green{0%,100%{box-shadow:0 6px 20px rgba(16,185,129,0.4)}50%{box-shadow:0 6px 28px rgba(16,185,129,0.7)}}
+/* tour */
+.tour-backdrop{position:fixed;inset:0;z-index:6000;pointer-events:none}
+.tour-box{position:fixed;background:var(--card-solid,var(--card));border-radius:20px;padding:20px 20px 16px;width:min(310px,90vw);box-shadow:0 12px 48px rgba(0,0,0,0.55),0 0 0 1px rgba(56,189,248,0.2);z-index:6002;direction:rtl;font-family:'Heebo',sans-serif;pointer-events:all;border:1px solid rgba(56,189,248,0.25)}
+.tour-box::before{content:'';position:absolute;inset:0;border-radius:20px;background:linear-gradient(135deg,rgba(56,189,248,0.06),transparent 60%);pointer-events:none}
+.tour-step-badge{display:inline-block;background:rgba(56,189,248,0.15);color:var(--accent);font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;margin-bottom:8px;letter-spacing:.5px}
+.tour-title{font-size:16px;font-weight:900;margin-bottom:8px;color:var(--text);line-height:1.2}
+.tour-body{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:16px}
+.tour-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tour-dots{display:flex;gap:4px;flex:1;justify-content:center}
+.tour-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .25s}
+.tour-dot.active{background:var(--accent);width:18px;border-radius:3px}
+.tour-next{background:linear-gradient(135deg,var(--accent),var(--accent-dk));border:none;border-radius:10px;padding:9px 20px;color:#fff;font-family:'Heebo',sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(56,189,248,0.4);white-space:nowrap}
+.tour-skip{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;padding:4px;white-space:nowrap}
+/* spotlight — box-shadow ענק מחשיך הכל חוץ מהאלמנט */
+.tour-highlight{position:fixed;border-radius:12px;pointer-events:none;z-index:5999;
+  box-shadow:0 0 0 9999px rgba(0,0,0,0.72), 0 0 0 3px #38bdf8, 0 0 20px rgba(56,189,248,0.6);
+  transition:all .4s cubic-bezier(.16,1,.32,1);
+  animation:spotPulse 2s ease-in-out infinite}
+@keyframes spotPulse{0%,100%{box-shadow:0 0 0 9999px rgba(0,0,0,0.72),0 0 0 3px #38bdf8,0 0 18px rgba(56,189,248,0.5)}50%{box-shadow:0 0 0 9999px rgba(0,0,0,0.72),0 0 0 3px #38bdf8,0 0 32px rgba(56,189,248,0.8)}}
 
 /* Map Selection Mode UI */
 #vol-map-ui{display:none;position:absolute;inset:0;z-index:900;pointer-events:none;flex-direction:column;justify-content:space-between}
@@ -464,6 +486,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <button class="ctrl-btn" onclick="toggleLayer('stations',this)">📍 עמדות</button>
       <button class="ctrl-btn" onclick="toggleLayer('reports',this)">🚨 מפגעים</button>
       <button class="ctrl-btn" onclick="toggleLayer('volunteers',this)">🙋 מתנדבים</button>
+      <button class="ctrl-btn" onclick="startTour()" style="opacity:0.45;font-size:11px;padding:5px 10px;letter-spacing:0">❓ סיור</button>
     </div>
     <div class="map-fabs">
       <!-- שמאל: התנדב + דיווח -->
@@ -555,6 +578,9 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div id="page-info" class="page">
   <div class="page-pad">
     <div class="page-title">מדריך שימוש</div>
+    <button onclick="startTour()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-dk));color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:18px;box-shadow:0 4px 16px rgba(56,189,248,0.35)">
+      🎯 סיור מודרך באפליקציה
+    </button>
     <div class="instr-card">
       <div class="instr-card-title">🗺️ הוספת עמדה חדשה</div>
       <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ + בפינת המפה או החזק לחוץ על המפה</div></div>
@@ -906,7 +932,7 @@ let isVolMapMode = false;
 let selectedVolTraps = new Set();
 
 // ── Groq API — מנותב דרך GAS backend (עוקף CSP של script.google.com) ─────
-const GROQ_KEY = 'gsk_cTqs6Ma1fT2pVVX'+'KvKKMWGdyb3FYOukSnbltsxw7NjI27wLq0YaY';
+const GROQ_KEY = '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';
 
 async function claudeCall(prompt, base64Image = null) {
   // אם זמין google.script.run (GAS) — השתמש בו (עוקף CSP)
@@ -1464,7 +1490,12 @@ function openStationSite(stationId){
   const doneSec=doneTraps.length?`<div class="trap-section-title" style="margin-top:16px">✅ הושלכו (${doneTraps.length})</div>${doneTraps.map(t=>renderTrapCard(t,true)).join('')}`:'';
   const group = getStationGroup(stationId);
   const groupBadge = group ? `<div id="ss-group-badge" style="font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px"><span style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:7px;padding:2px 9px">🏷️ ${group}</span></div>` : `<div id="ss-group-badge"></div>`;
-  document.getElementById('station-site-content').innerHTML=`${groupBadge}${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">⚙️ נהל עמדה</button></div><div class="trap-section-title">🪤 מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
+  const getEffSev = t => { const u=db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]; return u?.severity||t.severity||'low'; };
+  const hasFullTraps = traps.some(t => getEffSev(t)==='high' || getDaysOld(t)>=14);
+  const volCta = hasFullTraps
+    ? `<button class="vol-cta-btn" onclick="closeOverlay('station');openOverlay('vol-type')">🙋 יש מלכודות מלאות — התנדב לפנות!</button>`
+    : '';
+  document.getElementById('station-site-content').innerHTML=`${groupBadge}${volCta}${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">⚙️ נהל עמדה</button></div><div class="trap-section-title">🪤 מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
   openOverlay('station');
 }
 
@@ -2555,6 +2586,92 @@ function closeLightbox() {
 }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');if(msg.includes('✅'))haptic('success');setTimeout(()=>t.classList.remove('show'),2500);}
 
+// ── GUIDED TOUR ───────────────────────────────────────────────────────────
+const TOUR_STEPS = [
+  { title:'👋 ברוכים הבאים!', body:'האפליקציה עוזרת לנהל את מלכודות הזבובים במושב.\nהסיור הזה יראה לך הכל תוך שתי דקות.' },
+  { title:'🗺️ המפה', body:'כל נקודה היא עמדת מלכודת.\n🔴 אדום = מלאה / דחוף\n🟡 צהוב = קצת מלאה\n🟢 ירוק = תקין\nלחץ על עמדה לפרטים.', navTo:'map', sel:'#map' },
+  { title:'🛰️ סוג מפה', body:'לחץ כאן כדי לעבור בין לוויין, רחובות, כהה וטופוגרפי.', navTo:'map', sel:'.map-style-picker' },
+  { title:'📍 שכבות המפה', body:'📍 עמדות — הצג/הסתר\n🚨 מפגעים — דיווחי תושבים\n🙋 מתנדבים — מי לקח אחריות\n❓ סיור — הפעל מחדש', navTo:'map', sel:'.map-controls' },
+  { title:'🎯 כפתורי פעולה', body:'🙋 התנדב לפנות מלכודת\n🚨 דווח על מפגע זבובים\n📍 מיקומי (מעקב בזמן אמת)\n＋ הוסף עמדה חדשה', navTo:'map', sel:'.map-fabs', boxPos:'top' },
+  { title:'📍 רשימת עמדות', body:'מסנן לפי אזור, מלאות ועוד.\nכשיש מלכודת מלאה — כפתור ירוק בולט מופיע.', navTo:'list', sel:'#stations-filter-bar' },
+  { title:'🙋 התנדבות', body:'רשום שאתה מפנה מלכודת.\nהכי מומלץ — רביעי בערב לפני פינוי הזבל ביום חמישי.', navTo:'volunteers', sel:'#page-volunteers .btn-sparkle' },
+  { title:'📊 דוח מצב', body:'סיכום כולל: זבובים שנתפסו, מי פינה הכי הרבה, החודש הכי עמוס.', navTo:'stats', sel:'.stats-grid' },
+  { title:'✅ זהו!', body:'אם אתה רואה שקית מלאה — צלם ועדכן.\nאם אתה יכול לפנות — לחץ על הכפתור הירוק.\n\nתודה שעוזר! 🙏' }
+];
+let _tourStep=0, _tourEl=null, _tourHighlight=null, _tourArrowSvg=null;
+
+function startTour(){
+  const nav=document.querySelector('.nav-item');
+  if(nav)navigate('map',nav);
+  _tourStep=0; renderTourStep();
+}
+
+function renderTourStep(){
+  // clean up previous
+  if(_tourEl){_tourEl.remove();_tourEl=null;}
+  if(_tourHighlight){_tourHighlight.remove();_tourHighlight=null;}
+  if(_tourArrowSvg){_tourArrowSvg.remove();_tourArrowSvg=null;}
+
+  const step=TOUR_STEPS[_tourStep]; if(!step){endTour();return;}
+  if(step.navTo){const nb=document.querySelector(`.nav-item[onclick*="${step.navTo}"]`);if(nb)navigate(step.navTo,nb);}
+
+  const dots=TOUR_STEPS.map((_,i)=>`<div class="tour-dot ${i===_tourStep?'active':''}"></div>`).join('');
+  const isLast=_tourStep===TOUR_STEPS.length-1;
+
+  // build tour box
+  const el=document.createElement('div');
+  el.id='tour-overlay'; el.className='tour-backdrop';
+  el.innerHTML=`<div class="tour-box" id="tour-box">
+    <div class="tour-step-badge">שלב ${_tourStep + 1} מתוך ${TOUR_STEPS.length}</div>
+    <div class="tour-title">${step.title}</div>
+    <div class="tour-body">${step.body.replace(/\n/g,'<br>')}</div>
+    <div class="tour-footer">
+      <button class="tour-skip" onclick="endTour()">✕ דלג</button>
+      <div class="tour-dots">${dots}</div>
+      <button class="tour-next" onclick="nextTourStep()">${isLast?'✅ סיום':'הבא ›'}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(el); _tourEl=el;
+
+  // position box — top or bottom based on target location
+  const box = document.getElementById('tour-box');
+  const placeTop = step.boxPos === 'top' ||
+    (step.sel && (()=>{ const t=document.querySelector(step.sel); return t && t.getBoundingClientRect().top > window.innerHeight*0.55; })());
+  if (placeTop) {
+    box.style.top = 'calc(var(--header-h) + 12px)';
+    box.style.bottom = 'auto';
+  } else {
+    box.style.bottom = 'calc(var(--nav-h) + 14px)';
+    box.style.top = 'auto';
+  }
+  box.style.left = '50%';
+  box.style.transform = 'translateX(-50%)';
+
+  // highlight + arrow after layout
+  if(step.sel) requestAnimationFrame(()=>setTimeout(()=>drawTourArrow(step.sel, box),80));
+}
+
+function drawTourArrow(sel, box) {
+  const target = document.querySelector(sel);
+  if(!target) return;
+  const tr = target.getBoundingClientRect();
+  const pad = 8;
+  const hl = document.createElement('div');
+  hl.className = 'tour-highlight';
+  hl.style.cssText = `top:${tr.top-pad}px;left:${tr.left-pad}px;width:${tr.width+pad*2}px;height:${tr.height+pad*2}px`;
+  document.body.appendChild(hl);
+  _tourHighlight = hl;
+}
+
+function nextTourStep(){_tourStep++;if(_tourStep>=TOUR_STEPS.length){endTour();return;}renderTourStep();haptic('light');}
+function endTour(){
+  if(_tourEl){_tourEl.remove();_tourEl=null;}
+  if(_tourHighlight){_tourHighlight.remove();_tourHighlight=null;}
+  if(_tourArrowSvg){_tourArrowSvg.remove();_tourArrowSvg=null;}
+  const nav=document.querySelector('.nav-item');if(nav)navigate('map',nav);
+  showToast('✅ סיור הסתיים');
+}
+
 window.addEventListener('load',()=>{
   if(window.lucide)lucide.createIcons();
   const saved = localStorage.getItem('theme');
@@ -2563,6 +2680,9 @@ window.addEventListener('load',()=>{
     document.getElementById('theme-btn').textContent='☀️';
   }
   initMap();
+  if(!localStorage.getItem('tour_done')){
+    setTimeout(()=>{startTour();localStorage.setItem('tour_done','1');},1500);
+  }
 });
 setInterval(loadData,90000);
 </script>
