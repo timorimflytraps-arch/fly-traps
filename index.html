@@ -8,6 +8,8 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
 <style>
 :root {
   /* Deep navy with indigo→cyan accent */
@@ -118,6 +120,15 @@ body.light .brand-icon{box-shadow:0 6px 18px -4px rgba(2,132,199,0.35), inset 0 
 .ctrl-btn:hover{border-color:var(--border-strong)}
 .ctrl-btn:active{transform:scale(0.97)}
 .ctrl-btn.off{opacity:0.4}
+/* map style picker */
+.map-style-picker{position:absolute;top:12px;left:12px;z-index:800}
+.map-style-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:7px 11px;color:var(--text);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.3);display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.map-style-btn:active{transform:scale(0.96)}
+.map-style-menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--card-solid,var(--card));border:1px solid var(--border);border-radius:12px;padding:5px;box-shadow:0 8px 28px rgba(0,0,0,0.35);display:none;min-width:150px;flex-direction:column;gap:3px}
+.map-style-menu.open{display:flex}
+.map-style-opt{background:transparent;border:none;border-radius:8px;padding:9px 11px;color:var(--text);font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s;width:100%}
+.map-style-opt:hover{background:var(--card2)}
+.map-style-opt.active{background:rgba(56,189,248,0.12);color:var(--accent)}
 .map-fabs{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18px;z-index:800;pointer-events:none}
 .fab{
   width:56px;height:56px;border-radius:20px;border:1px solid rgba(255,255,255,0.14);
@@ -391,6 +402,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 
 .loading-spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes locPulse{0%{transform:scale(1);opacity:0.8}70%{transform:scale(2.5);opacity:0}100%{transform:scale(2.5);opacity:0}}
 .empty{text-align:center;padding:52px 20px;color:var(--muted)}
 .empty-icon{font-size:42px;margin-bottom:12px;opacity:0.7}
 .status-inactive{opacity:0.4}
@@ -403,6 +415,9 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 .vol-completed{opacity:0.55;filter:grayscale(0.5)}
 .station-group-title{font-size:12px;font-weight:900;color:var(--accent);margin:14px 0 8px 0;text-transform:uppercase;letter-spacing:0.8px;display:flex;align-items:center;gap:8px}
 .station-group-title::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--accent-grad)}
+.filter-btn{flex-shrink:0;padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+#stations-filter-bar::-webkit-scrollbar{display:none}
 
 /* Map Selection Mode UI */
 #vol-map-ui{display:none;position:absolute;inset:0;z-index:900;pointer-events:none;flex-direction:column;justify-content:space-between}
@@ -431,6 +446,20 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div id="page-map" class="page active">
   <div class="map-wrap">
     <div id="map"></div>
+    <div class="map-style-picker">
+      <button class="map-style-btn" id="map-style-btn" onclick="toggleMapStyleMenu()">
+        <span id="map-style-icon">🛰️</span>
+        <span id="map-style-label">לוויין</span>
+        <span style="opacity:0.5;font-size:10px">▾</span>
+      </button>
+      <div class="map-style-menu" id="map-style-menu">
+        <button class="map-style-opt active" id="opt-satellite" onclick="setMapStyle('satellite')">🛰️ לוויין</button>
+        <button class="map-style-opt" id="opt-topo" onclick="setMapStyle('topo')">🗺️ טופוגרפי ישראל</button>
+        <button class="map-style-opt" id="opt-streets" onclick="setMapStyle('streets')">🏙️ רחובות</button>
+        <button class="map-style-opt" id="opt-dark" onclick="setMapStyle('dark')">🌑 כהה</button>
+        <button class="map-style-opt" id="opt-osm" onclick="setMapStyle('osm')">🌍 OpenStreetMap</button>
+      </div>
+    </div>
     <div class="map-controls">
       <button class="ctrl-btn" onclick="toggleLayer('stations',this)">📍 עמדות</button>
       <button class="ctrl-btn" onclick="toggleLayer('reports',this)">🚨 מפגעים</button>
@@ -444,8 +473,8 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       </div>
       <!-- ימין: מיקום + הוסף עמדה -->
       <div style="display:flex;gap:10px">
-        <button onclick="locateMe()" id="locate-btn" style="width:52px;height:52px;border-radius:16px;border:none;background:white;box-shadow:0 4px 16px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0" title="המיקום שלי">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <button onclick="locateMe()" id="locate-btn" style="width:52px;height:52px;border-radius:16px;border:1px solid var(--border);background:var(--card);box-shadow:0 4px 16px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;pointer-events:all;transition:transform .15s,box-shadow .15s" title="המיקום שלי" onmousedown="this.style.transform='scale(0.93)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(0.93)'" ontouchend="this.style.transform=''">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
           </svg>
         </button>
@@ -472,6 +501,14 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div id="page-list" class="page">
   <div class="page-pad">
     <div class="page-title">עמדות בשטח</div>
+    <div id="stations-filter-bar" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;margin-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+      <button class="filter-btn active" onclick="setStationFilter('groups',this)">🏷️ לפי אזור</button>
+      <button class="filter-btn" onclick="setStationFilter('full',this)">🔴 מלאות</button>
+      <button class="filter-btn" onclick="setStationFilter('empty',this)">✅ ריקות</button>
+      <button class="filter-btn" onclick="setStationFilter('no-trap',this)">❌ ללא מלכודת</button>
+      <button class="filter-btn" onclick="setStationFilter('urgent',this)">⏰ דחוף</button>
+      <button class="filter-btn" onclick="setStationFilter('all',this)">📋 הכל</button>
+    </div>
     <div id="stations-list"></div>
   </div>
 </div>
@@ -484,10 +521,19 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <div class="stat-box"><div class="stat-val c-purple" id="d-traps">—</div><div class="stat-lbl">מלכודות פעילות</div></div>
       <div class="stat-box"><div class="stat-val c-red" id="d-urgent">—</div><div class="stat-lbl">דחוף — מעל 14 יום</div></div>
       <div class="stat-box"><div class="stat-val c-yellow" id="d-soon">—</div><div class="stat-lbl">בקרוב — 10-14 יום</div></div>
+      <div class="stat-box full" style="background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(56,189,248,0.07));border-color:rgba(167,139,250,0.3)">
+        <div class="stat-lbl" style="margin-bottom:4px">🪰 סה"כ זבובים נתפסו (הערכת AI)</div>
+        <div class="stat-val c-purple" id="d-flies" style="font-size:28px">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px" id="d-flies-sub"></div>
+      </div>
       <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">🔥 אזור הכי עמוס</div><div class="stat-sub" id="d-hotspot">טוען...</div></div>
-      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:8px">📅 עדכונים לפי חודש</div><div id="d-chart"></div></div>
+      <div class="stat-box full" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),transparent)">
+        <div class="stat-lbl" style="margin-bottom:6px">🏆 מפנה מוביל</div>
+        <div class="stat-sub" id="d-top-vol" style="font-size:15px;font-weight:700">—</div>
+      </div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:8px">📅 פעילות לפי חודש</div><div id="d-chart"></div></div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">🌡️ חודש הכי עמוס</div><div class="stat-sub" id="d-peak-month" style="font-size:15px;font-weight:700">—</div></div>
     </div>
-
     <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:20px 0 10px">🚨 ארכיון דיווחים</div>
     <div id="reports-history-list"></div>
   </div>
@@ -589,6 +635,12 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="handle"></div>
     <div class="sheet-title">🪤 מלכודת חדשה</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="at-station-name"></div>
+    <div class="fg"><label class="fl">סוג מלכודת</label>
+      <div class="sev-group" style="grid-template-columns:1fr 1fr">
+        <button class="sev-btn" id="type-btn-bag" onclick="setTrapType('bag',this)"><span class="si">🪣</span>שקית FLY IN</button>
+        <button class="sev-btn" id="type-btn-sticky" onclick="setTrapType('sticky',this)"><span class="si">🟨</span>מדבקה</button>
+      </div>
+    </div>
     <div class="fg"><label class="fl">שם המלכודת</label><input class="fi" id="at-name" placeholder="נוצר אוטומטי"><div style="font-size:11px;color:var(--muted);margin-top:4px">ניתן לשנות</div></div>
     <div class="fg"><label class="fl">תאריך הצבה</label><input type="date" class="fi" id="at-date"></div>
     <div class="fg"><label class="fl">סטטוס התחלתי</label>
@@ -673,6 +725,9 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
   <div class="sheet">
     <div class="handle"></div>
     <div class="sheet-title" id="so-title">אפשרויות עמדה</div>
+    <div id="so-group-display" style="font-size:12px;color:var(--accent);margin-bottom:12px;min-height:18px"></div>
+    <button class="btn btn-primary" onclick="closeOverlay('station-options');renameStation()">✏️ שנה שם עמדה</button>
+    <button class="btn btn-primary" style="background:var(--card2);color:var(--text);border:1px solid var(--border)" onclick="closeOverlay('station-options');editStationGroup()">🏷️ קבע קבוצה / אזור</button>
     <button class="btn btn-yellow" onclick="toggleStationStatus('suspend')">⏸️ השהה עמדה</button>
     <button class="btn btn-green" style="display:none" id="so-activate-btn" onclick="toggleStationStatus('activate')">✅ הפעל מחדש</button>
     <button class="btn btn-red" onclick="toggleStationStatus('delete')">🗑️ הסתר עמדה</button>
@@ -724,6 +779,11 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <div style="margin-bottom:8px;display:flex;justify-content:center"><i data-lucide="package-plus" style="width:28px;height:28px"></i></div>
       <div style="font-weight:800">תליית מלכודת</div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">תלה מלכודת בעמדה קיימת או חדשה</div>
+    </button>
+    <button class="btn" style="background:var(--card2);border:2px solid var(--border);color:var(--text);margin-top:10px;padding:20px;border-radius:14px;text-align:right;font-size:15px" onclick="closeOverlay('vol-type');openGroupVolPick()">
+      <div style="margin-bottom:8px;display:flex;justify-content:center"><i data-lucide="layers" style="width:28px;height:28px"></i></div>
+      <div style="font-weight:800">פינוי לפי קבוצה / אזור</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">בחר אזור שלם — גן ילדים, בריכה, הרחבה...</div>
     </button>
     <button class="btn btn-grey" onclick="closeOverlay('vol-type')">ביטול</button>
   </div>
@@ -832,7 +892,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz00cvPOLtHggVbyPsfn67ORXFlw7n9E4rRlBr6ALik5wKCQ-mSHIEN46vfPYhbo7CP/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw7oIqYYheN-waiQQDzVIvSpVhIFY7qtLMFsKR8GtkgQqJI3aqCdMnIubc9MmQf4Iz05g/exec';
 const apiKey = ""; 
 let db={stations:[],traps:[],updates:[],reports:[],volunteers:[]};
 let map,pinMaps={},pinData={};
@@ -845,40 +905,124 @@ let confirmCallback=null,mapPickerMap=null,mapPickerCallback=null;
 let isVolMapMode = false;
 let selectedVolTraps = new Set();
 
-// --- AI Gemini Call ---
-async function geminiCall(prompt, base64Image = null) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-  const contents = [{ parts: [{ text: prompt }] }];
-  if (base64Image) {
-    contents[0].parts.push({ inlineData: { mimeType: "image/png", data: base64Image.split(',')[1] } });
+// ── Groq API — מנותב דרך GAS backend (עוקף CSP של script.google.com) ─────
+const GROQ_KEY = 'gsk_cTqs6Ma1fT2pVVX'+'KvKKMWGdyb3FYOukSnbltsxw7NjI27wLq0YaY';
+
+async function claudeCall(prompt, base64Image = null) {
+  // אם זמין google.script.run (GAS) — השתמש בו (עוקף CSP)
+  if (typeof google !== 'undefined' && google.script?.run) {
+    return new Promise(resolve => {
+      google.script.run
+        .withSuccessHandler(r => resolve(r))
+        .withFailureHandler(e => resolve('שגיאה: ' + e.message))
+        .callGroqAI(prompt, base64Image || null);
+    });
   }
-  const payload = { contents };
-  let retries = 0;
-  while (retries < 5) {
-    try {
-      const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "לא התקבלה תשובה מה-AI";
-    } catch (e) {
-      retries++;
-      await new Promise(r => setTimeout(r, Math.pow(2, retries) * 1000));
-    }
+  // fallback — fetch ישיר (עובד כשהקובץ נפתח מחוץ ל-GAS)
+  const content = [];
+  if (base64Image) content.push({ type:'image_url', image_url:{ url: base64Image.includes(',') ? base64Image : `data:image/jpeg;base64,${base64Image}` }});
+  content.push({ type:'text', text: prompt });
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({ model:'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens:800,
+        messages:[{ role:'user', content }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.choices?.[0]?.message?.content || 'לא התקבלה תשובה';
+  } catch(e) {
+    return 'שגיאה: ' + e.message;
   }
-  return "שגיאה בתקשורת עם ה-AI";
 }
 
 async function analyzePhoto(imgId, targetId, btnId) {
-  const img = document.getElementById(imgId);
   const btn = document.getElementById(btnId);
-  if (!img.src) return;
+  const prefix = imgId.replace('-photo-prev','');
+  const photoData = window._photoData?.[prefix];
+
+  if (!photoData) { showToast('📷 צלם תמונה תחילה'); return; }
+
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spin"></span> מנתח...';
-  const prompt = "Please analyze this photo of a fly trap or hazard in an Israeli village (Moshav). Tell me in Hebrew: 1. Estimate how full it is (0-100%). 2. Give a very short observation. Keep it friendly and concise.";
-  const result = await geminiCall(prompt, img.src);
-  document.getElementById(targetId).value = result;
-  btn.disabled = false;
-  btn.innerHTML = '✨ נתח תמונה עם AI';
-  showToast("✨ ה-AI ניתח את התמונה");
+
+  // remove old result card
+  document.getElementById('au-ai-result-card')?.remove();
+
+  const trapType = _trapType || 'bag';
+  const capacity = trapType === 'sticky' ? 14700 : 60000;
+  const prompt = `נתח מלכודת זבובים. סוג: ${trapType==='sticky'?'מדבקה 24x17 ס"מ x2 צדדים קיבולת ~14700':'שקית FLY IN קיבולת 60000'}.
+החזר JSON בלבד ללא backticks:
+{"fill_percent":<0-100>,"fly_count":<int>,"action":"ok|soon|urgent|replace_now","notes_he":"<עברית>","confidence":"low|medium|high"}`;
+
+  try {
+    const raw = await claudeCall(prompt, photoData);
+    btn.disabled = false;
+    btn.innerHTML = '✨ נתח שוב';
+
+    if (!raw || raw.startsWith('שגיאה')) {
+      showToast('❌ ' + (raw || 'שגיאת AI'));
+      return;
+    }
+
+    let ai = null;
+    try { ai = JSON.parse(raw.replace(/```[\w]*|```/g,'').trim()); }
+    catch { const m = raw.match(/\{[\s\S]*\}/); if (m) try { ai = JSON.parse(m[0]); } catch {} }
+
+    if (!ai) {
+      // fallback text
+      const noteEl = document.getElementById(targetId);
+      if (noteEl && !noteEl.value.trim()) noteEl.value = raw.slice(0,200);
+      showToast('✨ ניתוח הושלם (טקסט)');
+      return;
+    }
+
+    // auto-fill note
+    const noteEl = document.getElementById(targetId);
+    if (noteEl && !noteEl.value.trim() && ai.notes_he) noteEl.value = ai.notes_he;
+
+    // auto-set severity
+    const sevRemap = { ok:'low', soon:'med', urgent:'high', replace_now:'done' };
+    const targetSev = sevRemap[ai.action] || 'med';
+    const sevBtn = document.querySelector(`#overlay-add-update .sev-btn[onclick*="'${targetSev}'"]`);
+    if (sevBtn) setSev('au', targetSev, sevBtn);
+
+    // result card
+    const fc = ai.fill_percent>=75?'#ef4444':ai.fill_percent>=45?'#f59e0b':'#10b981';
+    const actLbl = {ok:'✅ ריקה',soon:'🟡 בקרוב',urgent:'🔴 דחוף',replace_now:'🚨 החלף!'}[ai.action]||'';
+    const card = document.createElement('div');
+    card.id = 'au-ai-result-card';
+    card.style.cssText = 'margin-top:10px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:12px';
+    card.innerHTML = `
+      <div style="font-size:10px;font-weight:800;color:var(--trap);letter-spacing:.8px;margin-bottom:8px">✨ ניתוח AI — ${trapType==='sticky'?'מדבקה':'שקית'}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+        <div style="background:var(--card2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:16px;font-weight:900;color:var(--trap)">${(ai.fly_count||0).toLocaleString()}</div>
+          <div style="font-size:10px;color:var(--muted)">🪰 זבובים</div>
+        </div>
+        <div style="background:var(--card2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:16px;font-weight:900;color:${fc}">${ai.fill_percent}%</div>
+          <div style="font-size:10px;color:var(--muted)">📊 מילוי</div>
+        </div>
+        <div style="background:var(--card2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:11px;font-weight:800;padding-top:3px">${actLbl}</div>
+          <div style="font-size:10px;color:var(--muted)">🎯 פעולה</div>
+        </div>
+      </div>
+      <div style="height:7px;background:var(--card2);border-radius:4px;overflow:hidden">
+        <div style="width:${ai.fill_percent}%;height:100%;background:${fc};border-radius:4px"></div>
+      </div>
+      ${ai.notes_he?`<div style="font-size:12px;color:var(--text2);margin-top:7px">💬 ${ai.notes_he}</div>`:''}`;
+    btn.after(card);
+    showToast('✨ ניתוח AI הושלם!');
+    haptic('success');
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.innerHTML = '✨ נסה שוב';
+    showToast('❌ שגיאה: ' + err.message);
+  }
 }
 
 async function generateCommunityInsight() {
@@ -886,12 +1030,10 @@ async function generateCommunityInsight() {
   const box = document.getElementById('community-insight');
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spin"></span> מחשב תובנות...';
-  
-  const dataContext = `Stations: ${db.stations.length}, Traps: ${db.traps.length}, Active Volunteers: ${db.volunteers.filter(v=>v.status==='בתהליך').length}`;
-  const prompt = `Based on this data for a Moshav fly control app: ${dataContext}. Write a short, friendly Hebrew update for the village board. Encourage volunteering if there are full traps. Use emojis.`;
-  
-  const result = await geminiCall(prompt);
-  box.innerHTML = `<strong>✨ עדכון קהילתי AI:</strong><br>${result.replace(/\n/g, '<br>')}`;
+  const totalFlies = db.traps.reduce((s,t)=>s+estimateFlyCount(t),0);
+  const ctx = `עמדות: ${db.stations.length}, מלכודות פעילות: ${db.traps.filter(t=>t.status==='active').length}, דחוף: ${db.traps.filter(t=>t.status==='active'&&getDaysOld(t)>=14).length}, מתנדבים פעילים: ${(db.volunteers||[]).filter(v=>v.status==='בתהליך').length}, הערכת זבובים שנתפסו: ${totalFlies.toLocaleString()}`;
+  const result = await claudeCall(`בהינתן נתוני אפליקציית מלכודות זבובים של מושב ישראלי: ${ctx}. כתוב עדכון קהילתי קצר וידידותי בעברית לוועד. השתמש באמוג'י. אם יש מלכודות דחופות — עודד להתנדב.`);
+  box.innerHTML = `<strong>✨ עדכון קהילתי AI:</strong><br>${result.replace(/\n/g,'<br>')}`;
   box.style.display = 'block';
   btn.disabled = false;
   btn.innerHTML = '✨ רענן תובנות AI';
@@ -908,11 +1050,85 @@ function navigate(pageId,el){
   if(pageId==='volunteers')renderVolunteersList();
 }
 
+// ── MAP STYLE SWITCHER ────────────────────────────────────────────────────
+const MAP_STYLES = {
+  satellite: {
+    icon:'🛰️', label:'לוויין',
+    tiles:[
+      { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri', maxZoom:22, maxNativeZoom:18 },
+      { url:'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', attr:'', maxZoom:22, maxNativeZoom:18, opacity:0.9 }
+    ]
+  },
+  topo: {
+    icon:'🗺️', label:'טופוגרפי ישראל',
+    tiles:[
+      { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', attr:'© Esri © OSM', maxZoom:22, maxNativeZoom:18 }
+    ]
+  },
+  streets: {
+    icon:'🏙️', label:'רחובות',
+    tiles:[{ url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attr:'© CartoDB © OSM', maxZoom:22, maxNativeZoom:18 }]
+  },
+  dark: {
+    icon:'🌑', label:'כהה',
+    tiles:[{ url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attr:'© CartoDB © OSM', maxZoom:22, maxNativeZoom:18 }]
+  },
+  osm: {
+    icon:'🌍', label:'OpenStreetMap',
+    tiles:[{ url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr:'© OpenStreetMap', maxZoom:22, maxNativeZoom:18 }]
+  }
+};
+
+let currentMapStyle = 'satellite';
+
+function toggleMapStyleMenu() {
+  const menu = document.getElementById('map-style-menu');
+  menu.classList.toggle('open');
+  haptic('light');
+}
+
+// close when clicking outside
+document.addEventListener('click', e => {
+  const picker = document.querySelector('.map-style-picker');
+  if (picker && !picker.contains(e.target)) {
+    document.getElementById('map-style-menu')?.classList.remove('open');
+  }
+});
+
+function setMapStyle(styleKey) {
+  if (!MAP_STYLES[styleKey] || !map) return;
+  currentMapStyle = styleKey;
+  const style = MAP_STYLES[styleKey];
+  map.eachLayer(l => { if (l instanceof L.TileLayer) map.removeLayer(l); });
+  style.tiles.forEach(t => {
+    L.tileLayer(t.url, { attribution: t.attr, maxZoom: t.maxZoom, maxNativeZoom: t.maxNativeZoom, opacity: t.opacity ?? 1 }).addTo(map);
+  });
+  document.getElementById('map-style-icon').textContent = style.icon;
+  document.getElementById('map-style-label').textContent = style.label;
+  document.querySelectorAll('.map-style-opt').forEach(b => b.classList.remove('active'));
+  document.getElementById('opt-' + styleKey)?.classList.add('active');
+  document.getElementById('map-style-menu').classList.remove('open');
+  haptic('light');
+  showToast(style.icon + ' ' + style.label);
+}
+
 function initMap(){
-  const isDark=!document.body.classList.contains('light');
-  const tile=isDark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-  map=L.map('map',{zoomControl:false}).setView([31.7154,34.7586],16);
-  L.tileLayer(tile,{attribution:'© CartoDB © OSM'}).addTo(map);
+  // תחום גאוגרפי — תימורים + שוליים של ~1.5ק"מ
+  const MOSHAV_BOUNDS = L.latLngBounds(
+    [31.700, 34.738],  // דרום-מערב
+    [31.730, 34.778]   // צפון-מזרח
+  );
+  map=L.map('map',{
+    zoomControl: false,
+    maxBounds: MOSHAV_BOUNDS,
+    maxBoundsViscosity: 0.85,   // 0=חופשי 1=קיר קשיח, 0.85=קיר עם קצת קפיץ
+    minZoom: 14,
+    maxZoom: 22
+  }).setView([31.7154,34.7586],16);
+  // default: satellite
+  MAP_STYLES.satellite.tiles.forEach(t => {
+    L.tileLayer(t.url, { attribution: t.attr, maxZoom: t.maxZoom, maxNativeZoom: t.maxNativeZoom, opacity: t.opacity ?? 1 }).addTo(map);
+  });
   layerGroups.stations=L.layerGroup().addTo(map);
   layerGroups.reports=L.layerGroup().addTo(map);
   layerGroups.volunteers=L.layerGroup().addTo(map);
@@ -945,28 +1161,204 @@ async function deleteReport(reportId) {
 }
 
 function locateMe() {
-  if (!navigator.geolocation) { showToast('⚠️ GPS לא זמין'); return; }
+  if (!navigator.geolocation) { showToast('⚠️ GPS לא נתמך'); return; }
+  if (navigator.permissions) {
+    navigator.permissions.query({name:'geolocation'}).then(r => {
+      if (r.state === 'denied') showLocationSheet('denied');
+      else if (r.state === 'prompt') showLocationSheet('ask');
+      else doLocate();
+    }).catch(() => showLocationSheet('ask'));
+  } else {
+    showLocationSheet('ask');
+  }
+}
+
+function showLocationSheet(mode) {
+  const existing = document.getElementById('loc-sheet');
+  if (existing) existing.remove();
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const deniedSteps = isIOS
+    ? 'הגדרות ← פרטיות ← שירותי מיקום ← Safari ← "בזמן שימוש"'
+    : 'לחץ על 🔒 בשורת הכתובת ← הרשאות ← מיקום ← אפשר';
+
+  const content = mode === 'ask' ? `
+    <div style="font-size:40px;text-align:center;margin-bottom:14px">📍</div>
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:10px">גישה למיקום</div>
+    <div style="font-size:14px;color:var(--text2);text-align:center;line-height:1.65;margin-bottom:24px">
+      כדי להראות לך את העמדות הקרובות.<br>
+      <strong style="color:var(--text)">המיקום לא נשמר ולא נשלח לאף מקום.</strong>
+    </div>
+    <button onclick="document.getElementById('loc-sheet').remove(); doLocate();"
+      style="${btnStyle('var(--accent)')}margin-bottom:10px">
+      📍 אפשר גישה למיקום
+    </button>
+    <button onclick="document.getElementById('loc-sheet').remove(); showAddressSearch();"
+      style="${btnStyle('transparent','1px solid var(--border)','var(--text2)')}">
+      🔍 חפש כתובת
+    </button>
+  ` : `
+    <div style="font-size:40px;text-align:center;margin-bottom:14px">🔒</div>
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:10px">מיקום חסום</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:6px;text-align:center">
+      הדפדפן חסם גישה למיקום.<br>כדי לאפשר מחדש:
+    </div>
+    <div style="background:var(--card2);border-radius:12px;padding:13px 15px;margin-bottom:20px;font-size:13px;color:var(--text);line-height:1.7;text-align:right">
+      ${deniedSteps}
+    </div>
+    <button onclick="document.getElementById('loc-sheet').remove(); showAddressSearch();"
+      style="${btnStyle('var(--accent)')}margin-bottom:10px">
+      🔍 חפש כתובת במקום
+    </button>
+    <button onclick="document.getElementById('loc-sheet').remove();"
+      style="${btnStyle('transparent','1px solid var(--border)','var(--muted)')}">
+      סגור
+    </button>
+  `;
+
+  const sheet = document.createElement('div');
+  sheet.id = 'loc-sheet';
+  sheet.style.cssText = 'position:fixed;inset:0;z-index:4500;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
+  sheet.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
+      <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 22px"></div>
+      ${content}
+    </div>`;
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
+  document.body.appendChild(sheet);
+}
+
+function btnStyle(bg, border='none', color='#fff') {
+  return `width:100%;padding:15px;border-radius:14px;border:${border};background:${bg};color:${color};font-family:Heebo,sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:block;`;
+}
+
+function showAddressSearch() {
+  const existing = document.getElementById('addr-sheet');
+  if (existing) { existing.style.display='flex'; document.getElementById('addr-input')?.focus(); return; }
+  const sheet = document.createElement('div');
+  sheet.id = 'addr-sheet';
+  sheet.style.cssText = 'position:fixed;inset:0;z-index:4500;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
+  sheet.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
+      <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:14px">🔍 חיפוש כתובת</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input id="addr-input" type="text" placeholder="רח' הרדוף, תימורים..."
+          style="flex:1;padding:13px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:15px;outline:none;-webkit-appearance:none"
+          onkeydown="if(event.key==='Enter')doAddressSearch()">
+        <button onclick="doAddressSearch()"
+          style="padding:13px 16px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;cursor:pointer">חפש</button>
+      </div>
+      <div id="addr-results"></div>
+      <button onclick="document.getElementById('addr-sheet').remove()"
+        style="width:100%;padding:12px;margin-top:10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer">סגור</button>
+    </div>`;
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
+  document.body.appendChild(sheet);
+  setTimeout(() => document.getElementById('addr-input')?.focus(), 120);
+}
+
+async function doAddressSearch() {
+  const q = document.getElementById('addr-input')?.value?.trim();
+  const res = document.getElementById('addr-results');
+  if (!q || !res) return;
+  res.innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px"><span class="loading-spin"></span> מחפש...</div>`;
+  try {
+    const data = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', ישראל')}&format=json&limit=5&accept-language=he`,
+      { headers:{'Accept-Language':'he'} }
+    ).then(r=>r.json());
+    if (!data.length) { res.innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">לא נמצאו תוצאות 🤷</div>`; return; }
+    res.innerHTML = data.map(r => {
+      const label = r.display_name.split(',').slice(0,3).join(', ');
+      return `<button onclick="goToAddress(${r.lat},${r.lon},'${label.replace(/'/g,'')}')"
+        style="width:100%;padding:11px 13px;border-radius:10px;border:none;background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer;text-align:right;margin-bottom:7px;display:block;line-height:1.4">
+        📍 ${label}
+      </button>`;
+    }).join('');
+  } catch {
+    res.innerHTML = `<div style="text-align:center;padding:16px;color:var(--danger);font-size:13px">❌ שגיאת חיפוש</div>`;
+  }
+}
+
+function goToAddress(lat, lng, name) {
+  document.getElementById('addr-sheet')?.remove();
+  map.setView([+lat,+lng], 17);
+  if (window._locMarker) map.removeLayer(window._locMarker);
+  window._locMarker = L.marker([+lat,+lng], { icon: L.divIcon({
+    className:'',
+    html:`<div style="width:16px;height:16px;border-radius:50%;background:#38bdf8;border:3px solid white;box-shadow:0 0 0 4px rgba(56,189,248,0.3),0 2px 8px rgba(0,0,0,0.4)"></div>`,
+    iconSize:[16,16], iconAnchor:[8,8]
+  })}).addTo(map).bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif">📍 ${name}</div>`).openPopup();
+  showToast('📍 '+name);
+}
+
+let _watchId = null;
+let _locCircle = null;
+let _locTracking = false;
+
+function doLocate() {
+  const btn = document.getElementById('locate-btn');
+
+  // כפתור שני — כבה מעקב
+  if (_locTracking) {
+    navigator.geolocation.clearWatch(_watchId);
+    _watchId = null; _locTracking = false;
+    if (window._locMarker) { map.removeLayer(window._locMarker); window._locMarker = null; }
+    if (_locCircle) { map.removeLayer(_locCircle); _locCircle = null; }
+    if (btn) { btn.querySelector('svg').style.stroke = 'var(--accent)'; btn.style.background = 'var(--card)'; }
+    showToast('📍 מעקב מיקום כובה');
+    return;
+  }
+
+  if (btn) { btn.style.opacity='0.5'; btn.style.pointerEvents='none'; }
   showToast('⏳ מאתר מיקום...');
-  navigator.geolocation.getCurrentPosition(pos => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    map.setView([lat, lng], 18);
+  let firstFix = true;
 
-    // Remove old marker if exists
-    if (window._locMarker) map.removeLayer(window._locMarker);
+  function onPos(pos) {
+    const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+    if (btn) { btn.style.opacity=''; btn.style.pointerEvents=''; btn.style.background='rgba(56,189,248,0.15)'; btn.querySelector('svg').style.stroke='#38bdf8'; }
 
-    // Add pulsing marker
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="width:16px;height:16px;border-radius:50%;background:#38bdf8;border:3px solid white;box-shadow:0 0 0 4px rgba(56,189,248,0.3),0 2px 8px rgba(0,0,0,0.4)"></div>`,
-      iconSize: [16,16], iconAnchor: [8,8]
-    });
-    window._locMarker = L.marker([lat, lng], {icon}).addTo(map);
-    window._locMarker.bindPopup('<div dir="rtl" style="font-family:Heebo,sans-serif">📍 המיקום שלי</div>').openPopup();
-    showToast('✅ מיקום נמצא');
-  }, () => {
-    showToast('❌ לא ניתן לאתר מיקום');
-  }, { enableHighAccuracy: true, timeout: 10000 });
+    // עיגול דיוק
+    if (_locCircle) _locCircle.setLatLng([lat, lng]).setRadius(accuracy);
+    else _locCircle = L.circle([lat, lng], { radius: accuracy,
+      fillColor:'#38bdf8', fillOpacity:0.08, color:'#38bdf8', weight:1, opacity:0.35
+    }).addTo(map);
+
+    // נקודה פועמת
+    const dotHtml = `<div style="position:relative;width:22px;height:22px">
+      <div style="position:absolute;inset:0;border-radius:50%;background:rgba(56,189,248,0.3);animation:locPulse 2s ease-out infinite"></div>
+      <div style="position:absolute;inset:3px;border-radius:50%;background:#38bdf8;border:2.5px solid white;box-shadow:0 2px 8px rgba(56,189,248,0.7)"></div>
+    </div>`;
+    if (window._locMarker) window._locMarker.setLatLng([lat, lng]);
+    else window._locMarker = L.marker([lat, lng], {
+      icon: L.divIcon({ className:'', html: dotHtml, iconSize:[22,22], iconAnchor:[11,11] }),
+      zIndexOffset: 1000
+    }).addTo(map);
+
+    if (firstFix) {
+      map.setView([lat, lng], 18);
+      showToast('✅ מעקב מיקום פעיל');
+      _locTracking = true;
+      firstFix = false;
+    }
+  }
+
+  function onErr(err) {
+    if (btn) { btn.style.opacity=''; btn.style.pointerEvents=''; }
+    if (err.code === 1) {
+      showLocationSheet('denied');
+    } else {
+      // fallback IP
+      fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
+        if(d.latitude){ map.setView([d.latitude,d.longitude],16); showToast('📡 מיקום משוער לפי רשת'); }
+        else { map.setView([31.7154,34.7586],16); showToast('📍 מרכז המפה — תימורים'); }
+      }).catch(()=>{ map.setView([31.7154,34.7586],16); });
+    }
+  }
+
+  _watchId = navigator.geolocation.watchPosition(onPos, onErr,
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 3000 });
 }
 
 function toggleLayer(name,btn){const lg=layerGroups[name];if(!lg)return;if(map.hasLayer(lg)){map.removeLayer(lg);btn.classList.add('off');}else{lg.addTo(map);btn.classList.remove('off');}}
@@ -980,7 +1372,10 @@ function loadData(){
 function parseSheets(raw){
   if(!raw)return;
   function pr(rows,mapper){if(!rows||rows.length<2)return[];return rows.slice(1).filter(r=>r[0]).map(mapper);}
-  db.stations=pr(raw.stations,r=>({id:String(r[2]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),reporter:r[10],status:r[11]||'active',date:r[0]}));
+  db.stations=pr(raw.stations,r=>({id:String(r[2]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),reporter:r[10],status:r[11]||'active',date:r[0],group:r[12]||''}));
+  // merge localStorage groups (override server — more up to date)
+  const localGroups=JSON.parse(localStorage.getItem('station_groups')||'{}');
+  db.stations.forEach(s=>{if(localGroups[s.id])s.group=localGroups[s.id];});
   db.traps=pr(raw.traps,r=>({id:String(r[2]),stationId:String(r[3]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],status:r[11]||'active',date:r[0],extra:r[12]}));
   db.updates=pr(raw.updates,r=>({id:String(r[2]),trapId:String(r[3]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],date:r[0]}));
   db.reports=pr(raw.reports,r=>({id:String(r[2]),email:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],subtype:r[12],note:r[8],reporter:r[10],status:r[11]||'active',date:r[0]}));
@@ -988,11 +1383,19 @@ function parseSheets(raw){
 }
 
 function renderMap(){
-  layerGroups.stations.clearLayers();layerGroups.reports.clearLayers();
+  layerGroups.stations.clearLayers();layerGroups.reports.clearLayers();layerGroups.volunteers.clearLayers();
   db.stations.filter(s=>s.status==='active'&&!isNaN(s.lat)).forEach(station=>{
     const traps=db.traps.filter(t=>t.stationId===station.id&&t.status==='active');
-    const urgent=traps.filter(t=>getDaysOld(t)>=14).length;
-    const color=urgent>0?'#ef4444':traps.length>0?'#38bdf8':'#475569';
+
+    // צבע לפי המלכודת הכי מלאה
+    const getEffectiveSev = t => {
+      const u = db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+      return u?.severity || t.severity || 'low';
+    };
+    const sevs = traps.map(getEffectiveSev).filter(s=>s!=='done');
+    const topSev = sevs.includes('high') ? 'high' : sevs.includes('med') ? 'med' : sevs.includes('low') ? 'low' : null;
+    const urgent = traps.filter(t=>getDaysOld(t)>=14).length;
+    const color = urgent>0||topSev==='high' ? '#ef4444' : topSev==='med' ? '#f59e0b' : topSev==='low' ? '#10b981' : '#475569';
     
     // Dim stations in volunteer map mode if they have no needy traps
     let opacity = 1;
@@ -1022,6 +1425,28 @@ function renderMap(){
       </div>
     </div>`);
   });
+
+  // Feature 5: Volunteer claim markers
+  db.volunteers.filter(v=>v.status==='בתהליך'&&v.severity==='pickup').forEach(vol=>{
+    const trapIds=(v=>v.parentId?v.parentId.split(','):[])(vol);
+    const trap=db.traps.find(t=>trapIds.includes(t.id));
+    const station=trap?db.stations.find(s=>s.id===trap.stationId):null;
+    if(!station||isNaN(station.lat))return;
+    const volIcon=L.divIcon({className:'',html:`
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div style="background:#a78bfa;color:#fff;font-family:Heebo,sans-serif;font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.6)">🙋 ${vol.reporter}</div>
+        <div style="width:2px;height:8px;background:#a78bfa;margin:0 auto"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;border:2px solid white"></div>
+      </div>`,iconSize:[100,44],iconAnchor:[50,44]});
+    L.marker([station.lat,station.lng],{icon:volIcon,zIndexOffset:500})
+      .addTo(layerGroups.volunteers)
+      .bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif">
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px">🙋 ${vol.reporter}</div>
+        <div style="font-size:12px;color:#a78bfa">לוקח/ת אחריות על פינוי</div>
+        <div style="font-size:11px;color:#888;margin-top:4px">📍 ${station.name}</div>
+        <div style="font-size:11px;color:#888">${new Date(vol.date).toLocaleDateString('he-IL')}</div>
+      </div>`);
+  });
 }
 
 function openStationSite(stationId){
@@ -1037,7 +1462,9 @@ function openStationSite(stationId){
   const trapsHtml=traps.length===0?`<div class="empty"><div class="empty-icon">🪤</div><div>אין מלכודות פעילות</div></div>`:traps.map(t=>renderTrapCard(t)).join('');
   const doneTraps=allTraps.filter(t=>t.status!=='active');
   const doneSec=doneTraps.length?`<div class="trap-section-title" style="margin-top:16px">✅ הושלכו (${doneTraps.length})</div>${doneTraps.map(t=>renderTrapCard(t,true)).join('')}`:'';
-  document.getElementById('station-site-content').innerHTML=`${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">⚙️ נהל עמדה</button></div><div class="trap-section-title">🪤 מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
+  const group = getStationGroup(stationId);
+  const groupBadge = group ? `<div id="ss-group-badge" style="font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px"><span style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:7px;padding:2px 9px">🏷️ ${group}</span></div>` : `<div id="ss-group-badge"></div>`;
+  document.getElementById('station-site-content').innerHTML=`${groupBadge}${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">⚙️ נהל עמדה</button></div><div class="trap-section-title">🪤 מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
   openOverlay('station');
 }
 
@@ -1060,19 +1487,95 @@ function toggleTrapBody(trapId){
   if (chev) chev.classList.toggle('open');
 }
 
+let _stationFilter = 'groups';
+
+function setStationFilter(filter, btn) {
+  _stationFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStationsList();
+  haptic('light');
+}
+
 function renderStationsList(){
   const el=document.getElementById('stations-list');
   if(!db.stations.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📍</div><div>אין עמדות — הוסף מהמפה</div></div>`;return;}
-  el.innerHTML=db.stations.map(station=>{
+
+  const getEffectiveSev = t => {
+    const u = db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+    return u?.severity || t.severity || 'low';
+  };
+
+  const stationCard = station => {
     const traps=db.traps.filter(t=>t.stationId===station.id&&t.status==='active');
     const urgent=traps.filter(t=>getDaysOld(t)>=14).length;
     const soon=traps.filter(t=>{const d=getDaysOld(t);return d>=10&&d<14;}).length;
-    const color=urgent>0?'var(--danger)':traps.length>0?'var(--accent)':'var(--muted)';
+    const sevs=traps.map(getEffectiveSev).filter(s=>s!=='done');
+    const topSev=sevs.includes('high')?'high':sevs.includes('med')?'med':sevs.includes('low')?'low':null;
+    const color=urgent>0||topSev==='high'?'var(--danger)':topSev==='med'?'var(--warn)':topSev==='low'?'var(--live)':'var(--muted)';
     const inactive=station.status!=='active';
-    return `<div class="gcard ${inactive?'status-inactive':''}" onclick="openStationSite('${station.id}')"><div class="gcard-row"><div class="s-dot" style="background:${color}"></div><div class="s-info"><div class="s-name">${station.name}${inactive?' <span style="font-size:11px;color:var(--muted)">(מושהית)</span>':''}</div><div class="s-meta">${new Date(station.date).toLocaleDateString('he-IL')} · ${station.reporter||''}</div><div class="s-badges">${traps.length?`<span class="badge bg-blue">🪤 ${traps.length}</span>`:'<span class="badge bg-grey">אין</span>'}${urgent?`<span class="badge bg-red">🔴 ${urgent} דחוף</span>`:''}${soon?`<span class="badge bg-yellow">🟡 ${soon} בקרוב</span>`:''}</div></div><div class="s-arrow">›</div></div></div>`;
+    const grp=getStationGroup(station.id);
+    const grpTag=grp?`<span class="badge" style="background:rgba(56,189,248,0.1);color:var(--accent);border:1px solid rgba(56,189,248,0.25)">🏷️ ${grp}</span>`:'';
+    return `<div class="gcard ${inactive?'status-inactive':''}" onclick="openStationSite('${station.id}')"><div class="gcard-row"><div class="s-dot" style="background:${color}"></div><div class="s-info"><div class="s-name">${station.name}${inactive?' <span style="font-size:11px;color:var(--muted)">(מושהית)</span>':''}</div><div class="s-meta">${new Date(station.date).toLocaleDateString('he-IL')} · ${station.reporter||''}</div><div class="s-badges">${grpTag}${traps.length?`<span class="badge bg-blue">🪤 ${traps.length}</span>`:'<span class="badge bg-grey">אין</span>'}${urgent?`<span class="badge bg-red">🔴 ${urgent} דחוף</span>`:''}${soon?`<span class="badge bg-yellow">🟡 ${soon} בקרוב</span>`:''}</div></div><div class="s-arrow">›</div></div></div>`;
+  };
+
+  const active = db.stations.filter(s=>s.status==='active');
+
+  // apply filter
+  let filtered, title='';
+  if (_stationFilter === 'full') {
+    filtered = active.filter(s => {
+      const traps = db.traps.filter(t=>t.stationId===s.id&&t.status==='active');
+      return traps.some(t => getEffectiveSev(t) === 'high');
+    });
+    title = `🔴 מלכודות מלאות (${filtered.length})`;
+  } else if (_stationFilter === 'empty') {
+    filtered = active.filter(s => {
+      const traps = db.traps.filter(t=>t.stationId===s.id&&t.status==='active');
+      return traps.length > 0 && traps.every(t => getEffectiveSev(t) === 'low');
+    });
+    title = `✅ מלכודות ריקות (${filtered.length})`;
+  } else if (_stationFilter === 'no-trap') {
+    filtered = active.filter(s => db.traps.filter(t=>t.stationId===s.id&&t.status==='active').length === 0);
+    title = `❌ ללא מלכודת פעילה (${filtered.length})`;
+  } else if (_stationFilter === 'urgent') {
+    filtered = active.filter(s => {
+      const traps = db.traps.filter(t=>t.stationId===s.id&&t.status==='active');
+      return traps.some(t => getDaysOld(t)>=14 || getEffectiveSev(t)==='high');
+    }).sort((a,b) => {
+      const maxDays = s => Math.max(...db.traps.filter(t=>t.stationId===s.id&&t.status==='active').map(t=>getDaysOld(t)),0);
+      return maxDays(b) - maxDays(a);
+    });
+    title = `⏰ דחופות לפינוי (${filtered.length})`;
+  } else if (_stationFilter === 'all') {
+    filtered = active;
+    title = `📋 כל העמדות (${filtered.length})`;
+  }
+
+  // flat list filters
+  if (_stationFilter !== 'groups') {
+    if (!filtered.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">${_stationFilter==='full'?'🔴':_stationFilter==='no-trap'?'❌':'✅'}</div><div>אין עמדות בקטגוריה זו</div></div>`;
+      return;
+    }
+    el.innerHTML = `<div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px">${title}</div>` + filtered.map(stationCard).join('');
+    return;
+  }
+
+  // groups view (default)
+  const grouped={};
+  db.stations.forEach(station=>{
+    const g=station.group||'ללא קבוצה';
+    if(!grouped[g])grouped[g]=[];
+    grouped[g].push(station);
+  });
+  const groups=Object.keys(grouped).sort((a,b)=>a==='ללא קבוצה'?1:b==='ללא קבוצה'?-1:a.localeCompare(b,'he'));
+  el.innerHTML=groups.map(g=>{
+    const stations=grouped[g];
+    const header=groups.length>1||g!=='ללא קבוצה'?`<div class="station-group-title">${g==='ללא קבוצה'?'📍 כללי':'🏷️ '+g} <span style="font-size:11px;font-weight:400;color:var(--muted)">(${stations.length})</span></div>`:'';
+    return header+stations.map(stationCard).join('');
   }).join('');
 }
-
 function renderReportsHistory() {
   const el = document.getElementById('reports-history-list');
   if (!el) return;
@@ -1109,24 +1612,140 @@ function renderReportsHistory() {
 function renderDashboard(){
   const active=db.stations.filter(s=>s.status==='active');
   const aT=db.traps.filter(t=>t.status==='active');
+  const allTraps=db.traps;
   const urgent=aT.filter(t=>getDaysOld(t)>=14);
   const soon=aT.filter(t=>{const d=getDaysOld(t);return d>=10&&d<14;});
   document.getElementById('d-stations').textContent=active.length;
   document.getElementById('d-traps').textContent=aT.length;
   document.getElementById('d-urgent').textContent=urgent.length;
   document.getElementById('d-soon').textContent=soon.length;
+
+  // 🔥 Hotspot
   let hotspot='—';
   if(active.length){const ranked=active.map(s=>({name:s.name,score:db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=14).length*2+db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=10).length})).sort((a,b)=>b.score-a.score);hotspot=ranked[0].score>0?`${ranked[0].name} (${ranked[0].score} נקודות)`:'הכל תקין ✅';}
   document.getElementById('d-hotspot').textContent=hotspot;
+
+  // 🪰 Total flies estimated
+  let totalFlies=0, bagFlies=0, stickyFlies=0, doneCount=0;
+  allTraps.forEach(t=>{
+    const est=estimateFlyCount(t);
+    totalFlies+=est;
+    if(t.note==='sticky')stickyFlies+=est; else bagFlies+=est;
+    const updates=db.updates.filter(u=>u.trapId===t.id);
+    if(updates.some(u=>u.severity==='done')||t.status!=='active')doneCount++;
+  });
+  document.getElementById('d-flies').textContent=totalFlies.toLocaleString();
+  document.getElementById('d-flies-sub').textContent=`🪣 שקיות: ${bagFlies.toLocaleString()} · 🟨 מדבקות: ${stickyFlies.toLocaleString()} · ${doneCount} פונו`;
+
+  // 🏆 Top volunteer
+  const volCounts={};
+  db.volunteers.filter(v=>v.severity==='pickup').forEach(v=>{
+    if(v.reporter){volCounts[v.reporter]=(volCounts[v.reporter]||0)+((v.parentId||'').split(',').filter(Boolean).length||1);}
+  });
+  // also count from updates marked done
+  db.updates.filter(u=>u.severity==='done'&&u.reporter).forEach(u=>{
+    volCounts[u.reporter]=(volCounts[u.reporter]||0)+1;
+  });
+  const topVol=Object.entries(volCounts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('d-top-vol').textContent=topVol?`🥇 ${topVol[0]} — ${topVol[1]} פינויים`:'טרם נרשמו פינויים';
+
+  // 📅 Monthly chart + peak month
   const months=['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'];
   const counts=Array(12).fill(0);
-  [...db.traps,...db.updates].forEach(d=>{if(d.date)counts[new Date(d.date).getMonth()]++;});
+  [...allTraps,...db.updates].forEach(d=>{if(d.date)counts[new Date(d.date).getMonth()]++;});
   const max=Math.max(...counts,1);
-  document.getElementById('d-chart').innerHTML=counts.map((c,i)=>`<div class="bar-row"><div class="bar-lbl">${months[i]}</div><div class="bar-track"><div class="bar-fill" style="width:${c/max*100}%"></div></div><div class="bar-val">${c||''}</div></div>`).join('');
+  const peakIdx=counts.indexOf(Math.max(...counts));
+  document.getElementById('d-chart').innerHTML=counts.map((c,i)=>`<div class="bar-row"><div class="bar-lbl">${months[i]}</div><div class="bar-track"><div class="bar-fill" style="width:${c/max*100}%;${i===peakIdx?'background:var(--danger)':''}"</div></div><div class="bar-val">${c||''}</div></div>`).join('');
+  document.getElementById('d-peak-month').textContent=counts[peakIdx]>0?`${months[peakIdx]} — ${counts[peakIdx]} אירועים`:'אין נתונים עדיין';
+
   renderReportsHistory();
 }
 
-// ── VOLUNTEER MAP & FUNCTIONS ──
+// ── AI FLY COUNT ESTIMATOR ────────────────────────────────────────────────
+// שקית: 60,000 קיבולת
+// מדבקה: 24×17 ס"מ × 2 צדדים = 816 סמ"ר, ~18 זבובים/סמ"ר כשמלאה = ~14,700
+const BAG_CAPACITY = 60000;
+const STICKY_CAPACITY = 14700; // 24×17×2×18
+
+function estimateFlyCount(trap) {
+  const type = trap.note === 'sticky' ? 'sticky' : 'bag'; // note stores type from feature 2
+  const capacity = type === 'sticky' ? STICKY_CAPACITY : BAG_CAPACITY;
+  // get latest severity
+  const updates = db.updates.filter(u=>u.trapId===trap.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const sev = updates[0]?.severity || trap.severity || 'low';
+  if(sev === 'done') {
+    // when thrown out, estimate was ~full based on last known severity
+    const lastBeforeDone = updates.find(u=>u.severity!=='done');
+    const lastSev = lastBeforeDone?.severity || 'high';
+    const fillPct = {high:0.85, med:0.5, low:0.2}[lastSev] || 0.7;
+    return Math.round(capacity * fillPct);
+  }
+  const fillPct = {high:0.8, med:0.45, low:0.15}[sev] || 0.1;
+  // also factor in days old
+  const days = getDaysOld(trap);
+  const dayBonus = Math.min(days / 20, 0.15); // up to 15% more for aged traps
+  return Math.round(capacity * Math.min(fillPct + dayBonus, 1.0));
+}
+
+// ── GROUP VOLUNTEER PICKUP ────────────────────────────────────────────────
+function openGroupVolPick() {
+  const groups = [...new Set(db.stations.map(s=>getStationGroup(s.id)).filter(Boolean))];
+  if(!groups.length) {
+    showToast('⚠️ אין קבוצות מוגדרות — הוסף קבוצות לעמדות תחילה');
+    return;
+  }
+  const sheet = document.createElement('div');
+  sheet.id = 'grp-vol-sheet';
+  sheet.style.cssText = 'position:fixed;inset:0;z-index:4500;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
+  sheet.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
+      <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:6px">🏷️ פינוי לפי קבוצה</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">בחר אזור — כל המלכודות הדחופות בו ייבחרו אוטומטית</div>
+      ${groups.map(g => {
+        const stationsInGroup = db.stations.filter(s=>getStationGroup(s.id)===g);
+        const trapsInGroup = stationsInGroup.flatMap(s=>db.traps.filter(t=>t.stationId===s.id&&t.status==='active'));
+        const needyCount = trapsInGroup.filter(t=>t.severity==='high'||getDaysOld(t)>=10).length;
+        return `<button onclick="selectGroupForPickup('${g.replace(/'/g,'')}')"
+          style="width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:right;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <span>🏷️ ${g}</span>
+          <span style="font-size:12px;color:${needyCount>0?'var(--danger)':'var(--muted)'}">
+            ${needyCount > 0 ? `🔴 ${needyCount} מלכודות` : 'הכל תקין'}
+          </span>
+        </button>`;
+      }).join('')}
+      <button onclick="document.getElementById('grp-vol-sheet').remove()"
+        style="width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer;margin-top:4px">ביטול</button>
+    </div>`;
+  sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
+  document.body.appendChild(sheet);
+}
+
+function selectGroupForPickup(group) {
+  document.getElementById('grp-vol-sheet')?.remove();
+  selectedVolTraps.clear();
+  const stationsInGroup = db.stations.filter(s=>getStationGroup(s.id)===group);
+  stationsInGroup.forEach(s=>{
+    db.traps.filter(t=>t.stationId===s.id&&t.status==='active'&&(t.severity==='high'||getDaysOld(t)>=10))
+      .forEach(t=>selectedVolTraps.add(t.id));
+  });
+  if(!selectedVolTraps.size) { showToast('✅ אין מלכודות דחופות בקבוצה זו'); return; }
+  showToast(`🏷️ ${selectedVolTraps.size} מלכודות נבחרו מ"${group}"`);
+  // open final confirmation
+  startVolMapMode();
+  setTimeout(()=>{
+    exitVolMapMode();
+    openVolunteerPickupFinal();
+  }, 100);
+}
+
+function openVolunteerPickupFinal() {
+  const trapIds = [...selectedVolTraps];
+  if(!trapIds.length) return;
+  // Use existing final modal
+  document.getElementById('vpf-title').textContent = `🗑️ אישור פינוי — ${trapIds.length} מלכודות`;
+  openOverlay('vol-pickup-final');
+}
 
 function startVolMapMode() {
   closeOverlay('vol-type');
@@ -1162,7 +1781,11 @@ function openVolStationPick(stationId) {
   if(!station) return;
   document.getElementById('vsp-title').textContent = '📍 ' + station.name;
   const traps = db.traps.filter(t => t.stationId === stationId && t.status === 'active');
-  const needy = traps.filter(t => t.severity === 'high' || getDaysOld(t) >= 10);
+  const needy = traps.filter(t => {
+    const updates = db.updates.filter(u=>u.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const effectiveSev = updates[0]?.severity || t.severity || 'low';
+    return effectiveSev === 'high' || effectiveSev === 'med' || getDaysOld(t) >= 10;
+  });
 
   // מזהה מלכודות שכבר בטיפול ע"י מתנדבים אחרים
   const claimedTraps = {};
@@ -1472,33 +2095,114 @@ async function saveStation(){
   btn.disabled=false;btn.textContent='📍 שמור עמדה';setTimeout(loadData,1500);
 }
 
+// Feature 2: trap type
+let _trapType = 'bag';
+function setTrapType(type, btn) {
+  _trapType = type;
+  document.querySelectorAll('#overlay-add-trap .sev-btn[id^="type-btn"]').forEach(b=>b.classList.remove('sel-low','sel-med','sel-high'));
+  btn.classList.add('sel-low');
+  // auto-update name placeholder
+  const station = db.stations.find(s=>s.id===currentStationId);
+  const stTraps = db.traps.filter(t=>t.stationId===currentStationId).length;
+  const icon = type==='bag'?'🪣':'🟨';
+  const typeName = type==='bag'?'שקית':'מדבקה';
+  document.getElementById('at-name').placeholder = `${icon} ${typeName} ${station?station.name:''} ${stTraps+1}`;
+}
+
+// Feature 4: station groups
+function editStationGroup() {
+  const station = db.stations.find(s=>s.id===currentStationId);
+  if(!station) return;
+  const currentGroup = station.group || '';
+  const existingGroups = [...new Set(db.stations.map(s=>s.group||'').filter(Boolean))];
+  const groupOptions = existingGroups.map(g=>
+    `<button onclick="document.getElementById('group-input').value='${g.replace(/'/g,'')}';"
+      style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer;margin:0 4px 6px 0">${g}</button>`
+  ).join('');
+  const sheet = document.createElement('div');
+  sheet.id='group-sheet';
+  sheet.style.cssText='position:fixed;inset:0;z-index:4500;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
+  sheet.innerHTML=`
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
+      <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:6px">🏷️ קבוצה / אזור</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">קבץ עמדות לאזורים: גן ילדים, בריכה, הרחבה...</div>
+      ${existingGroups.length?`<div style="margin-bottom:12px;flex-wrap:wrap;display:flex">${groupOptions}</div>`:''}
+      <input id="group-input" class="fi" value="${currentGroup}" placeholder="לדוגמה: גן ילדים" style="margin-bottom:12px">
+      <button onclick="saveStationGroup()" style="${btnStyle('var(--accent)')}margin-bottom:8px">✅ שמור</button>
+      <button onclick="document.getElementById('group-sheet').remove()" style="${btnStyle('transparent','1px solid var(--border)','var(--muted)')}">ביטול</button>
+    </div>`;
+  sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
+  document.body.appendChild(sheet);
+  setTimeout(()=>document.getElementById('group-input')?.focus(),100);
+}
+
+async function saveStationGroup() {
+  const group = document.getElementById('group-input')?.value?.trim()||'';
+  // שמור מיידית ב-localStorage — עובד גם בלי backend
+  const localGroups = JSON.parse(localStorage.getItem('station_groups')||'{}');
+  localGroups[currentStationId] = group;
+  localStorage.setItem('station_groups', JSON.stringify(localGroups));
+  // שלח לשרת גם (extra field)
+  await postData({rowType:'stationGroup',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'',extra:group});
+  document.getElementById('group-sheet')?.remove();
+  // עדכן את db.stations מיידית
+  const st = db.stations.find(s=>s.id===currentStationId);
+  if(st) st.group = group;
+  renderStationsList();
+  // עדכן כותרת עמדה פתוחה אם פתוחה
+  updateStationGroupBadge(currentStationId, group);
+  showToast(group ? `🏷️ קבוצה: ${group}` : '🏷️ קבוצה הוסרה');
+  setTimeout(loadData, 2000);
+}
+
+function getStationGroup(stationId) {
+  const localGroups = JSON.parse(localStorage.getItem('station_groups')||'{}');
+  const st = db.stations.find(s=>s.id===stationId);
+  return localGroups[stationId] || st?.group || '';
+}
+
+function updateStationGroupBadge(stationId, group) {
+  const badge = document.getElementById('ss-group-badge');
+  if(badge) badge.textContent = group ? `🏷️ ${group}` : '';
+}
+
 function openAddTrap(stationId){
   currentStationId=stationId;
+  _trapType='bag';
   const station=db.stations.find(s=>s.id===stationId);
   document.getElementById('at-station-name').textContent='📍 '+(station?station.name:'');
   document.getElementById('at-date').value=new Date().toISOString().split('T')[0];
+  // reset type buttons
+  document.querySelectorAll('#overlay-add-trap .sev-btn[id^="type-btn"]').forEach(b=>b.classList.remove('sel-low'));
+  document.getElementById('type-btn-bag')?.classList.add('sel-low');
   const di=document.getElementById('at-date');const ni=document.getElementById('at-name');
-  function un(){const d=di.value?new Date(di.value):new Date();const ds=d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'}).slice(0,5);ni.value=station?`${station.name} ${ds}`:ds;}
+  function un(){
+    const d=di.value?new Date(di.value):new Date();
+    const ds=d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'}).slice(0,5);
+    const icon=_trapType==='bag'?'🪣':'🟨';
+    ni.value=station?`${icon} ${station.name} ${ds}`:ds;
+  }
   un();di.onchange=un;
   formSev['at']='low';
-  document.querySelectorAll('#overlay-add-trap .sev-btn').forEach(b=>b.className='sev-btn');
-  document.querySelector('#overlay-add-trap .sev-btn').classList.add('sel-low');
+  document.querySelectorAll('#overlay-add-trap .sev-btn:not([id^="type-btn"])').forEach(b=>b.className='sev-btn');
+  document.querySelector('#overlay-add-trap .sev-btn:not([id^="type-btn"])')?.classList.add('sel-low');
   openOverlay('add-trap');
 }
 async function saveTrap(){
-  const name=document.getElementById('at-name').value.trim();
+  const rawName=document.getElementById('at-name').value.trim();
+  const icon=_trapType==='bag'?'🪣':'🟨';
+  const name=rawName||(icon+' מלכודת');
   const reporter=document.getElementById('at-reporter').value.trim();
   const dateVal=document.getElementById('at-date').value;
   const sev=formSev['at'];
-  if(!name){showToast('⚠️ נא להכניס שם');return;}
   if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
   if(!sev){showToast('⚠️ נא לבחור סטטוס');return;}
   const station=db.stations.find(s=>s.id===currentStationId);
   const btn=document.getElementById('at-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שומר...';
-  const station2=station;
   const photoBase64=(window._photoData&&window._photoData['at'])||'';
   if(window._photoData)delete window._photoData['at'];
-  await postData({rowType:'trap',id:'TR'+Date.now(),parentId:currentStationId,name,lat:station2?station2.lat:'',lng:station2?station2.lng:'',severity:sev,note:'',photoBase64,stationName:station2?station2.name:'',reporter,status:'active',extra:dateVal});
+  await postData({rowType:'trap',id:'TR'+Date.now(),parentId:currentStationId,name,lat:station?station.lat:'',lng:station?station.lng:'',severity:sev,note:_trapType,photoBase64,stationName:station?station.name:'',reporter,status:'active',extra:dateVal});
   showToast('✅ מלכודת נוספה!');closeOverlay('add-trap');
   document.getElementById('at-reporter').value='';btn.disabled=false;btn.textContent='🪤 הוסף מלכודת';
   setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
@@ -1553,10 +2257,42 @@ async function saveReport(){
 
 function openManageStation(){
   const station=db.stations.find(s=>s.id===currentStationId);
+  const grp=getStationGroup(currentStationId);
   document.getElementById('so-title').textContent=station?station.name:'עמדה';
+  document.getElementById('so-group-display').textContent=grp?`קבוצה נוכחית: 🏷️ ${grp}`:'';
   const inactive=station&&station.status!=='active';
   document.getElementById('so-activate-btn').style.display=inactive?'block':'none';
   openOverlay('station-options');
+}
+
+function renameStation(){
+  const station=db.stations.find(s=>s.id===currentStationId);
+  if(!station)return;
+  const sheet=document.createElement('div');
+  sheet.id='rename-sheet';
+  sheet.style.cssText='position:fixed;inset:0;z-index:4500;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
+  sheet.innerHTML=`
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
+      <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:14px">✏️ שנה שם עמדה</div>
+      <input id="rename-input" class="fi" value="${station.name}" style="margin-bottom:12px;font-size:16px">
+      <button onclick="saveRename()" style="${btnStyle('var(--accent)')}margin-bottom:8px">✅ שמור</button>
+      <button onclick="document.getElementById('rename-sheet').remove()" style="${btnStyle('transparent','1px solid var(--border)','var(--muted)')}">ביטול</button>
+    </div>`;
+  sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
+  document.body.appendChild(sheet);
+  setTimeout(()=>{const inp=document.getElementById('rename-input');if(inp){inp.focus();inp.select();}},100);
+}
+
+async function saveRename(){
+  const newName=document.getElementById('rename-input')?.value?.trim();
+  if(!newName){showToast('⚠️ שם ריק');return;}
+  await postData({rowType:'stationName',id:currentStationId,parentId:'',name:newName,lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'',extra:''});
+  document.getElementById('rename-sheet')?.remove();
+  document.getElementById('ss-title').textContent=newName;
+  document.getElementById('so-title').textContent=newName;
+  showToast('✅ שם עודכן');
+  setTimeout(loadData,1500);
 }
 async function toggleStationStatus(action){
   if(action==='delete'){
@@ -1801,7 +2537,7 @@ function toggleTheme(){
   document.getElementById('theme-btn').textContent=isLight?'☀️':'🌙';
   localStorage.setItem('theme',isLight?'light':'dark');
   haptic('light');
-  if(map){map.eachLayer(l=>{if(l instanceof L.TileLayer)map.removeLayer(l);});const tile=isLight?'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';L.tileLayer(tile,{attribution:'© CartoDB © OSM'}).addTo(map);}
+  if(map){ setMapStyle(currentMapStyle); }
 }
 
 function haptic(type){if(!navigator.vibrate)return;const p={light:[10],medium:[20],success:[10,50,10],error:[50,30,50]};if(p[type])navigator.vibrate(p[type]);}
