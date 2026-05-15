@@ -700,7 +700,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     </div>
     <div class="fg"><label class="fl">תמונה (אופציונלי)</label>
       <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('au',this)"><div id="au-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="au-photo-prev" class="photo-preview">
-      <button class="btn btn-sparkle" id="au-analyze-btn" onclick="analyzePhoto('au-photo-prev', 'au-note', 'au-analyze-btn')" style="margin-top:10px; display:none; padding:8px; font-size:12px; position:relative; z-index:5;">✨ נתח תמונה עם AI</button>
+      <button class="btn btn-sparkle" id="au-analyze-btn" style="display:none;margin-top:10px;padding:8px;font-size:12px;position:relative;z-index:5;opacity:0.4;cursor:not-allowed" disabled>✨ ניתוח AI — בקרוב</button>
       </div>
     </div>
     <div class="fg"><label class="fl">הערה (אופציונלי)</label><textarea class="fi" id="au-note" placeholder="תאר את המצב..."></textarea></div>
@@ -1399,9 +1399,17 @@ function parseSheets(raw){
   if(!raw)return;
   function pr(rows,mapper){if(!rows||rows.length<2)return[];return rows.slice(1).filter(r=>r[0]).map(mapper);}
   db.stations=pr(raw.stations,r=>({id:String(r[2]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),reporter:r[10],status:r[11]||'active',date:r[0],group:r[12]||''}));
-  // merge localStorage groups (override server — more up to date)
+  // merge localStorage overrides
   const localGroups=JSON.parse(localStorage.getItem('station_groups')||'{}');
-  db.stations.forEach(s=>{if(localGroups[s.id])s.group=localGroups[s.id];});
+  const localStatus=JSON.parse(localStorage.getItem('station_status')||'{}');
+  const localNames=JSON.parse(localStorage.getItem('station_names')||'{}');
+  db.stations.forEach(s=>{
+    if(localGroups[s.id]) s.group=localGroups[s.id];
+    if(localStatus[s.id]) s.status=localStatus[s.id];
+    if(localNames[s.id]) s.name=localNames[s.id];
+  });
+  // סנן מחוקים לצמיתות
+  db.stations=db.stations.filter(s=>s.status!=='perm_deleted');
   db.traps=pr(raw.traps,r=>({id:String(r[2]),stationId:String(r[3]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],status:r[11]||'active',date:r[0],extra:r[12]}));
   db.updates=pr(raw.updates,r=>({id:String(r[2]),trapId:String(r[3]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],date:r[0]}));
   db.reports=pr(raw.reports,r=>({id:String(r[2]),email:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],subtype:r[12],note:r[8],reporter:r[10],status:r[11]||'active',date:r[0]}));
@@ -1508,7 +1516,9 @@ function renderTrapCard(trap,done=false){
   const ub=!done&&days>=14?`<span class="badge bg-red">🔴 ${days}י׳ — דחוף</span>`:!done&&days>=10?`<span class="badge bg-yellow">🟡 ${days} יום</span>`:!done?`<span class="badge bg-grey">${days} יום</span>`:'';
   const tlHtml=updates.map(u=>{const uc={low:'var(--live)',med:'var(--warn)',high:'var(--danger)',done:'var(--muted)'}[u.severity]||'var(--muted)';const ul={low:'🟢 ריקה',med:'🟡 קצת מלאה',high:'🔴 מלאה',done:'✅ הושלכה לפח'}[u.severity]||u.severity;const ds=new Date(u.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});return `<div class="tl-item"><div class="tl-icon">📸</div><div class="tl-body"><div class="tl-sev" style="color:${uc}">${ul}</div>${u.note?`<div class="tl-note">${u.note}</div>`:''}<div class="tl-meta">${ds}${u.reporter?' · '+u.reporter:''}</div></div>${u.photoUrl?`<img class="tl-img" src="${u.photoUrl}" onclick="event.stopPropagation();openLightbox('${u.photoUrl}','${u.severity||''} · ${u.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;}).join('');
   const fe=`<div class="tl-item"><div class="tl-icon">🪤</div><div class="tl-body"><div class="tl-sev" style="color:var(--accent)">הותקנה</div>${trap.note?`<div class="tl-note">${trap.note}</div>`:''}<div class="tl-meta">${new Date(trap.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${trap.reporter?' · '+trap.reporter:''}</div></div>${trap.photoUrl?`<img class="tl-img" src="${trap.photoUrl}" onclick="event.stopPropagation();openLightbox('${trap.photoUrl}','הותקנה · ${trap.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;
-  return `<div class="trap-card"><div class="trap-header" onclick="toggleTrapBody('${trap.id}')"><div class="trap-dot" style="background:${sc}"></div><div class="trap-info"><div class="trap-name">${trap.name}</div><div class="trap-meta" style="color:${sc}">${sl} ${ub}</div></div><div class="trap-chevron" id="chev-${trap.id}">▾</div></div><div class="trap-body" id="body-${trap.id}">${tlHtml}${fe}<button class="add-update-btn" data-action="add-update" data-trap-id="${trap.id}" data-trap-name="${trap.name}">📸 הוסף עדכון / שנה סטטוס</button>${done ? `<button class="add-update-btn" data-action="restore-trap" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--live);border-color:var(--live);margin-top:5px">♻️ שחזר כפעילה</button>` : ""}<button class="add-update-btn" data-action="delete-trap-choice" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--danger);border-color:var(--danger);margin-top:5px">🗑️ מחק מלכודת</button></div></div>`;
+  const est = estimateFlyCount(trap);
+  const flyBadge = est > 0 ? `<span class="badge" style="background:rgba(167,139,250,0.12);color:var(--trap);border:1px solid rgba(167,139,250,0.25)">🪰 ~${est.toLocaleString()}</span>` : '';
+  return `<div class="trap-card"><div class="trap-header" onclick="toggleTrapBody('${trap.id}')"><div class="trap-dot" style="background:${sc}"></div><div class="trap-info"><div class="trap-name">${trap.name}</div><div class="trap-meta" style="color:${sc}">${sl} ${ub} ${flyBadge}</div></div><div class="trap-chevron" id="chev-${trap.id}">▾</div></div><div class="trap-body" id="body-${trap.id}">${tlHtml}${fe}<button class="add-update-btn" data-action="add-update" data-trap-id="${trap.id}" data-trap-name="${trap.name}">📸 הוסף עדכון / שנה סטטוס</button>${done ? `<button class="add-update-btn" data-action="restore-trap" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--live);border-color:var(--live);margin-top:5px">♻️ שחזר כפעילה</button>` : ""}<button class="add-update-btn" data-action="delete-trap-choice" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--danger);border-color:var(--danger);margin-top:5px">🗑️ מחק מלכודת</button></div></div>`;
 }
 
 function toggleTrapBody(trapId){
@@ -1696,26 +1706,34 @@ function renderDashboard(){
 // שקית: 60,000 קיבולת
 // מדבקה: 24×17 ס"מ × 2 צדדים = 816 סמ"ר, ~18 זבובים/סמ"ר כשמלאה = ~14,700
 const BAG_CAPACITY = 60000;
-const STICKY_CAPACITY = 14700; // 24×17×2×18
+const STICKY_CAPACITY = 10000; // מאומת מתמונה: ~9,000-10,000 כשמלאה לגמרי (שני צדדים)
 
 function estimateFlyCount(trap) {
-  const type = trap.note === 'sticky' ? 'sticky' : 'bag'; // note stores type from feature 2
-  const capacity = type === 'sticky' ? STICKY_CAPACITY : BAG_CAPACITY;
-  // get latest severity
+  // זיהוי סוג — לפי שדה note (מלכודות חדשות) או שם (מלכודות ישנות)
+  const isSticky = trap.note === 'sticky' || trap.name?.includes('מדבקה');
+  const capacity = isSticky ? STICKY_CAPACITY : BAG_CAPACITY;
+
   const updates = db.updates.filter(u=>u.trapId===trap.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
   const sev = updates[0]?.severity || trap.severity || 'low';
-  if(sev === 'done') {
-    // when thrown out, estimate was ~full based on last known severity
-    const lastBeforeDone = updates.find(u=>u.severity!=='done');
-    const lastSev = lastBeforeDone?.severity || 'high';
-    const fillPct = {high:0.85, med:0.5, low:0.2}[lastSev] || 0.7;
-    return Math.round(capacity * fillPct);
-  }
-  const fillPct = {high:0.8, med:0.45, low:0.15}[sev] || 0.1;
-  // also factor in days old
   const days = getDaysOld(trap);
-  const dayBonus = Math.min(days / 20, 0.15); // up to 15% more for aged traps
-  return Math.round(capacity * Math.min(fillPct + dayBonus, 1.0));
+
+  if (sev === 'done') {
+    // נזרקה = ממוצע 30,000 לשקית, מלאה למדבקה
+    return isSticky ? STICKY_CAPACITY : 30000;
+  }
+
+  if (isSticky) {
+    // מדבקה — פשוט לפי סטטוס
+    return Math.round(STICKY_CAPACITY * ({high:1.0, med:0.6, low:0.25}[sev] || 0.15));
+  }
+
+  // שקית — ממוצע זריקה = 30,000
+  // אם מעל שבועיים ולא עודכן = כנראה מלאה
+  if (days >= 14) return 28000;
+  if (sev === 'high') return 30000;
+  if (sev === 'med')  return 15000;
+  // low = לפי ימים (ממוצע 2,000/יום)
+  return Math.min(Math.round(days * 2000), 25000);
 }
 
 // ── GROUP VOLUNTEER PICKUP ────────────────────────────────────────────────
@@ -2318,25 +2336,43 @@ function renameStation(){
 async function saveRename(){
   const newName=document.getElementById('rename-input')?.value?.trim();
   if(!newName){showToast('⚠️ שם ריק');return;}
+  // שמור ב-localStorage מיידית
+  const localNames=JSON.parse(localStorage.getItem('station_names')||'{}');
+  localNames[currentStationId]=newName;
+  localStorage.setItem('station_names',JSON.stringify(localNames));
+  // עדכן db מיידית
+  const st=db.stations.find(s=>s.id===currentStationId);
+  if(st) st.name=newName;
+  // שלח ל-GAS
   await postData({rowType:'stationName',id:currentStationId,parentId:'',name:newName,lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'',extra:''});
   document.getElementById('rename-sheet')?.remove();
-  document.getElementById('ss-title').textContent=newName;
+  const ssTitle=document.getElementById('ss-title');
+  if(ssTitle)ssTitle.textContent=newName;
   document.getElementById('so-title').textContent=newName;
+  renderStationsList(); renderMap();
   showToast('✅ שם עודכן');
-  setTimeout(loadData,1500);
 }
 async function toggleStationStatus(action){
+  const applyStatus = async (newStatus) => {
+    await postData({rowType:'stationStatus',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:newStatus,extra:''});
+    // עדכון מיידי local — לא מחכים לשרת
+    const st=db.stations.find(s=>s.id===currentStationId);
+    if(st) st.status=newStatus;
+    const loc=JSON.parse(localStorage.getItem('station_status')||'{}');
+    loc[currentStationId]=newStatus;
+    localStorage.setItem('station_status',JSON.stringify(loc));
+    closeOverlay('station-options'); closeOverlay('station');
+    renderMap(); renderStationsList();
+    const msgs={deleted:'🗑️ עמדה הוסתרה',suspended:'⏸️ עמדה הושהתה',active:'✅ עמדה הופעלה'};
+    showToast(msgs[newStatus]||'✅ עודכן');
+    setTimeout(loadData,2000);
+  };
   if(action==='delete'){
     const station=db.stations.find(s=>s.id===currentStationId);
-    showConfirm('🗑️ הסתרת עמדה',`להסתיר את "${station?station.name:'העמדה'}"?`,async()=>{
-      await postData({rowType:'stationStatus',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'deleted',extra:''});
-      closeOverlay('station-options');closeOverlay('station');showToast('🗑️ עמדה הוסתרה');setTimeout(loadData,1500);
-    });return;
+    showConfirm('🗑️ הסתרת עמדה',`להסתיר את "${station?station.name:'העמדה'}"?`,()=>applyStatus('deleted'));
+    return;
   }
-  const newStatus=action==='suspend'?'suspended':'active';
-  await postData({rowType:'stationStatus',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:newStatus,extra:''});
-  closeOverlay('station-options');closeOverlay('station');
-  showToast(action==='suspend'?'⏸️ עמדה הושהתה':'✅ עמדה הופעלה');setTimeout(loadData,1500);
+  applyStatus(action==='suspend'?'suspended':'active');
 }
 
 function deleteTrapChoice(choice){
@@ -2359,8 +2395,7 @@ async function saveUpdateForTrash(){
 
 // ── PERMANENT DELETE FUNCTIONS ──
 async function permanentDelete(sheetName, rowId) {
-  const url = `${SCRIPT_URL}?action=deleteRow&sheet=${sheetName}&id=${rowId}&t=${Date.now()}`;
-  await fetch(url, { method: 'GET', mode: 'no-cors' });
+  await postData({rowType:'deleteRow', sheetName:sheetName, id:rowId, parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'',extra:''});
 }
 
 async function permanentDeleteTrap(trapId, trapName) {
@@ -2373,8 +2408,19 @@ async function permanentDeleteTrap(trapId, trapName) {
 
 function confirmPermanentDeleteStation() {
   const station = db.stations.find(s => s.id === currentStationId);
-  showConfirm('⚠️ מחיקה לצמיתות', `למחוק את "${station?.name}" + כל המלכודות לצמיתות? פעולה זו אינה הפיכה!`, async () => {
-    await permanentDeleteStation(currentStationId);
+  showConfirm('⚠️ מחיקה לצמיתות', `למחוק את "${station?.name}" + כל המלכודות? פעולה זו אינה הפיכה!`, async () => {
+    // שמור ב-localStorage מיידית
+    const localStatus = JSON.parse(localStorage.getItem('station_status')||'{}');
+    localStatus[currentStationId] = 'perm_deleted';
+    localStorage.setItem('station_status', JSON.stringify(localStatus));
+    // עדכן db מיידית
+    db.stations = db.stations.filter(s => s.id !== currentStationId);
+    db.traps.filter(t => t.stationId === currentStationId).forEach(t => t.status = 'deleted');
+    closeOverlay('station-options'); closeOverlay('station');
+    renderMap(); renderStationsList();
+    showToast('🗑️ עמדה נמחקה לצמיתות');
+    // נסה גם ב-GAS (אם מוגדר)
+    await permanentDelete('stations', currentStationId);
   });
 }
 
