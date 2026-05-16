@@ -918,7 +918,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw7oIqYYheN-waiQQDzVIvSpVhIFY7qtLMFsKR8GtkgQqJI3aqCdMnIubc9MmQf4Iz05g/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz00cvPOLtHggVbyPsfn67ORXFlw7n9E4rRlBr6ALik5wKCQ-mSHIEN46vfPYhbo7CP/exec';
 const apiKey = ""; 
 let db={stations:[],traps:[],updates:[],reports:[],volunteers:[]};
 let map,pinMaps={},pinData={};
@@ -2193,7 +2193,7 @@ async function saveStationGroup() {
   localGroups[currentStationId] = group;
   localStorage.setItem('station_groups', JSON.stringify(localGroups));
   // שלח לשרת גם (extra field)
-  await postData({rowType:'stationGroup',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'',extra:group});
+  await postData({rowType:'stationGroup',id:currentStationId,parentId:'',name:'',lat:'',lng:'',severity:'',note:group,photoUrl:'',reporter:'',status:'',extra:''});
   document.getElementById('group-sheet')?.remove();
   // עדכן את db.stations מיידית
   const st = db.stations.find(s=>s.id===currentStationId);
@@ -2254,7 +2254,14 @@ async function saveTrap(){
   await postData({rowType:'trap',id:'TR'+Date.now(),parentId:currentStationId,name,lat:station?station.lat:'',lng:station?station.lng:'',severity:sev,note:_trapType,photoBase64,stationName:station?station.name:'',reporter,status:'active',extra:dateVal});
   showToast('✅ מלכודת נוספה!');closeOverlay('add-trap');
   document.getElementById('at-reporter').value='';btn.disabled=false;btn.textContent='🪤 הוסף מלכודת';
-  setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
+  const savedStationId = currentStationId;
+  const prevCb = window._cb;
+  window._cb = function(raw) {
+    if(prevCb) prevCb(raw);
+    setTimeout(()=>openStationSite(savedStationId), 100);
+    window._cb = prevCb;
+  };
+  setTimeout(loadData, 300);
 }
 
 function openAddUpdate(trapId,trapName){
