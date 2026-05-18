@@ -524,6 +524,13 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div id="page-list" class="page">
   <div class="page-pad">
     <div class="page-title">עמדות בשטח</div>
+    <div style="position:relative;margin-bottom:10px">
+      <input id="station-search" class="fi" placeholder="🔍 חפש עמדה, מלכודת, קבוצה..."
+        oninput="renderStationsList()"
+        style="padding-right:36px;background:var(--card2)">
+      <span id="search-clear" onclick="document.getElementById('station-search').value='';renderStationsList()"
+        style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);font-size:16px;display:none">✕</span>
+    </div>
     <div id="stations-filter-bar" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;margin-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch">
       <button class="filter-btn active" onclick="setStationFilter('groups',this)">🏷️ לפי אזור</button>
       <button class="filter-btn" onclick="setStationFilter('full',this)">🔴 מלאות</button>
@@ -1209,10 +1216,16 @@ async function markReportDone(reportId) {
 }
 
 async function deleteReport(reportId) {
-  await permanentDelete('reports', reportId);
-  map.closePopup();
-  showToast('🗑️ דיווח נמחק');
-  setTimeout(loadData, 1500);
+  showConfirm('🗑️ מחיקת דיווח', 'למחוק את הדיווח לצמיתות?', async () => {
+    // עדכון מיידי
+    db.reports = db.reports.filter(r => r.id !== reportId);
+    renderMap();
+    renderReportsHistory();
+    map.closePopup();
+    showToast('🗑️ דיווח נמחק');
+    // שלח ל-GAS
+    await postData({rowType:'deleteRow', sheetName:'reports', id:reportId, parentId:'', name:'', lat:'', lng:'', severity:'', note:'', photoUrl:'', reporter:'', status:'', extra:''});
+  });
 }
 
 function locateMe() {
@@ -1678,6 +1691,12 @@ function renderStationsList(){
   const el=document.getElementById('stations-list');
   if(!db.stations.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📍</div><div>אין עמדות — הוסף מהמפה</div></div>`;return;}
 
+  // חיפוש
+  const searchEl = document.getElementById('station-search');
+  const q = (searchEl?.value||'').trim().toLowerCase();
+  const clearBtn = document.getElementById('search-clear');
+  if(clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
   const getEffectiveSev = t => {
     const u = db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
     return u?.severity || t.severity || 'low';
@@ -1695,6 +1714,33 @@ function renderStationsList(){
     const grpTag=grp?`<span class="badge" style="background:rgba(56,189,248,0.1);color:var(--accent);border:1px solid rgba(56,189,248,0.25)">🏷️ ${grp}</span>`:'';
     return `<div class="gcard ${inactive?'status-inactive':''}" onclick="openStationSite('${station.id}')"><div class="gcard-row"><div class="s-dot" style="background:${color}"></div><div class="s-info"><div class="s-name">${station.name}${inactive?' <span style="font-size:11px;color:var(--muted)">(מושהית)</span>':''}</div><div class="s-meta">${new Date(station.date).toLocaleDateString('he-IL')} · ${station.reporter||''}</div><div class="s-badges">${grpTag}${traps.length?`<span class="badge bg-blue">🪤 ${traps.length}</span>`:'<span class="badge bg-grey">אין</span>'}${urgent?`<span class="badge bg-red">🔴 ${urgent} דחוף</span>`:''}${soon?`<span class="badge bg-yellow">🟡 ${soon} בקרוב</span>`:''}</div></div><div class="s-arrow">›</div></div></div>`;
   };
+
+  // אם יש חיפוש — מצב חיפוש
+  if (q) {
+    const results = [];
+    db.stations.forEach(station => {
+      const grp = getStationGroup(station.id);
+      const stationMatch = station.name.toLowerCase().includes(q) || grp.toLowerCase().includes(q);
+      const stationTraps = db.traps.filter(t=>t.stationId===station.id&&t.status==='active');
+      const trapMatches = stationTraps.filter(t=>t.name.toLowerCase().includes(q));
+
+      if (stationMatch) {
+        results.push({type:'station', station, highlight: grp.toLowerCase().includes(q) && !station.name.toLowerCase().includes(q) ? `🏷️ ${grp}` : ''});
+      } else if (trapMatches.length) {
+        results.push({type:'station', station, highlight: `🪤 ${trapMatches.map(t=>t.name).join(', ')}`});
+      }
+    });
+
+    if (!results.length) {
+      el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div>לא נמצאו תוצאות עבור "${q}"</div></div>`;
+      return;
+    }
+    el.innerHTML = `<div style="font-size:12px;color:var(--muted);margin-bottom:10px">נמצאו ${results.length} תוצאות</div>` +
+      results.map(({station, highlight}) =>
+        stationCard(station) + (highlight ? `<div style="font-size:11px;color:var(--accent);margin:-8px 0 8px 12px">↳ ${highlight}</div>` : '')
+      ).join('');
+    return;
+  }
 
   const active = db.stations.filter(s=>s.status==='active');
 
@@ -2634,7 +2680,7 @@ async function postData(data) {
   try {
     const photoBase64 = data.photoBase64 || '';
     const payload = {
-      rowType: data.rowType, id: data.id, parentId: data.parentId, name: data.name, lat: data.lat, lng: data.lng, severity: data.severity, note: data.note, reporter: data.reporter, status: data.status, extra: data.extra, trapDate: data.trapDate, stationName: data.stationName, photoUrl: data.photoUrl || ''
+      rowType: data.rowType, id: data.id, parentId: data.parentId, name: data.name, lat: data.lat, lng: data.lng, severity: data.severity, note: data.note, reporter: data.reporter, status: data.status, extra: data.extra, trapDate: data.trapDate, stationName: data.stationName, photoUrl: data.photoUrl || '', sheetName: data.sheetName || '', phone: data.phone || ''
     };
     if (photoBase64 && photoBase64.length > 100) {
       console.log('Uploading photo to Cloudinary...');
