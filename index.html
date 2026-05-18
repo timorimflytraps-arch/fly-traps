@@ -578,8 +578,11 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div id="page-info" class="page">
   <div class="page-pad">
     <div class="page-title">מדריך שימוש</div>
-    <button onclick="startTour()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-dk));color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:18px;box-shadow:0 4px 16px rgba(56,189,248,0.35)">
+    <button onclick="startTour()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-dk));color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(56,189,248,0.35)">
       🎯 סיור מודרך באפליקציה
+    </button>
+    <button onclick="open106Sheet()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:18px;box-shadow:0 4px 16px rgba(239,68,68,0.35)">
+      📋 דווח למוקד 106 — מועצה אזורית באר טוביה
     </button>
     <div class="instr-card">
       <div class="instr-card-title">🗺️ הוספת עמדה חדשה</div>
@@ -710,6 +713,31 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
   </div>
 </div>
 
+<div class="overlay" id="overlay-106">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <div style="font-size:24px">📋</div>
+      <div>
+        <div class="sheet-title" style="margin-bottom:2px">פנייה למוקד 106</div>
+        <div style="font-size:12px;color:var(--muted)">נשלח ישירות לשפ"ה — מועצה אזורית באר טוביה</div>
+      </div>
+    </div>
+    <div id="form-106-body">
+      <div class="fg"><label class="fl">שם מלא (חובה)</label><input class="fi" id="f106-name" placeholder="שם פרטי ומשפחה"></div>
+      <div class="fg"><label class="fl">טלפון נייד (חובה)</label><input class="fi" id="f106-phone" type="tel" placeholder="05X-XXXXXXX"></div>
+      <div class="fg"><label class="fl">תיאור הבעיה</label><textarea class="fi" id="f106-note" rows="4" placeholder="תאר את הבעיה..."></textarea></div>
+      <div id="f106-loc-bar" style="background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px">
+        <span>📍</span><span id="f106-loc-text">מיקום לא צורף</span>
+        <button onclick="attach106Location()" style="margin-right:auto;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:Heebo,sans-serif;font-size:12px;cursor:pointer">📍 צרף מיקום</button>
+      </div>
+      <button class="btn" onclick="submit106()" id="f106-submit" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:900;font-size:15px">📨 שלח פנייה למועצה</button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">הפנייה תישלח למחלקת שפ"ה: sviva@beer-tuvia.org.il</div>
+    </div>
+    <button class="btn btn-grey" onclick="closeOverlay('106')">ביטול</button>
+  </div>
+</div>
+
 <div class="overlay" id="overlay-report">
   <div class="sheet">
     <div class="handle"></div>
@@ -743,6 +771,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="rep-reporter" placeholder="ישראל ישראלי"></div>
     <div class="fg"><label class="fl">מייל לעדכון (אופציונלי)</label><input type="email" class="fi" id="rep-email" placeholder="example@gmail.com"><div style="font-size:11px;color:var(--muted);margin-top:4px">נשלח מייל אוטומטי כשהדיווח יטופל</div></div>
     <button class="btn btn-yellow" onclick="saveReport()" id="rep-save-btn">🚨 שלח דיווח</button>
+    <button class="btn" onclick="open106Sheet(document.getElementById('rep-note').value, pinData['rep'])" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;margin-top:6px;font-weight:800">📋 דווח גם למוקד 106 — מועצה</button>
     <button class="btn btn-grey" onclick="closeOverlay('report')">ביטול</button>
   </div>
 </div>
@@ -918,7 +947,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz00cvPOLtHggVbyPsfn67ORXFlw7n9E4rRlBr6ALik5wKCQ-mSHIEN46vfPYhbo7CP/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz4x1Ry7tK6z192mJ5TwyzXrlCPyFe_gmQRACHQxRz7go8Sac5a2gVOKWATUN8z-2A1iQ/exec';
 const apiKey = ""; 
 let db={stations:[],traps:[],updates:[],reports:[],volunteers:[]};
 let map,pinMaps={},pinData={};
@@ -1323,6 +1352,102 @@ let _watchId = null;
 let _locCircle = null;
 let _locTracking = false;
 
+// ── מוקד 106 ────────────────────────────────────────────────────────────
+// ── מוקד 106 — טופס מובנה ────────────────────────────────────────────────
+let _106loc = null;
+let _106photoUrl = '';
+
+function open106FromMap(note, loc, photoUrl) {
+  _106loc = loc || null;
+  _106photoUrl = photoUrl || '';
+  document.getElementById('f106-name').value = '';
+  document.getElementById('f106-phone').value = '';
+  document.getElementById('f106-note').value = note || '';
+  document.getElementById('f106-submit').disabled = false;
+  document.getElementById('f106-submit').textContent = '📨 שלח פנייה למועצה';
+  update106LocBar();
+  // הצג תמונה אם קיימת
+  let photoBar = document.getElementById('f106-photo-bar');
+  if (!photoBar) {
+    photoBar = document.createElement('div');
+    photoBar.id = 'f106-photo-bar';
+    photoBar.style.cssText = 'margin-bottom:12px';
+    document.getElementById('f106-loc-bar').after(photoBar);
+  }
+  if (_106photoUrl) {
+    photoBar.innerHTML = `<div style="font-size:12px;color:var(--muted);margin-bottom:6px">📷 תמונה מהדיווח (תצורף אוטומטית)</div>
+      <img src="${_106photoUrl}" style="width:100%;border-radius:10px;max-height:140px;object-fit:cover">`;
+  } else {
+    photoBar.innerHTML = '';
+  }
+  map.closePopup();
+  openOverlay('106');
+}
+
+function open106Sheet(note, loc) {
+  open106FromMap(
+    note || 'שקיות מלכודות זבובים הונחו ליד הפח אך לא פונו על ידי שירות הפינוי',
+    loc || null,
+    ''
+  );
+}
+
+function attach106Location() {
+  if (!navigator.geolocation) { showToast('GPS לא זמין'); return; }
+  const btn = document.querySelector('#f106-loc-bar button');
+  if (btn) { btn.textContent = '⏳ מאתר...'; btn.disabled = true; }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      _106loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      update106LocBar();
+      showToast('✅ מיקום צורף');
+      if (btn) { btn.textContent = '✅ צורף'; btn.disabled = false; }
+    },
+    () => {
+      showToast('❌ לא ניתן לאתר מיקום');
+      if (btn) { btn.textContent = '📍 צרף מיקום'; btn.disabled = false; }
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+}
+
+function update106LocBar() {
+  const el = document.getElementById('f106-loc-text');
+  if (!el) return;
+  if (_106loc) {
+    el.textContent = `${_106loc.lat.toFixed(5)}, ${_106loc.lng.toFixed(5)}`;
+    el.style.color = 'var(--live)';
+  } else {
+    el.textContent = 'מיקום לא צורף';
+    el.style.color = 'var(--muted)';
+  }
+}
+
+async function submit106() {
+  const name  = document.getElementById('f106-name').value.trim();
+  const phone = document.getElementById('f106-phone').value.trim();
+  const note  = document.getElementById('f106-note').value.trim();
+  if (!name)  { showToast('⚠️ נא להכניס שם');    return; }
+  if (!phone) { showToast('⚠️ נא להכניס טלפון'); return; }
+  const btn = document.getElementById('f106-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spin"></span> שולח...';
+  await postData({
+    rowType: 'send106',
+    id: 'R106-' + Date.now(),
+    parentId: '', name, phone,
+    lat:  _106loc ? _106loc.lat  : '',
+    lng:  _106loc ? _106loc.lng  : '',
+    note: note || 'מטרד זבובים — שקיות מלכודות לא פונו',
+    photoUrl: _106photoUrl || '',
+    severity: 'high',
+    reporter: name, status: 'sent', extra: 'sviva'
+  });
+  closeOverlay('106');
+  showToast('✅ הפנייה נשלחה למועצה!');
+  haptic('success');
+}
+
 function doLocate() {
   const btn = document.getElementById('locate-btn');
 
@@ -1412,7 +1537,7 @@ function parseSheets(raw){
   db.stations=db.stations.filter(s=>s.status!=='perm_deleted');
   db.traps=pr(raw.traps,r=>({id:String(r[2]),stationId:String(r[3]),name:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],status:r[11]||'active',date:r[0],extra:r[12]}));
   db.updates=pr(raw.updates,r=>({id:String(r[2]),trapId:String(r[3]),severity:r[7],note:r[8],photoUrl:r[9],reporter:r[10],date:r[0]}));
-  db.reports=pr(raw.reports,r=>({id:String(r[2]),email:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],subtype:r[12],note:r[8],reporter:r[10],status:r[11]||'active',date:r[0]}));
+  db.reports=pr(raw.reports,r=>({id:String(r[2]),email:r[4],lat:parseFloat(r[5]),lng:parseFloat(r[6]),severity:r[7],subtype:r[12],note:r[8],photoUrl:r[9]||'',reporter:r[10],status:r[11]||'active',date:r[0]}));
   db.volunteers=pr(raw.volunteers||[],r=>({id:String(r[2]),parentId:String(r[3]),name:r[4],severity:r[7],note:r[8],reporter:r[10],status:r[11]||'active',extra:r[12],date:r[0]}));
 }
 
@@ -1448,14 +1573,25 @@ function renderMap(){
   db.reports.filter(r=>!isNaN(r.lat)&&r.status!=='done'&&r.status!=='deleted').forEach(rep=>{
     const color=rep.severity==='high'?'#ef4444':rep.severity==='med'?'#f59e0b':'#10b981';
     const repMarker = L.circleMarker([rep.lat,rep.lng],{radius:8,fillColor:color,color:'#fff',weight:2,fillOpacity:0.85}).addTo(layerGroups.reports);
-    repMarker.bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif;min-width:160px">
+    const rep106note = `דיווח על מפגע זבובים בתימורים.
+סוג: ${rep.subtype==='bag'?'שקית מלכודת מלאה':'ריכוז זבובים'}
+תאריך דיווח: ${new Date(rep.date).toLocaleDateString('he-IL')}
+${rep.note?'תיאור: '+rep.note:''}
+${rep.reporter?'מדווח: '+rep.reporter:''}
+
+אנשי הפינוי לא אספו את המלכודות שהונחו ליד הפח. מבקש טיפול דחוף.`;
+    const rep106loc = rep.lat&&rep.lng?{lat:Number(rep.lat),lng:Number(rep.lng)}:null;
+    const rep106photo = rep.photoUrl||'';
+    repMarker.bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif;min-width:170px">
       <strong>${rep.subtype==='bag'?'🛍️ שקית':'🚨 זבובים'}</strong><br>
       <small style="color:#888">${new Date(rep.date).toLocaleDateString('he-IL')}</small>
       ${rep.note?`<br><span style="font-size:12px">${rep.note}</span>`:''}
       ${rep.reporter?`<br><small>👤 ${rep.reporter}</small>`:''}
-      <br><div style="display:flex;gap:6px;margin-top:8px">
-        <button onclick="markReportDone('${rep.id}')" style="flex:1;padding:6px;background:#10b981;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">✅ טופל</button>
-        <button onclick="deleteReport('${rep.id}')" style="flex:1;padding:6px;background:#ef4444;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️ מחק</button>
+      ${rep106photo?`<br><img src="${rep106photo}" style="width:100%;border-radius:6px;margin-top:6px;max-height:100px;object-fit:cover">`:''}
+      <br><div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap">
+        <button onclick="markReportDone('${rep.id}')" style="flex:1;padding:6px;background:#10b981;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-width:50px">✅ טופל</button>
+        <button onclick="open106FromMap(${JSON.stringify(rep106note).replace(/"/g,'&quot;')},${rep106loc?`{lat:${rep106loc.lat},lng:${rep106loc.lng}}`:'null'},'${rep106photo}')" style="flex:1;padding:6px;background:#ef4444;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-width:50px">📋 106</button>
+        <button onclick="deleteReport('${rep.id}')" style="padding:6px 8px;background:#475569;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️</button>
       </div>
     </div>`);
   });
@@ -1630,7 +1766,10 @@ function renderReportsHistory() {
   el.innerHTML = all.map(r => {
     const isDone = r.status === 'done';
     const dateStr = new Date(r.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const safeNote = (r.note||'').replace(/'/g,"'").replace(/"/g,'&quot;');
+    const locArg = r.lat&&r.lng ? `,{lat:${r.lat},lng:${r.lng}}` : ',null';
     return `<div class="gcard" style="${isDone?'opacity:0.55':''}">
+      ${r.photoUrl?`<img src="${r.photoUrl}" style="width:100%;border-radius:10px;max-height:160px;object-fit:cover;margin-bottom:10px;cursor:pointer" onclick="openLightbox('${r.photoUrl}','${typeLabel[r.subtype]||'דיווח'}')" onerror="this.style.display='none'">`:'' }
       <div class="gcard-body" style="display:flex;align-items:flex-start;gap:10px">
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">
@@ -1643,6 +1782,7 @@ function renderReportsHistory() {
         </div>
         <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
           ${!isDone?`<button onclick="markReportDone('${r.id}')" style="background:var(--live);border:none;border-radius:8px;padding:6px 10px;color:#0f172a;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">✅ טופל</button>`:''}
+          <button onclick="open106FromMap('${safeNote}'${locArg},'${r.photoUrl||''}')" style="background:#ef4444;border:none;border-radius:8px;padding:6px 10px;color:#fff;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">📋 106</button>
           <button onclick="deleteReport('${r.id}')" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--danger);font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️</button>
         </div>
       </div>
