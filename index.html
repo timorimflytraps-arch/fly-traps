@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#38bdf8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="מלכודות תימורים">
+  <link rel="apple-touch-icon" href="/icon-192.png">
 <title>מלכודות תימורים</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -588,6 +594,9 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <button onclick="startTour()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-dk));color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(56,189,248,0.35)">
       🎯 סיור מודרך באפליקציה
     </button>
+    <button id="pwa-install-btn" onclick="installPWA()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(16,185,129,0.35)">
+      🪰 הוסף למסך הבית
+    </button>
     <button onclick="open106Sheet()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:18px;box-shadow:0 4px 16px rgba(239,68,68,0.35)">
       📋 דווח למוקד 106 — מועצה אזורית באר טוביה
     </button>
@@ -851,7 +860,14 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
   </div>
 </div>
 
-<!-- VOL STATION PICK (MAP MODE) -->
+<!-- GOVMAP OVERLAY -->
+<div id="govmap-overlay" style="display:none;position:absolute;inset:0;z-index:700;flex-direction:column;background:#000">
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px)">
+    <span style="color:#fff;font-weight:700;font-size:14px;font-family:Heebo,sans-serif">🗺️ GovMap — תימורים</span>
+    <button onclick="toggleGovMap()" style="margin-right:auto;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-family:Heebo,sans-serif;font-size:12px;cursor:pointer">✕ סגור</button>
+  </div>
+  <iframe id="govmap-frame" src="" style="flex:1;border:none;width:100%;height:100%" allowfullscreen></iframe>
+</div>
 <div class="overlay" id="overlay-vol-station-pick">
   <div class="sheet">
     <div class="handle"></div>
@@ -1459,6 +1475,24 @@ async function submit106() {
   closeOverlay('106');
   showToast('✅ הפנייה נשלחה למועצה!');
   haptic('success');
+}
+
+let _govmapOpen = false;
+function toggleGovMap(btn) {
+  const overlay = document.getElementById('govmap-overlay');
+  const frame = document.getElementById('govmap-frame');
+  const b = btn || document.getElementById('govmap-btn');
+  _govmapOpen = !_govmapOpen;
+  if (_govmapOpen) {
+    // מרכז על תימורים — קואורדינטות ITM
+    frame.src = 'https://www.govmap.gov.il?c=177124.21%2C624709.54&b=1&z=11&q=%D7%AA%D7%99%D7%9E%D7%95%D7%A8%D7%99%D7%9D&bb=1&zb=1&rb=1&in=1';
+    overlay.style.display = 'flex';
+    if(b){b.style.background='var(--accent)';b.style.color='#fff';}
+  } else {
+    overlay.style.display = 'none';
+    frame.src = '';
+    if(b){b.style.background='';b.style.color='';}
+  }
 }
 
 function doLocate() {
@@ -2910,6 +2944,57 @@ function endTour(){
   const nav=document.querySelector('.nav-item');if(nav)navigate('map',nav);
   showToast('✅ סיור הסתיים');
 }
+
+// ── PWA Install ─────────────────────────────────────────────────────────
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); _pwaPrompt = e;
+  const btn = document.getElementById('pwa-install-btn');
+  if(btn) btn.style.display = 'block';
+});
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwa-install-btn');
+  if(btn) btn.style.display = 'none';
+  showToast('🪰 האפליקציה הותקנה!');
+});
+function installPWA() {
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(r => { if(r.outcome==='accepted') showToast('🪰 מותקן!'); _pwaPrompt=null; });
+    return;
+  }
+  // iOS / Safari
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const sheet = document.createElement('div');
+  sheet.style.cssText='position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
+  const steps = isIOS
+    ? `<div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px">
+          <span style="font-size:24px">1️⃣</span><span>לחץ על כפתור <strong>שתף</strong> <span style="font-size:18px">⎙</span> בתחתית הדפדפן</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px">
+          <span style="font-size:24px">2️⃣</span><span>בחר <strong>"הוסף למסך הבית"</strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px">
+          <span style="font-size:24px">3️⃣</span><span>לחץ <strong>"הוסף"</strong> ✅</span>
+        </div>
+      </div>`
+    : `<div style="padding:14px;background:var(--card2);border-radius:10px;text-align:center">
+        בתפריט הדפדפן ⋮ בחר <strong>"הוסף למסך הבית"</strong>
+      </div>`;
+  sheet.innerHTML=`<div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
+    <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
+    <div style="font-size:28px;text-align:center;margin-bottom:8px">🪰</div>
+    <div style="font-size:17px;font-weight:900;text-align:center;margin-bottom:4px">הוסף למסך הבית</div>
+    <div style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px">מלכודות זבובים — תימורים</div>
+    ${steps}
+    <button onclick="this.closest('div[style*=fixed]').remove()" style="width:100%;padding:13px;margin-top:16px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer">סגור</button>
+  </div>`;
+  sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
+  document.body.appendChild(sheet);
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 window.addEventListener('load',()=>{
   if(window.lucide)lucide.createIcons();
