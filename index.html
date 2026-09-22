@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#38bdf8">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/icon-192.png">
 <title>מלכודות תימורים</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/lucide@1.47.0/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
@@ -402,7 +402,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 .mp-confirm{width:100%;padding:14px;border-radius:var(--radius-sm);border:none;background:var(--accent-grad);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 22px -8px rgba(99,102,241,0.55)}
 
 .ai-box{background:linear-gradient(135deg, rgba(168,85,247,0.10), rgba(99,102,241,0.08));border:1px solid rgba(168,85,247,0.25);border-radius:14px;padding:14px 14px 14px 40px;margin-bottom:14px;position:relative;overflow:hidden;line-height:1.55}
-.ai-box::before{content:'✨';position:absolute;left:12px;top:12px;opacity:0.55;font-size:20px}
+.ai-box::before{content:'[[icon:sparkles]]';position:absolute;left:12px;top:12px;opacity:0.55;font-size:20px}
 .vol-list-item{background:var(--card2);padding:11px;border-radius:12px;margin-bottom:8px;display:flex;align-items:center;gap:11px;cursor:pointer;border:1px solid var(--border);transition:background .15s, border-color .15s}
 .vol-list-item:hover{border-color:var(--border-strong)}
 
@@ -458,16 +458,40 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card-solid) !important;color:var(--text) !important;box-shadow:var(--shadow-lg) !important;border-radius:14px !important}
 .leaflet-popup-content{font-family:'Heebo',sans-serif !important;font-size:13px !important}
 </style>
+<style>
+[hidden]{display:none!important}
+:root{--muted:#a1adc4;--radius:16px}
+body.light{--muted:#52627a;--bg-grad:linear-gradient(180deg,#f6f8fc,#edf3f8);--border:rgba(15,23,42,.14)}
+button,input,select,textarea{font:inherit}button{touch-action:manipulation}button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.fi{font-size:16px;min-height:46px}.sheet-close,.theme-btn,.ctrl-btn,.filter-btn{min-height:44px;min-width:44px}
+.sheet,.sheet-full{overscroll-behavior:contain;padding-bottom:max(28px,env(safe-area-inset-bottom));max-height:92dvh}
+.sheet-title{line-height:1.5}.page-intro{color:var(--text2);font-size:14px;margin:-8px 0 18px}
+.bulk-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}.bulk-actions .btn{margin:0;font-size:14px;min-height:54px}
+.lucide,.ui-icon{width:19px;height:19px;vertical-align:middle;display:inline-block;flex-shrink:0;stroke-width:1.8}.ui-icon{margin-inline:2px}
+.map-controls{max-width:calc(100% - 24px);flex-wrap:wrap;gap:6px}.ctrl-btn{display:inline-flex;align-items:center;gap:5px}
+.bulk-sheet{max-width:720px;padding:20px;scrollbar-gutter:stable}.bulk-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.bulk-header h2{font-size:22px}
+.bulk-help{font-size:14px;line-height:1.7;color:var(--text2);margin-bottom:16px}.bulk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.bulk-grid label,.bulk-reporter{display:block;font-size:14px;font-weight:600}.bulk-grid .fi,.bulk-reporter .fi{margin-top:5px;width:100%}
+.bulk-select-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}.bulk-select-actions button{background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:9px;min-height:44px;padding:7px 12px}
+#bulk-count{margin-inline-start:auto;color:var(--accent);font-weight:700}.bulk-list{border:1px solid var(--border);border-radius:12px;max-height:32dvh;overflow:auto;margin-bottom:16px}.bulk-row{display:flex;align-items:center;gap:12px;padding:13px;min-height:64px;border-bottom:1px solid var(--border);cursor:pointer}.bulk-row:last-child{border-bottom:0}.bulk-row:has(input:checked){background:color-mix(in srgb,var(--accent) 12%,transparent)}.bulk-row input{width:22px;height:22px;accent-color:var(--accent);flex-shrink:0}.bulk-row strong,.bulk-row small{display:block}.bulk-row small{color:var(--text2);font-size:13px;margin-top:4px}.bulk-empty{padding:24px;text-align:center;color:var(--text2)}
+.bulk-footer{position:sticky;bottom:-20px;padding:12px 0 4px;background:var(--card-solid);border-top:1px solid var(--border);margin-top:16px}.bulk-footer .btn{margin:0;min-height:48px}.bulk-warning{padding:12px;background:color-mix(in srgb,var(--warn) 12%,transparent);border:1px solid var(--warn);border-radius:10px;line-height:1.7;margin:12px 0}.bulk-summary{padding:12px 28px;max-height:28dvh;overflow:auto;line-height:1.9}.bulk-step{padding:10px;border-bottom:1px solid var(--border);line-height:1.6}.bulk-step small{display:block;color:var(--text2)}#bulk-progress{white-space:pre-line;line-height:1.8}#bulk-progress:empty{display:none}
+#toast{max-width:calc(100vw - 24px);white-space:normal;text-align:center}#last-sync{cursor:pointer}.trap-header[role=button]{min-height:56px}.nav-item{min-height:48px}
+.bulk-row label{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer}.bulk-sev{flex-shrink:0;width:auto;min-height:40px;padding:6px 10px;font-size:13px;margin:0}.bulk-row:not(:has(input:checked)) .bulk-sev{display:none}.bulk-sev.missing{border-color:var(--danger)}.bulk-state{margin-bottom:14px}.bulk-state .fl{display:block;font-size:14px;font-weight:600;margin-bottom:6px}.bulk-state .sev-group{grid-template-columns:repeat(4,1fr)}.bulk-state small{display:block;color:var(--text2);font-size:12px;margin-top:6px}.sev-btn.sel-none{border-color:var(--text2);background:var(--card2);color:var(--text);box-shadow:0 0 0 3px rgba(148,163,184,0.18)}.bulk-bar{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin:10px 0}.bulk-bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s ease}.bulk-bar[hidden]{display:none}
+@media(max-width:480px){.bulk-state .sev-group{grid-template-columns:1fr 1fr}.bulk-actions,.bulk-grid{grid-template-columns:1fr}.bulk-grid.filters{grid-template-columns:1fr 1fr}.bulk-grid.filters label:first-child{grid-column:1/-1}.sheet,.sheet-full{padding-inline:16px}.bulk-sheet{padding:16px}.bulk-list{max-height:30dvh}.bulk-footer{bottom:-16px}.map-controls .ctrl-btn{font-size:12px}.header{padding-inline:12px}.brand-name{font-size:18px}.sync-text{font-size:10px}.page-pad{padding-inline:16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.page-pad{max-width:1120px;margin-inline:auto}.s-meta,.trap-meta,.tl-meta{font-size:13px}.s-name,.trap-name{font-size:16px}body.light .btn-primary{background:linear-gradient(135deg,#4338ca,#0369a1)}
+
+</style>
 </head>
 <body>
 <header class="header">
   <div class="brand">
-    <div class="brand-icon">🪰</div>
+    <div class="brand-icon">[[icon:bug]]</div>
     <div class="brand-name">תימורים <span>Pro</span></div>
   </div>
   <div class="header-right">
     <div class="sync-text" id="last-sync">טוען...</div>
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">[[icon:moon]]</button>
   </div>
 </header>
 
@@ -476,23 +500,23 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div id="map"></div>
     <div class="map-style-picker">
       <button class="map-style-btn" id="map-style-btn" onclick="toggleMapStyleMenu()">
-        <span id="map-style-icon">🛰️</span>
+        <span id="map-style-icon">[[icon:satellite]]</span>
         <span id="map-style-label">לוויין</span>
         <span style="opacity:0.5;font-size:10px">▾</span>
       </button>
       <div class="map-style-menu" id="map-style-menu">
-        <button class="map-style-opt active" id="opt-satellite" onclick="setMapStyle('satellite')">🛰️ לוויין</button>
-        <button class="map-style-opt" id="opt-topo" onclick="setMapStyle('topo')">🗺️ טופוגרפי ישראל</button>
-        <button class="map-style-opt" id="opt-streets" onclick="setMapStyle('streets')">🏙️ רחובות</button>
-        <button class="map-style-opt" id="opt-dark" onclick="setMapStyle('dark')">🌑 כהה</button>
-        <button class="map-style-opt" id="opt-osm" onclick="setMapStyle('osm')">🌍 OpenStreetMap</button>
+        <button class="map-style-opt active" id="opt-satellite" onclick="setMapStyle('satellite')">[[icon:satellite]] לוויין</button>
+        <button class="map-style-opt" id="opt-topo" onclick="setMapStyle('topo')">[[icon:map]] טופוגרפי ישראל</button>
+        <button class="map-style-opt" id="opt-streets" onclick="setMapStyle('streets')">[[icon:building-2]] רחובות</button>
+        <button class="map-style-opt" id="opt-dark" onclick="setMapStyle('dark')">[[icon:moon]] כהה</button>
+        <button class="map-style-opt" id="opt-osm" onclick="setMapStyle('osm')">[[icon:globe]] OpenStreetMap</button>
       </div>
     </div>
-    <div class="map-controls">
-      <button class="ctrl-btn" onclick="toggleLayer('stations',this)">📍 עמדות</button>
-      <button class="ctrl-btn" onclick="toggleLayer('reports',this)">🚨 מפגעים</button>
-      <button class="ctrl-btn" onclick="toggleLayer('volunteers',this)">🙋 מתנדבים</button>
-      <button class="ctrl-btn" onclick="startTour()" style="opacity:0.45;font-size:11px;padding:5px 10px;letter-spacing:0">❓ סיור</button>
+    <div class="map-controls"><button class="ctrl-btn" onclick="openBulk('add')"><i data-lucide="list-plus"></i> הוספה מרוכזת</button><button class="ctrl-btn" onclick="openBulk('dispose')"><i data-lucide="list-checks"></i> פינוי מרוכז</button>
+      <button class="ctrl-btn" onclick="toggleLayer('stations',this)">[[icon:map-pin]] עמדות</button>
+      <button class="ctrl-btn" onclick="toggleLayer('reports',this)">[[icon:siren]] מפגעים</button>
+      <button class="ctrl-btn" onclick="toggleLayer('volunteers',this)">[[icon:hand]] מתנדבים</button>
+      <button class="ctrl-btn" onclick="startTour()" style="opacity:0.45;font-size:11px;padding:5px 10px;letter-spacing:0">[[icon:circle-help]] סיור</button>
     </div>
     <div class="map-fabs">
       <!-- שמאל: התנדב + דיווח -->
@@ -515,7 +539,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div id="vol-map-ui">
       <div class="vmu-header">
         <div>
-          <div style="font-weight:900; font-size:15px; color:var(--text)">🗺️ בחר עמדות לפינוי</div>
+          <div style="font-weight:900; font-size:15px; color:var(--text)">[[icon:map]] בחר עמדות לפינוי</div>
           <div style="font-size:11px; color:var(--muted)">לחץ על עמדות אדומות/צהובות במפה</div>
         </div>
         <button onclick="exitVolMapMode()" class="btn-grey" style="padding:6px 12px; border-radius:8px; font-size:12px; margin:0; width:auto">ביטול</button>
@@ -530,20 +554,22 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div id="page-list" class="page">
   <div class="page-pad">
     <div class="page-title">עמדות בשטח</div>
+<p class="page-intro">תמונת מצב, תלייה ופינוי — מכל העמדות במקום אחד.</p>
+<div class="bulk-actions"><button class="btn btn-primary" onclick="openBulk('add')"><i data-lucide="list-plus"></i> הוספה למספר עמדות</button><button class="btn btn-grey" onclick="openBulk('dispose')"><i data-lucide="list-checks"></i> פינוי מלכודות מרוכז</button></div>
     <div style="position:relative;margin-bottom:10px">
-      <input id="station-search" class="fi" placeholder="🔍 חפש עמדה, מלכודת, קבוצה..."
+      <input id="station-search" class="fi" placeholder="חפש עמדה, מלכודת, קבוצה..."
         oninput="renderStationsList()"
         style="padding-right:36px;background:var(--card2)">
       <span id="search-clear" onclick="document.getElementById('station-search').value='';renderStationsList()"
-        style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);font-size:16px;display:none">✕</span>
+        style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);font-size:16px;display:none">[[icon:circle]]</span>
     </div>
     <div id="stations-filter-bar" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;margin-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch">
-      <button class="filter-btn active" onclick="setStationFilter('groups',this)">🏷️ לפי אזור</button>
-      <button class="filter-btn" onclick="setStationFilter('full',this)">🔴 מלאות</button>
-      <button class="filter-btn" onclick="setStationFilter('empty',this)">✅ ריקות</button>
-      <button class="filter-btn" onclick="setStationFilter('no-trap',this)">❌ ללא מלכודת</button>
-      <button class="filter-btn" onclick="setStationFilter('urgent',this)">⏰ דחוף</button>
-      <button class="filter-btn" onclick="setStationFilter('all',this)">📋 הכל</button>
+      <button class="filter-btn active" onclick="setStationFilter('groups',this)">[[icon:tag]] לפי אזור</button>
+      <button class="filter-btn" onclick="setStationFilter('full',this)">[[icon:circle-alert]] מלאות</button>
+      <button class="filter-btn" onclick="setStationFilter('empty',this)">[[icon:check]] ריקות</button>
+      <button class="filter-btn" onclick="setStationFilter('no-trap',this)">[[icon:x]] ללא מלכודת</button>
+      <button class="filter-btn" onclick="setStationFilter('urgent',this)">[[icon:alarm-clock]] דחוף</button>
+      <button class="filter-btn" onclick="setStationFilter('all',this)">[[icon:clipboard-list]] הכל</button>
     </div>
     <div id="stations-list"></div>
   </div>
@@ -558,19 +584,19 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <div class="stat-box"><div class="stat-val c-red" id="d-urgent">—</div><div class="stat-lbl">דחוף — מעל 14 יום</div></div>
       <div class="stat-box"><div class="stat-val c-yellow" id="d-soon">—</div><div class="stat-lbl">בקרוב — 10-14 יום</div></div>
       <div class="stat-box full" style="background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(56,189,248,0.07));border-color:rgba(167,139,250,0.3)">
-        <div class="stat-lbl" style="margin-bottom:4px">🪰 סה"כ זבובים נתפסו (הערכת AI)</div>
+        <div class="stat-lbl" style="margin-bottom:4px">[[icon:bug]] סה"כ זבובים נתפסו (הערכה)</div>
         <div class="stat-val c-purple" id="d-flies" style="font-size:28px">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:3px" id="d-flies-sub"></div>
       </div>
-      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">🔥 אזור הכי עמוס</div><div class="stat-sub" id="d-hotspot">טוען...</div></div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">[[icon:circle]] אזור הכי עמוס</div><div class="stat-sub" id="d-hotspot">טוען...</div></div>
       <div class="stat-box full" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),transparent)">
-        <div class="stat-lbl" style="margin-bottom:6px">🏆 מפנה מוביל</div>
+        <div class="stat-lbl" style="margin-bottom:6px">[[icon:trophy]] מפנה מוביל</div>
         <div class="stat-sub" id="d-top-vol" style="font-size:15px;font-weight:700">—</div>
       </div>
-      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:8px">📅 פעילות לפי חודש</div><div id="d-chart"></div></div>
-      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">🌡️ חודש הכי עמוס</div><div class="stat-sub" id="d-peak-month" style="font-size:15px;font-weight:700">—</div></div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:8px">[[icon:calendar]] פעילות לפי חודש</div><div id="d-chart"></div></div>
+      <div class="stat-box full"><div class="stat-lbl" style="margin-bottom:6px">[[icon:circle]] חודש הכי עמוס</div><div class="stat-sub" id="d-peak-month" style="font-size:15px;font-weight:700">—</div></div>
     </div>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:20px 0 10px">🚨 ארכיון דיווחים</div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:20px 0 10px">[[icon:siren]] ארכיון דיווחים</div>
     <div id="reports-history-list"></div>
   </div>
 </div>
@@ -582,8 +608,6 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <div class="page-title" style="margin:0">יומן אחריות</div>
       <button onclick="openOverlay('vol-type')" style="background:var(--live);border:none;border-radius:10px;padding:8px 14px;color:#0f172a;font-family:Heebo,sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ התנדב</button>
     </div>
-    <div class="ai-box" id="community-insight" style="display:none; font-size:13px; color:var(--text);"></div>
-    <button class="btn btn-sparkle" id="ai-insight-btn" onclick="generateCommunityInsight()">✨ סיכום מצב קהילתי AI</button>
     <div id="volunteers-list" style="margin-top:16px"></div>
   </div>
 </div>
@@ -592,38 +616,38 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
   <div class="page-pad">
     <div class="page-title">מדריך שימוש</div>
     <button onclick="startTour()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-dk));color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(56,189,248,0.35)">
-      🎯 סיור מודרך באפליקציה
+      [[icon:target]] סיור מודרך באפליקציה
     </button>
-    <button id="pwa-install-btn" onclick="installPWA()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(16,185,129,0.35)">
-      🪰 הוסף למסך הבית
+    <button id="pwa-install-btn" onclick="installPWA()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(16,185,129,0.35);display:none">
+      [[icon:bug]] הוסף למסך הבית
     </button>
     <button onclick="open106Sheet()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:18px;box-shadow:0 4px 16px rgba(239,68,68,0.35)">
-      📋 דווח למוקד 106 — מועצה אזורית באר טוביה
+      [[icon:clipboard-list]] דווח למוקד 106 — מועצה אזורית באר טוביה
     </button>
     <div class="instr-card">
-      <div class="instr-card-title">🗺️ הוספת עמדה חדשה</div>
+      <div class="instr-card-title">[[icon:map]] הוספת עמדה חדשה</div>
       <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ + בפינת המפה או החזק לחוץ על המפה</div></div>
       <div class="instr-step"><div class="instr-num">2</div><div class="instr-text">בחר מיקום — GPS אוטומטי או סמן על מפה</div></div>
       <div class="instr-step"><div class="instr-num">3</div><div class="instr-text">תן שם לעמדה ולחץ שמור</div></div>
     </div>
     <div class="instr-card">
-      <div class="instr-card-title">🪤 הוספת מלכודת לעמדה</div>
+      <div class="instr-card-title">[[icon:package]] הוספת מלכודת לעמדה</div>
       <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ על עמדה במפה או ברשימה</div></div>
       <div class="instr-step"><div class="instr-num">2</div><div class="instr-text">לחץ "הוסף מלכודת חדשה"</div></div>
       <div class="instr-step"><div class="instr-num">3</div><div class="instr-text">השם נוצר אוטומטית — שם עמדה + תאריך</div></div>
       <div class="instr-step"><div class="instr-num">4</div><div class="instr-text">הכנס שמך — חובה</div></div>
     </div>
     <div class="instr-card">
-      <div class="instr-card-title">📸 עדכון מלכודת</div>
+      <div class="instr-card-title">[[icon:camera]] עדכון מלכודת</div>
       <div class="instr-step"><div class="instr-num">1</div><div class="instr-text">לחץ על שם המלכודת לפתיחת ציר זמן</div></div>
       <div class="instr-step"><div class="instr-num">2</div><div class="instr-text">לחץ "הוסף עדכון"</div></div>
       <div class="instr-step"><div class="instr-num">3</div><div class="instr-text">בחר סטטוס + תמונה + שמך</div></div>
     </div>
     <div class="instr-card">
-      <div class="instr-card-title">📅 לוח פינויים</div>
-      <div class="instr-note">⚠️ פינוי זבל ימי ב׳ וה׳ — פנה מלכודות ביום שלפני</div>
-      <div class="instr-step" style="margin-top:10px"><div class="instr-num">!</div><div class="instr-text">מעל 14 יום = 🔴 דחוף בדוח</div></div>
-      <div class="instr-step"><div class="instr-num">!</div><div class="instr-text">10–14 יום = 🟡 בקרוב</div></div>
+      <div class="instr-card-title">[[icon:calendar]] לוח פינויים</div>
+      <div class="instr-note">[[icon:triangle-alert]] פינוי זבל ימי ב׳ וה׳ — פנה מלכודות ביום שלפני</div>
+      <div class="instr-step" style="margin-top:10px"><div class="instr-num">!</div><div class="instr-text">מעל 14 יום = [[icon:circle-alert]] דחוף בדוח</div></div>
+      <div class="instr-step"><div class="instr-num">!</div><div class="instr-text">10–14 יום = [[icon:clock]] בקרוב</div></div>
     </div>
   </div>
 </div>
@@ -650,7 +674,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
   <div class="sheet-full">
     <div class="handle"></div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <button class="sheet-close" onclick="closeOverlay('station')">✕</button>
+      <button class="sheet-close" onclick="closeOverlay('station')">[[icon:circle]]</button>
       <div class="sheet-title" style="margin:0" id="ss-title">עמדה</div>
     </div>
     <div id="station-site-content"></div>
@@ -660,17 +684,17 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-add-station">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">📍 עמדה חדשה</div>
+    <div class="sheet-title">[[icon:map-pin]] עמדה חדשה</div>
     <div class="fg"><label class="fl">שם העמדה</label><input class="fi" id="ns-name" placeholder="לדוגמה: מעבר הרחבה למכולת"></div>
     <div class="fg"><label class="fl">מיקום</label>
       <div class="loc-btns">
-        <button class="loc-btn" id="ns-gps-btn" onclick="getGPS('ns')">📍 GPS שלי</button>
+        <button class="loc-btn" id="ns-gps-btn" onclick="getGPS('ns')">[[icon:map-pin]] GPS שלי</button>
         <button class="loc-btn" id="ns-map-btn" onclick="togglePinMap('ns')"><i data-lucide="map" style="width:14px;height:14px;vertical-align:middle;margin-left:4px"></i> סמן על מפה</button>
       </div>
       <div class="loc-status" id="ns-loc-status">לא נבחר מיקום</div>
     </div>
     <div class="fg"><label class="fl">שמך</label><input class="fi" id="ns-reporter" placeholder="ישראל ישראלי"></div>
-    <button class="btn btn-primary" onclick="saveStation()" id="ns-save-btn">📍 שמור עמדה</button>
+    <button class="btn btn-primary" onclick="saveStation()" id="ns-save-btn">[[icon:map-pin]] שמור עמדה</button>
     <button class="btn btn-grey" onclick="closeOverlay('add-station')">ביטול</button>
   </div>
 </div>
@@ -678,12 +702,12 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-add-trap">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">🪤 מלכודת חדשה</div>
+    <div class="sheet-title">[[icon:package]] מלכודת חדשה</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="at-station-name"></div>
     <div class="fg"><label class="fl">סוג מלכודת</label>
       <div class="sev-group" style="grid-template-columns:1fr 1fr">
-        <button class="sev-btn" id="type-btn-bag" onclick="setTrapType('bag',this)"><span class="si">🪣</span>שקית FLY IN</button>
-        <button class="sev-btn" id="type-btn-sticky" onclick="setTrapType('sticky',this)"><span class="si">🟨</span>מדבקה</button>
+        <button class="sev-btn" id="type-btn-bag" onclick="setTrapType('bag',this)"><span class="si">[[icon:package]]</span>שקית FLY IN</button>
+        <button class="sev-btn" id="type-btn-sticky" onclick="setTrapType('sticky',this)"><span class="si">[[icon:sticky-note]]</span>מדבקה</button>
       </div>
     </div>
     <div class="fg"><label class="fl">שם המלכודת</label><input class="fi" id="at-name" placeholder="נוצר אוטומטי"><div style="font-size:11px;color:var(--muted);margin-top:4px">ניתן לשנות</div></div>
@@ -699,7 +723,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('at',this)"><div id="at-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="at-photo-prev" class="photo-preview"></div>
     </div>
     <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="at-reporter" placeholder="ישראל ישראלי"></div>
-    <button class="btn btn-purple" onclick="saveTrap()" id="at-save-btn">🪤 הוסף מלכודת</button>
+    <button class="btn btn-purple" onclick="saveTrap()" id="at-save-btn">[[icon:package]] הוסף מלכודת</button>
     <button class="btn btn-grey" onclick="closeOverlay('add-trap')">ביטול</button>
   </div>
 </div>
@@ -707,7 +731,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-add-update">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">📸 עדכון מלכודת</div>
+    <div class="sheet-title">[[icon:camera]] עדכון מלכודת</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="au-trap-name"></div>
     <div class="fg"><label class="fl">סטטוס</label>
       <div class="sev-group" style="grid-template-columns:repeat(2,1fr)">
@@ -719,12 +743,11 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     </div>
     <div class="fg"><label class="fl">תמונה (אופציונלי)</label>
       <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('au',this)"><div id="au-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="au-photo-prev" class="photo-preview">
-      <button class="btn btn-sparkle" id="au-analyze-btn" style="display:none;margin-top:10px;padding:8px;font-size:12px;position:relative;z-index:5;opacity:0.4;cursor:not-allowed" disabled>✨ ניתוח AI — בקרוב</button>
       </div>
     </div>
     <div class="fg"><label class="fl">הערה (אופציונלי)</label><textarea class="fi" id="au-note" placeholder="תאר את המצב..."></textarea></div>
     <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="au-reporter" placeholder="ישראל ישראלי"></div>
-    <button class="btn btn-primary" onclick="saveUpdate()" id="au-save-btn">✅ שלח עדכון</button>
+    <button class="btn btn-primary" onclick="saveUpdate()" id="au-save-btn">[[icon:check]] שלח עדכון</button>
     <button class="btn btn-grey" onclick="closeOverlay('add-update')">ביטול</button>
   </div>
 </div>
@@ -733,7 +756,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
   <div class="sheet">
     <div class="handle"></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-      <div style="font-size:24px">📋</div>
+      <div style="font-size:24px">[[icon:clipboard-list]]</div>
       <div>
         <div class="sheet-title" style="margin-bottom:2px">פנייה למוקד 106</div>
         <div style="font-size:12px;color:var(--muted)">נשלח ישירות לשפ"ה — מועצה אזורית באר טוביה</div>
@@ -744,10 +767,10 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
       <div class="fg"><label class="fl">טלפון נייד (חובה)</label><input class="fi" id="f106-phone" type="tel" placeholder="05X-XXXXXXX"></div>
       <div class="fg"><label class="fl">תיאור הבעיה</label><textarea class="fi" id="f106-note" rows="4" placeholder="תאר את הבעיה..."></textarea></div>
       <div id="f106-loc-bar" style="background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px">
-        <span>📍</span><span id="f106-loc-text">מיקום לא צורף</span>
-        <button onclick="attach106Location()" style="margin-right:auto;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:Heebo,sans-serif;font-size:12px;cursor:pointer">📍 צרף מיקום</button>
+        <span>[[icon:map-pin]]</span><span id="f106-loc-text">מיקום לא צורף</span>
+        <button onclick="attach106Location()" style="margin-right:auto;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:Heebo,sans-serif;font-size:12px;cursor:pointer">[[icon:map-pin]] צרף מיקום</button>
       </div>
-      <button class="btn" onclick="submit106()" id="f106-submit" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:900;font-size:15px">📨 שלח פנייה למועצה</button>
+      <button class="btn" onclick="submit106()" id="f106-submit" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:900;font-size:15px">[[icon:circle]] שלח פנייה למועצה</button>
       <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">הפנייה תישלח למחלקת שפ"ה: sviva@beer-tuvia.org.il</div>
     </div>
     <button class="btn btn-grey" onclick="closeOverlay('106')">ביטול</button>
@@ -757,7 +780,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-report">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">🚨 דיווח מפגע</div>
+    <div class="sheet-title">[[icon:siren]] דיווח מפגע</div>
     <div class="fg"><label class="fl">סוג דיווח</label>
       <div class="sev-group" style="grid-template-columns:1fr 1fr">
         <button class="sev-btn" onclick="setSev('rep','flies',this)"><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:block;margin:0 auto 3px"><ellipse cx="12" cy="12" rx="3" ry="5"/><path d="M9 8c-2-2-5-2-6 0s1 5 3 5"/><path d="M15 8c2-2 5-2 6 0s-1 5-3 5"/><path d="M9 16c-1 1-2 3-1 4"/><path d="M15 16c1 1 2 3 1 4"/><circle cx="10" cy="7" r="1" fill="currentColor"/><circle cx="14" cy="7" r="1" fill="currentColor"/></svg></span>זבובים</button>
@@ -780,14 +803,13 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     </div>
     <div class="fg"><label class="fl">תמונה (אופציונלי)</label>
       <div class="photo-area"><input type="file" accept="image/*" capture="environment" onchange="handlePhoto('rep',this)"><div id="rep-photo-ph"><i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-left:4px"></i> צלם או העלה</div><img id="rep-photo-prev" class="photo-preview">
-      <button class="btn btn-sparkle" id="report-ai-btn" onclick="analyzePhoto('rep-photo-prev', 'rep-note', 'report-ai-btn')" style="margin-top:10px; display:none; padding:8px; font-size:12px; position:relative; z-index:5;">✨ נתח תמונה עם AI</button>
       </div>
     </div>
     <div class="fg"><label class="fl">הערה (אופציונלי)</label><textarea class="fi" id="rep-note" placeholder="תאר את הבעיה..."></textarea></div>
     <div class="fg"><label class="fl">שמך (חובה)</label><input class="fi" id="rep-reporter" placeholder="ישראל ישראלי"></div>
     <div class="fg"><label class="fl">מייל לעדכון (אופציונלי)</label><input type="email" class="fi" id="rep-email" placeholder="example@gmail.com"><div style="font-size:11px;color:var(--muted);margin-top:4px">נשלח מייל אוטומטי כשהדיווח יטופל</div></div>
-    <button class="btn btn-yellow" onclick="saveReport()" id="rep-save-btn">🚨 שלח דיווח</button>
-    <button class="btn" onclick="open106Sheet(document.getElementById('rep-note').value, pinData['rep'])" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;margin-top:6px;font-weight:800">📋 דווח גם למוקד 106 — מועצה</button>
+    <button class="btn btn-yellow" onclick="saveReport()" id="rep-save-btn">[[icon:siren]] שלח דיווח</button>
+    <button class="btn" onclick="open106Sheet(document.getElementById('rep-note').value, pinData['rep'])" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;margin-top:6px;font-weight:800">[[icon:clipboard-list]] דווח גם למוקד 106 — מועצה</button>
     <button class="btn btn-grey" onclick="closeOverlay('report')">ביטול</button>
   </div>
 </div>
@@ -797,12 +819,12 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="handle"></div>
     <div class="sheet-title" id="so-title">אפשרויות עמדה</div>
     <div id="so-group-display" style="font-size:12px;color:var(--accent);margin-bottom:12px;min-height:18px"></div>
-    <button class="btn btn-primary" onclick="closeOverlay('station-options');renameStation()">✏️ שנה שם עמדה</button>
-    <button class="btn btn-primary" style="background:var(--card2);color:var(--text);border:1px solid var(--border)" onclick="closeOverlay('station-options');editStationGroup()">🏷️ קבע קבוצה / אזור</button>
+    <button class="btn btn-primary" onclick="closeOverlay('station-options');renameStation()">[[icon:circle]] שנה שם עמדה</button>
+    <button class="btn btn-primary" style="background:var(--card2);color:var(--text);border:1px solid var(--border)" onclick="closeOverlay('station-options');editStationGroup()">[[icon:tag]] קבע קבוצה / אזור</button>
     <button class="btn btn-yellow" onclick="toggleStationStatus('suspend')">⏸️ השהה עמדה</button>
-    <button class="btn btn-green" style="display:none" id="so-activate-btn" onclick="toggleStationStatus('activate')">✅ הפעל מחדש</button>
-    <button class="btn btn-red" onclick="toggleStationStatus('delete')">🗑️ הסתר עמדה</button>
-    <button class="btn btn-red" style="background:#7f1d1d;margin-top:4px" onclick="confirmPermanentDeleteStation()">⚠️ מחק לצמיתות — לא ניתן לשחזר!</button>
+    <button class="btn btn-green" style="display:none" id="so-activate-btn" onclick="toggleStationStatus('activate')">[[icon:check]] הפעל מחדש</button>
+    <button class="btn btn-red" onclick="toggleStationStatus('delete')">[[icon:trash-2]] הסתר עמדה</button>
+    <button class="btn btn-red" style="background:#7f1d1d;margin-top:4px" onclick="confirmPermanentDeleteStation()">[[icon:triangle-alert]] מחק לצמיתות — לא ניתן לשחזר!</button>
     <button class="btn btn-grey" onclick="closeOverlay('station-options')">ביטול</button>
   </div>
 </div>
@@ -812,14 +834,14 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="handle"></div>
     <div class="sheet-title" id="confirm-title">אישור</div>
     <div style="font-size:14px;color:var(--text);margin-bottom:16px" id="confirm-msg"></div>
-    <button class="btn btn-red" onclick="confirmYes()">✅ כן, אשר</button>
+    <button class="btn btn-red" onclick="confirmYes()">[[icon:check]] כן, אשר</button>
     <button class="btn btn-grey" onclick="closeOverlay('confirm')">ביטול</button>
   </div>
 </div>
 
 <!-- PHOTO LIGHTBOX -->
 <div id="photo-lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:4000;align-items:center;justify-content:center;flex-direction:column" onclick="closeLightbox()">
-  <button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:40px;height:40px;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+  <button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:40px;height:40px;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">[[icon:circle]]</button>
   <img id="lightbox-img" style="max-width:95vw;max-height:80vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.8)">
   <div id="lightbox-caption" style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:12px;font-family:Heebo,sans-serif;text-align:center"></div>
 </div>
@@ -828,10 +850,10 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-delete-trap-choice">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">🗑️ מחיקת מלכודת</div>
+    <div class="sheet-title">[[icon:trash-2]] מחיקת מלכודת</div>
     <div style="font-size:14px;color:var(--muted);margin-bottom:16px" id="dtc-trap-name"></div>
-    <button class="btn btn-yellow" onclick="deleteTrapChoice('trash')">✅ פונתה לאשפה — שמור בהיסטוריה</button>
-    <button class="btn btn-red" onclick="deleteTrapChoice('permanent')" style="margin-top:8px;background:#7f1d1d">⚠️ מחק לצמיתות — לא ניתן לשחזר!</button>
+    <button class="btn btn-yellow" onclick="deleteTrapChoice('trash')">[[icon:check]] פונתה לאשפה — שמור בהיסטוריה</button>
+    <button class="btn btn-red" onclick="deleteTrapChoice('permanent')" style="margin-top:8px;background:#7f1d1d">[[icon:triangle-alert]] מחק לצמיתות — לא ניתן לשחזר!</button>
     <button class="btn btn-grey" onclick="closeOverlay('delete-trap-choice')">ביטול</button>
   </div>
 </div>
@@ -840,7 +862,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-vol-type">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">🙋 התנדבות — בחר סוג</div>
+    <div class="sheet-title">[[icon:hand]] התנדבות — בחר סוג</div>
     <button class="btn" style="background:var(--card2);border:2px solid var(--border);color:var(--text);margin-top:8px;padding:20px;border-radius:14px;text-align:right;font-size:15px" onclick="startVolMapMode()">
       <div style="margin-bottom:8px;display:flex;justify-content:center"><i data-lucide="trash-2" style="width:28px;height:28px"></i></div>
       <div style="font-weight:800">פינוי מלכודות</div>
@@ -863,15 +885,15 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <!-- GOVMAP OVERLAY -->
 <div id="govmap-overlay" style="display:none;position:absolute;inset:0;z-index:700;flex-direction:column;background:#000">
   <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px)">
-    <span style="color:#fff;font-weight:700;font-size:14px;font-family:Heebo,sans-serif">🗺️ GovMap — תימורים</span>
-    <button onclick="toggleGovMap()" style="margin-right:auto;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-family:Heebo,sans-serif;font-size:12px;cursor:pointer">✕ סגור</button>
+    <span style="color:#fff;font-weight:700;font-size:14px;font-family:Heebo,sans-serif">[[icon:map]] GovMap — תימורים</span>
+    <button onclick="toggleGovMap()" style="margin-right:auto;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-family:Heebo,sans-serif;font-size:12px;cursor:pointer">[[icon:circle]] סגור</button>
   </div>
   <iframe id="govmap-frame" src="" style="flex:1;border:none;width:100%;height:100%" allowfullscreen></iframe>
 </div>
 <div class="overlay" id="overlay-vol-station-pick">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title" id="vsp-title">📍 בחירת שקיות לפינוי</div>
+    <div class="sheet-title" id="vsp-title">[[icon:map-pin]] בחירת שקיות לפינוי</div>
     <div id="vsp-list" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;padding-right:4px;margin-bottom:16px"></div>
     <button class="btn btn-primary" onclick="closeOverlay('vol-station-pick')">אישור וסגירה</button>
   </div>
@@ -881,7 +903,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-vol-pickup-final">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">📝 פרטי התנדבות (פינוי)</div>
+    <div class="sheet-title" id="vpf-title">[[icon:pencil]] פרטי התנדבות (פינוי)</div>
     <div style="font-size:13px;color:var(--text2);margin-bottom:16px" id="vol-pickup-summary"></div>
     <div class="fg"><label class="fl">תאריך ביצוע מתוכנן</label>
       <input type="date" class="fi" id="vol-pickup-datetime">
@@ -892,7 +914,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="fg"><label class="fl">הערה (אופציונלי)</label>
       <textarea class="fi" id="vol-pickup-note" placeholder="פרטים נוספים..."></textarea>
     </div>
-    <button class="btn btn-yellow" onclick="saveVolPickup()" id="vol-pickup-save-btn">🗑️ אשר התנדבות</button>
+    <button class="btn btn-yellow" onclick="saveVolPickup()" id="vol-pickup-save-btn">[[icon:trash-2]] אשר התנדבות</button>
     <button class="btn btn-grey" onclick="closeOverlay('vol-pickup-final')">חזור למפה</button>
   </div>
 </div>
@@ -901,7 +923,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-vol-hang">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title">🪤 תליית מלכודת</div>
+    <div class="sheet-title">[[icon:package]] תליית מלכודת</div>
     <div class="fg">
       <label class="fl">באיזו עמדה?</label>
       <div class="sev-group" style="grid-template-columns:1fr 1fr;margin-bottom:8px">
@@ -926,7 +948,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="fg"><label class="fl">הערה (אופציונלי)</label>
       <textarea class="fi" id="vol-hang-note" placeholder="פרטים נוספים..."></textarea>
     </div>
-    <button class="btn btn-green" onclick="saveVolHang()" id="vol-hang-save-btn">🪤 אני מתנדב לתלות</button>
+    <button class="btn btn-green" onclick="saveVolHang()" id="vol-hang-save-btn">[[icon:package]] אני מתנדב לתלות</button>
     <button class="btn btn-grey" onclick="closeOverlay('vol-hang')">ביטול</button>
   </div>
 </div>
@@ -935,7 +957,7 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
 <div class="overlay" id="overlay-vol-complete">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sheet-title" id="vol-complete-title">✅ סימון ביצוע</div>
+    <div class="sheet-title" id="vol-complete-title">[[icon:check]] סימון ביצוע</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="vol-complete-desc"></div>
     <div class="fg"><label class="fl">תמונה (אופציונלי אך מומלץ)</label>
       <div class="photo-area">
@@ -947,31 +969,37 @@ body.light .trap-body{background:rgba(0,0,0,0.02)}
     <div class="fg"><label class="fl">הערה (אופציונלי)</label>
       <textarea class="fi" id="vol-complete-note" placeholder="איך הלך?"></textarea>
     </div>
-    <button class="btn btn-green" onclick="confirmVolComplete()" id="vol-complete-btn">✅ בוצע!</button>
+    <button class="btn btn-green" onclick="confirmVolComplete()" id="vol-complete-btn">[[icon:check]] בוצע!</button>
     <button class="btn btn-grey" onclick="closeOverlay('vol-complete')">ביטול</button>
   </div>
 </div>
 
 <div id="map-picker-overlay">
   <div class="mp-header">
-    <button class="mp-close" onclick="closeMapPicker()">✕</button>
+    <button class="mp-close" onclick="closeMapPicker()">[[icon:circle]]</button>
     <div class="mp-title">גלול למיקום הנכון</div>
   </div>
   <div class="mp-map-wrap">
     <div id="map-picker-map"></div>
-    <div class="mp-pin">📍</div>
+    <div class="mp-pin">[[icon:map-pin]]</div>
     <div class="mp-coords" id="map-picker-coords"></div>
   </div>
   <div class="mp-footer">
-    <button class="mp-confirm" onclick="confirmMapPicker()">✅ אשר מיקום זה</button>
+    <button class="mp-confirm" onclick="confirmMapPicker()">[[icon:check]] אשר מיקום זה</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// CARTO basemaps require a free key since Aug 2026 (carto.com/basemaps/apikey). Paste it here; empty = watermarked tiles.
+const CARTO_KEY='';
+const CARTO_Q=CARTO_KEY?'?key='+encodeURIComponent(CARTO_KEY):'';
+// Location guard: phones indoors / desktops often report a position far away. Never jump the map or save a pin outside the moshav area.
+const TIMORIM=[31.7154,34.7586],NEAR_KM=5;
+function kmFromTimorim(lat,lng){const R=6371,r=Math.PI/180,dLat=(lat-TIMORIM[0])*r,dLng=(lng-TIMORIM[1])*r;const a=Math.sin(dLat/2)**2+Math.cos(TIMORIM[0]*r)*Math.cos(lat*r)*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(a));}
+function nearTimorim(lat,lng){return Number.isFinite(lat)&&Number.isFinite(lng)&&kmFromTimorim(lat,lng)<=NEAR_KM;}
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz4x1Ry7tK6z192mJ5TwyzXrlCPyFe_gmQRACHQxRz7go8Sac5a2gVOKWATUN8z-2A1iQ/exec';
-const apiKey = ""; 
 let db={stations:[],traps:[],updates:[],reports:[],volunteers:[]};
 let map,pinMaps={},pinData={};
 let currentStationId=null,currentTrapId=null;
@@ -982,140 +1010,6 @@ let confirmCallback=null,mapPickerMap=null,mapPickerCallback=null;
 // MAP MODE FOR VOLUNTEER
 let isVolMapMode = false;
 let selectedVolTraps = new Set();
-
-// ── Groq API — מנותב דרך GAS backend (עוקף CSP של script.google.com) ─────
-const GROQ_KEY = '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';
-
-async function claudeCall(prompt, base64Image = null) {
-  // אם זמין google.script.run (GAS) — השתמש בו (עוקף CSP)
-  if (typeof google !== 'undefined' && google.script?.run) {
-    return new Promise(resolve => {
-      google.script.run
-        .withSuccessHandler(r => resolve(r))
-        .withFailureHandler(e => resolve('שגיאה: ' + e.message))
-        .callGroqAI(prompt, base64Image || null);
-    });
-  }
-  // fallback — fetch ישיר (עובד כשהקובץ נפתח מחוץ ל-GAS)
-  const content = [];
-  if (base64Image) content.push({ type:'image_url', image_url:{ url: base64Image.includes(',') ? base64Image : `data:image/jpeg;base64,${base64Image}` }});
-  content.push({ type:'text', text: prompt });
-  try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${GROQ_KEY}` },
-      body: JSON.stringify({ model:'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens:800,
-        messages:[{ role:'user', content }] })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    return data.choices?.[0]?.message?.content || 'לא התקבלה תשובה';
-  } catch(e) {
-    return 'שגיאה: ' + e.message;
-  }
-}
-
-async function analyzePhoto(imgId, targetId, btnId) {
-  const btn = document.getElementById(btnId);
-  const prefix = imgId.replace('-photo-prev','');
-  const photoData = window._photoData?.[prefix];
-
-  if (!photoData) { showToast('📷 צלם תמונה תחילה'); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading-spin"></span> מנתח...';
-
-  // remove old result card
-  document.getElementById('au-ai-result-card')?.remove();
-
-  const trapType = _trapType || 'bag';
-  const capacity = trapType === 'sticky' ? 14700 : 60000;
-  const prompt = `נתח מלכודת זבובים. סוג: ${trapType==='sticky'?'מדבקה 24x17 ס"מ x2 צדדים קיבולת ~14700':'שקית FLY IN קיבולת 60000'}.
-החזר JSON בלבד ללא backticks:
-{"fill_percent":<0-100>,"fly_count":<int>,"action":"ok|soon|urgent|replace_now","notes_he":"<עברית>","confidence":"low|medium|high"}`;
-
-  try {
-    const raw = await claudeCall(prompt, photoData);
-    btn.disabled = false;
-    btn.innerHTML = '✨ נתח שוב';
-
-    if (!raw || raw.startsWith('שגיאה')) {
-      showToast('❌ ' + (raw || 'שגיאת AI'));
-      return;
-    }
-
-    let ai = null;
-    try { ai = JSON.parse(raw.replace(/```[\w]*|```/g,'').trim()); }
-    catch { const m = raw.match(/\{[\s\S]*\}/); if (m) try { ai = JSON.parse(m[0]); } catch {} }
-
-    if (!ai) {
-      // fallback text
-      const noteEl = document.getElementById(targetId);
-      if (noteEl && !noteEl.value.trim()) noteEl.value = raw.slice(0,200);
-      showToast('✨ ניתוח הושלם (טקסט)');
-      return;
-    }
-
-    // auto-fill note
-    const noteEl = document.getElementById(targetId);
-    if (noteEl && !noteEl.value.trim() && ai.notes_he) noteEl.value = ai.notes_he;
-
-    // auto-set severity
-    const sevRemap = { ok:'low', soon:'med', urgent:'high', replace_now:'done' };
-    const targetSev = sevRemap[ai.action] || 'med';
-    const sevBtn = document.querySelector(`#overlay-add-update .sev-btn[onclick*="'${targetSev}'"]`);
-    if (sevBtn) setSev('au', targetSev, sevBtn);
-
-    // result card
-    const fc = ai.fill_percent>=75?'#ef4444':ai.fill_percent>=45?'#f59e0b':'#10b981';
-    const actLbl = {ok:'✅ ריקה',soon:'🟡 בקרוב',urgent:'🔴 דחוף',replace_now:'🚨 החלף!'}[ai.action]||'';
-    const card = document.createElement('div');
-    card.id = 'au-ai-result-card';
-    card.style.cssText = 'margin-top:10px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:12px';
-    card.innerHTML = `
-      <div style="font-size:10px;font-weight:800;color:var(--trap);letter-spacing:.8px;margin-bottom:8px">✨ ניתוח AI — ${trapType==='sticky'?'מדבקה':'שקית'}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
-        <div style="background:var(--card2);border-radius:8px;padding:8px;text-align:center">
-          <div style="font-size:16px;font-weight:900;color:var(--trap)">${(ai.fly_count||0).toLocaleString()}</div>
-          <div style="font-size:10px;color:var(--muted)">🪰 זבובים</div>
-        </div>
-        <div style="background:var(--card2);border-radius:8px;padding:8px;text-align:center">
-          <div style="font-size:16px;font-weight:900;color:${fc}">${ai.fill_percent}%</div>
-          <div style="font-size:10px;color:var(--muted)">📊 מילוי</div>
-        </div>
-        <div style="background:var(--card2);border-radius:8px;padding:8px;text-align:center">
-          <div style="font-size:11px;font-weight:800;padding-top:3px">${actLbl}</div>
-          <div style="font-size:10px;color:var(--muted)">🎯 פעולה</div>
-        </div>
-      </div>
-      <div style="height:7px;background:var(--card2);border-radius:4px;overflow:hidden">
-        <div style="width:${ai.fill_percent}%;height:100%;background:${fc};border-radius:4px"></div>
-      </div>
-      ${ai.notes_he?`<div style="font-size:12px;color:var(--text2);margin-top:7px">💬 ${ai.notes_he}</div>`:''}`;
-    btn.after(card);
-    showToast('✨ ניתוח AI הושלם!');
-    haptic('success');
-
-  } catch(err) {
-    btn.disabled = false;
-    btn.innerHTML = '✨ נסה שוב';
-    showToast('❌ שגיאה: ' + err.message);
-  }
-}
-
-async function generateCommunityInsight() {
-  const btn = document.getElementById('ai-insight-btn');
-  const box = document.getElementById('community-insight');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading-spin"></span> מחשב תובנות...';
-  const totalFlies = db.traps.reduce((s,t)=>s+estimateFlyCount(t),0);
-  const ctx = `עמדות: ${db.stations.length}, מלכודות פעילות: ${db.traps.filter(t=>t.status==='active').length}, דחוף: ${db.traps.filter(t=>t.status==='active'&&getDaysOld(t)>=14).length}, מתנדבים פעילים: ${(db.volunteers||[]).filter(v=>v.status==='בתהליך').length}, הערכת זבובים שנתפסו: ${totalFlies.toLocaleString()}`;
-  const result = await claudeCall(`בהינתן נתוני אפליקציית מלכודות זבובים של מושב ישראלי: ${ctx}. כתוב עדכון קהילתי קצר וידידותי בעברית לוועד. השתמש באמוג'י. אם יש מלכודות דחופות — עודד להתנדב.`);
-  box.innerHTML = `<strong>✨ עדכון קהילתי AI:</strong><br>${result.replace(/\n/g,'<br>')}`;
-  box.style.display = 'block';
-  btn.disabled = false;
-  btn.innerHTML = '✨ רענן תובנות AI';
-}
 
 function navigate(pageId,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1131,28 +1025,28 @@ function navigate(pageId,el){
 // ── MAP STYLE SWITCHER ────────────────────────────────────────────────────
 const MAP_STYLES = {
   satellite: {
-    icon:'🛰️', label:'לוויין',
+    icon:'[[icon:satellite]]', label:'לוויין',
     tiles:[
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri', maxZoom:22, maxNativeZoom:18 },
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', attr:'', maxZoom:22, maxNativeZoom:18, opacity:0.9 }
     ]
   },
   topo: {
-    icon:'🗺️', label:'טופוגרפי ישראל',
+    icon:'[[icon:map]]', label:'טופוגרפי ישראל',
     tiles:[
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', attr:'© Esri © OSM', maxZoom:22, maxNativeZoom:18 }
     ]
   },
   streets: {
-    icon:'🏙️', label:'רחובות',
-    tiles:[{ url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attr:'© CartoDB © OSM', maxZoom:22, maxNativeZoom:18 }]
+    icon:'[[icon:building-2]]', label:'רחובות',
+    tiles:[{ url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'+CARTO_Q, attr:'© CartoDB © OSM', maxZoom:22, maxNativeZoom:18 }]
   },
   dark: {
-    icon:'🌑', label:'כהה',
-    tiles:[{ url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attr:'© CartoDB © OSM', maxZoom:22, maxNativeZoom:18 }]
+    icon:'[[icon:moon]]', label:'כהה',
+    tiles:[{ url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'+CARTO_Q, attr:'© CartoDB © OSM', maxZoom:22, maxNativeZoom:18 }]
   },
   osm: {
-    icon:'🌍', label:'OpenStreetMap',
+    icon:'[[icon:globe]]', label:'OpenStreetMap',
     tiles:[{ url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr:'© OpenStreetMap', maxZoom:22, maxNativeZoom:18 }]
   }
 };
@@ -1211,7 +1105,7 @@ function initMap(){
   layerGroups.reports=L.layerGroup().addTo(map);
   layerGroups.volunteers=L.layerGroup().addTo(map);
   let lpTimer=null;
-  function startLP(latlng){lpTimer=setTimeout(()=>{haptic('medium');pinData['ns']={lat:latlng.lat,lng:latlng.lng};openAddStation();setTimeout(()=>{const s=document.getElementById('ns-loc-status');if(s){s.textContent='✅ מיקום נבחר מהמפה';s.className='loc-status ok';}const btn=document.getElementById('ns-gps-btn');if(btn)btn.classList.add('ok');},200);},600);}
+  function startLP(latlng){lpTimer=setTimeout(()=>{haptic('medium');pinData['ns']={lat:latlng.lat,lng:latlng.lng};openAddStation();setTimeout(()=>{const s=document.getElementById('ns-loc-status');if(s){s.textContent='[[icon:check]] מיקום נבחר מהמפה';s.className='loc-status ok';}const btn=document.getElementById('ns-gps-btn');if(btn)btn.classList.add('ok');},200);},600);}
   function cancelLP(){clearTimeout(lpTimer);}
   map.on('mousedown',e=>startLP(e.latlng));
   map.on('mouseup mousemove drag',cancelLP);
@@ -1227,25 +1121,25 @@ async function markReportDone(reportId) {
     body: JSON.stringify({rowType:'reportStatus', id:reportId, status:'done'})
   });
   if (map) map.closePopup();
-  showToast('✅ דיווח סומן כטופל');
+  showToast('[[icon:check]] דיווח סומן כטופל');
   setTimeout(() => { loadData(); if(document.getElementById('page-stats').classList.contains('active')) renderReportsHistory(); }, 1500);
 }
 
 async function deleteReport(reportId) {
-  showConfirm('🗑️ מחיקת דיווח', 'למחוק את הדיווח לצמיתות?', async () => {
+  showConfirm('[[icon:trash-2]] מחיקת דיווח', 'למחוק את הדיווח לצמיתות?', async () => {
     // עדכון מיידי
     db.reports = db.reports.filter(r => r.id !== reportId);
     renderMap();
     renderReportsHistory();
     map.closePopup();
-    showToast('🗑️ דיווח נמחק');
+    showToast('[[icon:trash-2]] דיווח נמחק');
     // שלח ל-GAS
     await postData({rowType:'deleteRow', sheetName:'reports', id:reportId, parentId:'', name:'', lat:'', lng:'', severity:'', note:'', photoUrl:'', reporter:'', status:'', extra:''});
   });
 }
 
 function locateMe() {
-  if (!navigator.geolocation) { showToast('⚠️ GPS לא נתמך'); return; }
+  if (!navigator.geolocation) { showToast('[[icon:triangle-alert]] GPS לא נתמך'); return; }
   if (navigator.permissions) {
     navigator.permissions.query({name:'geolocation'}).then(r => {
       if (r.state === 'denied') showLocationSheet('denied');
@@ -1264,10 +1158,10 @@ function showLocationSheet(mode) {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const deniedSteps = isIOS
     ? 'הגדרות ← פרטיות ← שירותי מיקום ← Safari ← "בזמן שימוש"'
-    : 'לחץ על 🔒 בשורת הכתובת ← הרשאות ← מיקום ← אפשר';
+    : 'לחץ על [[icon:circle]] בשורת הכתובת ← הרשאות ← מיקום ← אפשר';
 
   const content = mode === 'ask' ? `
-    <div style="font-size:40px;text-align:center;margin-bottom:14px">📍</div>
+    <div style="font-size:40px;text-align:center;margin-bottom:14px">[[icon:map-pin]]</div>
     <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:10px">גישה למיקום</div>
     <div style="font-size:14px;color:var(--text2);text-align:center;line-height:1.65;margin-bottom:24px">
       כדי להראות לך את העמדות הקרובות.<br>
@@ -1275,14 +1169,14 @@ function showLocationSheet(mode) {
     </div>
     <button onclick="document.getElementById('loc-sheet').remove(); doLocate();"
       style="${btnStyle('var(--accent)')}margin-bottom:10px">
-      📍 אפשר גישה למיקום
+      [[icon:map-pin]] אפשר גישה למיקום
     </button>
     <button onclick="document.getElementById('loc-sheet').remove(); showAddressSearch();"
       style="${btnStyle('transparent','1px solid var(--border)','var(--text2)')}">
-      🔍 חפש כתובת
+      [[icon:search]] חפש כתובת
     </button>
   ` : `
-    <div style="font-size:40px;text-align:center;margin-bottom:14px">🔒</div>
+    <div style="font-size:40px;text-align:center;margin-bottom:14px">[[icon:circle]]</div>
     <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:10px">מיקום חסום</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:6px;text-align:center">
       הדפדפן חסם גישה למיקום.<br>כדי לאפשר מחדש:
@@ -1292,7 +1186,7 @@ function showLocationSheet(mode) {
     </div>
     <button onclick="document.getElementById('loc-sheet').remove(); showAddressSearch();"
       style="${btnStyle('var(--accent)')}margin-bottom:10px">
-      🔍 חפש כתובת במקום
+      [[icon:search]] חפש כתובת במקום
     </button>
     <button onclick="document.getElementById('loc-sheet').remove();"
       style="${btnStyle('transparent','1px solid var(--border)','var(--muted)')}">
@@ -1325,7 +1219,7 @@ function showAddressSearch() {
   sheet.innerHTML = `
     <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
       <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
-      <div style="font-size:17px;font-weight:900;margin-bottom:14px">🔍 חיפוש כתובת</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:14px">[[icon:search]] חיפוש כתובת</div>
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <input id="addr-input" type="text" placeholder="רח' הרדוף, תימורים..."
           style="flex:1;padding:13px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:15px;outline:none;-webkit-appearance:none"
@@ -1352,16 +1246,16 @@ async function doAddressSearch() {
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', ישראל')}&format=json&limit=5&accept-language=he`,
       { headers:{'Accept-Language':'he'} }
     ).then(r=>r.json());
-    if (!data.length) { res.innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">לא נמצאו תוצאות 🤷</div>`; return; }
+    if (!data.length) { res.innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">לא נמצאו תוצאות [[icon:circle]]</div>`; return; }
     res.innerHTML = data.map(r => {
       const label = r.display_name.split(',').slice(0,3).join(', ');
       return `<button onclick="goToAddress(${r.lat},${r.lon},'${label.replace(/'/g,'')}')"
         style="width:100%;padding:11px 13px;border-radius:10px;border:none;background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer;text-align:right;margin-bottom:7px;display:block;line-height:1.4">
-        📍 ${label}
+        [[icon:map-pin]] ${label}
       </button>`;
     }).join('');
   } catch {
-    res.innerHTML = `<div style="text-align:center;padding:16px;color:var(--danger);font-size:13px">❌ שגיאת חיפוש</div>`;
+    res.innerHTML = `<div style="text-align:center;padding:16px;color:var(--danger);font-size:13px">[[icon:x]] שגיאת חיפוש</div>`;
   }
 }
 
@@ -1373,8 +1267,8 @@ function goToAddress(lat, lng, name) {
     className:'',
     html:`<div style="width:16px;height:16px;border-radius:50%;background:#38bdf8;border:3px solid white;box-shadow:0 0 0 4px rgba(56,189,248,0.3),0 2px 8px rgba(0,0,0,0.4)"></div>`,
     iconSize:[16,16], iconAnchor:[8,8]
-  })}).addTo(map).bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif">📍 ${name}</div>`).openPopup();
-  showToast('📍 '+name);
+  })}).addTo(map).bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif">[[icon:map-pin]] ${name}</div>`).openPopup();
+  showToast('[[icon:map-pin]] '+name);
 }
 
 let _watchId = null;
@@ -1393,7 +1287,7 @@ function open106FromMap(note, loc, photoUrl) {
   document.getElementById('f106-phone').value = '';
   document.getElementById('f106-note').value = note || '';
   document.getElementById('f106-submit').disabled = false;
-  document.getElementById('f106-submit').textContent = '📨 שלח פנייה למועצה';
+  document.getElementById('f106-submit').textContent = '[[icon:circle]] שלח פנייה למועצה';
   update106LocBar();
   // הצג תמונה אם קיימת
   let photoBar = document.getElementById('f106-photo-bar');
@@ -1404,7 +1298,7 @@ function open106FromMap(note, loc, photoUrl) {
     document.getElementById('f106-loc-bar').after(photoBar);
   }
   if (_106photoUrl) {
-    photoBar.innerHTML = `<div style="font-size:12px;color:var(--muted);margin-bottom:6px">📷 תמונה מהדיווח (תצורף אוטומטית)</div>
+    photoBar.innerHTML = `<div style="font-size:12px;color:var(--muted);margin-bottom:6px">[[icon:camera]] תמונה מהדיווח (תצורף אוטומטית)</div>
       <img src="${_106photoUrl}" style="width:100%;border-radius:10px;max-height:140px;object-fit:cover">`;
   } else {
     photoBar.innerHTML = '';
@@ -1424,17 +1318,17 @@ function open106Sheet(note, loc) {
 function attach106Location() {
   if (!navigator.geolocation) { showToast('GPS לא זמין'); return; }
   const btn = document.querySelector('#f106-loc-bar button');
-  if (btn) { btn.textContent = '⏳ מאתר...'; btn.disabled = true; }
+  if (btn) { btn.textContent = '[[icon:loader]] מאתר...'; btn.disabled = true; }
   navigator.geolocation.getCurrentPosition(
     pos => {
       _106loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       update106LocBar();
-      showToast('✅ מיקום צורף');
-      if (btn) { btn.textContent = '✅ צורף'; btn.disabled = false; }
+      showToast('[[icon:check]] מיקום צורף');
+      if (btn) { btn.textContent = '[[icon:check]] צורף'; btn.disabled = false; }
     },
     () => {
-      showToast('❌ לא ניתן לאתר מיקום');
-      if (btn) { btn.textContent = '📍 צרף מיקום'; btn.disabled = false; }
+      showToast('[[icon:x]] לא ניתן לאתר מיקום');
+      if (btn) { btn.textContent = '[[icon:map-pin]] צרף מיקום'; btn.disabled = false; }
     },
     { enableHighAccuracy: true, timeout: 8000 }
   );
@@ -1456,8 +1350,8 @@ async function submit106() {
   const name  = document.getElementById('f106-name').value.trim();
   const phone = document.getElementById('f106-phone').value.trim();
   const note  = document.getElementById('f106-note').value.trim();
-  if (!name)  { showToast('⚠️ נא להכניס שם');    return; }
-  if (!phone) { showToast('⚠️ נא להכניס טלפון'); return; }
+  if (!name)  { showToast('[[icon:triangle-alert]] נא להכניס שם');    return; }
+  if (!phone) { showToast('[[icon:triangle-alert]] נא להכניס טלפון'); return; }
   const btn = document.getElementById('f106-submit');
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spin"></span> שולח...';
@@ -1473,7 +1367,7 @@ async function submit106() {
     reporter: name, status: 'sent', extra: 'sviva'
   });
   closeOverlay('106');
-  showToast('✅ הפנייה נשלחה למועצה!');
+  showToast('[[icon:check]] הפנייה נשלחה למועצה!');
   haptic('success');
 }
 
@@ -1505,12 +1399,12 @@ function doLocate() {
     if (window._locMarker) { map.removeLayer(window._locMarker); window._locMarker = null; }
     if (_locCircle) { map.removeLayer(_locCircle); _locCircle = null; }
     if (btn) { btn.querySelector('svg').style.stroke = 'var(--accent)'; btn.style.background = 'var(--card)'; }
-    showToast('📍 מעקב מיקום כובה');
+    showToast('[[icon:map-pin]] מעקב מיקום כובה');
     return;
   }
 
   if (btn) { btn.style.opacity='0.5'; btn.style.pointerEvents='none'; }
-  showToast('⏳ מאתר מיקום...');
+  showToast('[[icon:loader]] מאתר מיקום...');
   let firstFix = true;
 
   function onPos(pos) {
@@ -1535,8 +1429,8 @@ function doLocate() {
     }).addTo(map);
 
     if (firstFix) {
-      map.setView([lat, lng], 18);
-      showToast('✅ מעקב מיקום פעיל');
+      if (nearTimorim(lat,lng)) { map.setView([lat, lng], 18); showToast('[[icon:check]] מעקב מיקום פעיל'); }
+      else { map.setView(TIMORIM,16); showToast(`[[icon:map-pin]] המיקום שהתקבל רחוק ${Math.round(kmFromTimorim(lat,lng))} ק״מ מתימורים — המפה נשארה על המושב`); }
       _locTracking = true;
       firstFix = false;
     }
@@ -1548,10 +1442,7 @@ function doLocate() {
       showLocationSheet('denied');
     } else {
       // fallback IP
-      fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
-        if(d.latitude){ map.setView([d.latitude,d.longitude],16); showToast('📡 מיקום משוער לפי רשת'); }
-        else { map.setView([31.7154,34.7586],16); showToast('📍 מרכז המפה — תימורים'); }
-      }).catch(()=>{ map.setView([31.7154,34.7586],16); });
+      map.setView(TIMORIM,16); showToast('[[icon:map-pin]] לא התקבל מיקום — המפה על תימורים');
     }
   }
 
@@ -1595,7 +1486,7 @@ function renderMap(){
 
     // צבע לפי המלכודת הכי מלאה
     const getEffectiveSev = t => {
-      const u = db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+      const u = db.updates.filter(x=>x.trapId===t.id).reverse().sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
       return u?.severity || t.severity || 'low';
     };
     const sevs = traps.map(getEffectiveSev).filter(s=>s!=='done');
@@ -1630,15 +1521,15 @@ ${rep.reporter?'מדווח: '+rep.reporter:''}
     const rep106loc = rep.lat&&rep.lng?{lat:Number(rep.lat),lng:Number(rep.lng)}:null;
     const rep106photo = rep.photoUrl||'';
     repMarker.bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif;min-width:170px">
-      <strong>${rep.subtype==='bag'?'🛍️ שקית':'🚨 זבובים'}</strong><br>
+      <strong>${rep.subtype==='bag'?'[[icon:circle]] שקית':'[[icon:siren]] זבובים'}</strong><br>
       <small style="color:#888">${new Date(rep.date).toLocaleDateString('he-IL')}</small>
       ${rep.note?`<br><span style="font-size:12px">${rep.note}</span>`:''}
-      ${rep.reporter?`<br><small>👤 ${rep.reporter}</small>`:''}
+      ${rep.reporter?`<br><small>[[icon:circle]] ${rep.reporter}</small>`:''}
       ${rep106photo?`<br><img src="${rep106photo}" style="width:100%;border-radius:6px;margin-top:6px;max-height:100px;object-fit:cover">`:''}
       <br><div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap">
-        <button onclick="markReportDone('${rep.id}')" style="flex:1;padding:6px;background:#10b981;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-width:50px">✅ טופל</button>
-        <button onclick="open106FromMap(${JSON.stringify(rep106note).replace(/"/g,'&quot;')},${rep106loc?`{lat:${rep106loc.lat},lng:${rep106loc.lng}}`:'null'},'${rep106photo}')" style="flex:1;padding:6px;background:#ef4444;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-width:50px">📋 106</button>
-        <button onclick="deleteReport('${rep.id}')" style="padding:6px 8px;background:#475569;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️</button>
+        <button onclick="markReportDone('${rep.id}')" style="flex:1;padding:6px;background:#10b981;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-width:50px">[[icon:check]] טופל</button>
+        <button onclick="open106FromMap(${JSON.stringify(rep106note).replace(/"/g,'&quot;')},${rep106loc?`{lat:${rep106loc.lat},lng:${rep106loc.lng}}`:'null'},'${rep106photo}')" style="flex:1;padding:6px;background:#ef4444;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-width:50px">[[icon:clipboard-list]] 106</button>
+        <button onclick="deleteReport('${rep.id}')" style="padding:6px 8px;background:#475569;border:none;border-radius:6px;color:white;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">[[icon:trash-2]]</button>
       </div>
     </div>`);
   });
@@ -1651,16 +1542,16 @@ ${rep.reporter?'מדווח: '+rep.reporter:''}
     if(!station||isNaN(station.lat))return;
     const volIcon=L.divIcon({className:'',html:`
       <div style="display:flex;flex-direction:column;align-items:center">
-        <div style="background:#a78bfa;color:#fff;font-family:Heebo,sans-serif;font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.6)">🙋 ${vol.reporter}</div>
+        <div style="background:#a78bfa;color:#fff;font-family:Heebo,sans-serif;font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.6)">[[icon:hand]] ${vol.reporter}</div>
         <div style="width:2px;height:8px;background:#a78bfa;margin:0 auto"></div>
         <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;border:2px solid white"></div>
       </div>`,iconSize:[100,44],iconAnchor:[50,44]});
     L.marker([station.lat,station.lng],{icon:volIcon,zIndexOffset:500})
       .addTo(layerGroups.volunteers)
       .bindPopup(`<div dir="rtl" style="font-family:Heebo,sans-serif">
-        <div style="font-weight:700;font-size:13px;margin-bottom:4px">🙋 ${vol.reporter}</div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px">[[icon:hand]] ${vol.reporter}</div>
         <div style="font-size:12px;color:#a78bfa">לוקח/ת אחריות על פינוי</div>
-        <div style="font-size:11px;color:#888;margin-top:4px">📍 ${station.name}</div>
+        <div style="font-size:11px;color:#888;margin-top:4px">[[icon:map-pin]] ${station.name}</div>
         <div style="font-size:11px;color:#888">${new Date(vol.date).toLocaleDateString('he-IL')}</div>
       </div>`);
   });
@@ -1674,34 +1565,34 @@ function openStationSite(stationId){
   const allTraps=db.traps.filter(t=>t.stationId===stationId);
   const urgent=traps.filter(t=>getDaysOld(t)>=14);
   const soon=traps.filter(t=>{const d=getDaysOld(t);return d>=10&&d<14;});
-  const statusBar=`<div class="status-bar"><div class="status-pill bg-blue">🪤 ${traps.length} פעילות</div>${urgent.length?`<div class="status-pill bg-red">🔴 ${urgent.length} דחוף</div>`:''} ${soon.length?`<div class="status-pill bg-yellow">🟡 ${soon.length} בקרוב</div>`:''}<div class="status-pill bg-grey">${allTraps.length} סה"כ</div></div>`;
-  const shareHtml=`<div class="share-btns"><a class="share-btn" href="https://waze.com/ul?ll=${station.lat},${station.lng}&navigate=yes" target="_blank">🚗 Waze</a><a class="share-btn" href="https://maps.google.com/?q=${station.lat},${station.lng}" target="_blank">🗺️ Maps</a><button class="share-btn" onclick="copyLink(${station.lat},${station.lng})">🔗 העתק</button></div>`;
-  const trapsHtml=traps.length===0?`<div class="empty"><div class="empty-icon">🪤</div><div>אין מלכודות פעילות</div></div>`:traps.map(t=>renderTrapCard(t)).join('');
+  const statusBar=`<div class="status-bar"><div class="status-pill bg-blue">[[icon:package]] ${traps.length} פעילות</div>${urgent.length?`<div class="status-pill bg-red">[[icon:circle-alert]] ${urgent.length} דחוף</div>`:''} ${soon.length?`<div class="status-pill bg-yellow">[[icon:clock]] ${soon.length} בקרוב</div>`:''}<div class="status-pill bg-grey">${allTraps.length} סה"כ</div></div>`;
+  const shareHtml=`<div class="share-btns"><a class="share-btn" href="https://waze.com/ul?ll=${station.lat},${station.lng}&navigate=yes" target="_blank">[[icon:car]] Waze</a><a class="share-btn" href="https://maps.google.com/?q=${station.lat},${station.lng}" target="_blank">[[icon:map]] Maps</a><button class="share-btn" onclick="copyLink(${station.lat},${station.lng})">[[icon:link]] העתק</button></div>`;
+  const trapsHtml=traps.length===0?`<div class="empty"><div class="empty-icon">[[icon:package]]</div><div>אין מלכודות פעילות</div></div>`:traps.map(t=>renderTrapCard(t)).join('');
   const doneTraps=allTraps.filter(t=>t.status!=='active');
-  const doneSec=doneTraps.length?`<div class="trap-section-title" style="margin-top:16px">✅ הושלכו (${doneTraps.length})</div>${doneTraps.map(t=>renderTrapCard(t,true)).join('')}`:'';
+  const doneSec=doneTraps.length?`<div class="trap-section-title" style="margin-top:16px">[[icon:check]] הושלכו (${doneTraps.length})</div>${doneTraps.map(t=>renderTrapCard(t,true)).join('')}`:'';
   const group = getStationGroup(stationId);
-  const groupBadge = group ? `<div id="ss-group-badge" style="font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px"><span style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:7px;padding:2px 9px">🏷️ ${group}</span></div>` : `<div id="ss-group-badge"></div>`;
-  const getEffSev = t => { const u=db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]; return u?.severity||t.severity||'low'; };
+  const groupBadge = group ? `<div id="ss-group-badge" style="font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px"><span style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:7px;padding:2px 9px">[[icon:tag]] ${group}</span></div>` : `<div id="ss-group-badge"></div>`;
+  const getEffSev = t => { const u=db.updates.filter(x=>x.trapId===t.id).reverse().sort((a,b)=>new Date(b.date)-new Date(a.date))[0]; return u?.severity||t.severity||'low'; };
   const hasFullTraps = traps.some(t => getEffSev(t)==='high' || getDaysOld(t)>=14);
   const volCta = hasFullTraps
-    ? `<button class="vol-cta-btn" onclick="closeOverlay('station');openOverlay('vol-type')">🙋 יש מלכודות מלאות — התנדב לפנות!</button>`
+    ? `<button class="vol-cta-btn" onclick="closeOverlay('station');openOverlay('vol-type')">[[icon:hand]] יש מלכודות מלאות — התנדב לפנות!</button>`
     : '';
-  document.getElementById('station-site-content').innerHTML=`${groupBadge}${volCta}${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">⚙️ נהל עמדה</button></div><div class="trap-section-title">🪤 מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
+  document.getElementById('station-site-content').innerHTML=`${groupBadge}${volCta}${statusBar}<div style="padding:14px 16px 4px">${shareHtml}<button class="ss-action-btn" onclick="openManageStation()">[[icon:settings]] נהל עמדה</button></div><div class="trap-section-title">[[icon:package]] מלכודות פעילות (${traps.length})</div>${trapsHtml}<button class="add-trap-btn" onclick="openAddTrap('${stationId}')">+ הוסף מלכודת חדשה</button>${doneSec}`;
   openOverlay('station');
 }
 
 function renderTrapCard(trap,done=false){
-  const updates=db.updates.filter(u=>u.trapId===trap.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const updates=db.updates.filter(u=>u.trapId===trap.id).reverse().sort((a,b)=>new Date(b.date)-new Date(a.date));
   const lastUpdate=updates[0];const currentSev=lastUpdate?lastUpdate.severity:trap.severity;
   const days=getDaysOld(trap);
   const sc={low:'var(--live)',med:'var(--warn)',high:'var(--danger)',done:'var(--muted)'}[currentSev]||'var(--muted)';
-  const sl={low:'🟢 ריקה',med:'🟡 קצת מלאה',high:'🔴 מלאה',done:'✅ הושלכה'}[currentSev]||currentSev;
-  const ub=!done&&days>=14?`<span class="badge bg-red">🔴 ${days}י׳ — דחוף</span>`:!done&&days>=10?`<span class="badge bg-yellow">🟡 ${days} יום</span>`:!done?`<span class="badge bg-grey">${days} יום</span>`:'';
-  const tlHtml=updates.map(u=>{const uc={low:'var(--live)',med:'var(--warn)',high:'var(--danger)',done:'var(--muted)'}[u.severity]||'var(--muted)';const ul={low:'🟢 ריקה',med:'🟡 קצת מלאה',high:'🔴 מלאה',done:'✅ הושלכה לפח'}[u.severity]||u.severity;const ds=new Date(u.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});return `<div class="tl-item"><div class="tl-icon">📸</div><div class="tl-body"><div class="tl-sev" style="color:${uc}">${ul}</div>${u.note?`<div class="tl-note">${u.note}</div>`:''}<div class="tl-meta">${ds}${u.reporter?' · '+u.reporter:''}</div></div>${u.photoUrl?`<img class="tl-img" src="${u.photoUrl}" onclick="event.stopPropagation();openLightbox('${u.photoUrl}','${u.severity||''} · ${u.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;}).join('');
-  const fe=`<div class="tl-item"><div class="tl-icon">🪤</div><div class="tl-body"><div class="tl-sev" style="color:var(--accent)">הותקנה</div>${trap.note?`<div class="tl-note">${trap.note}</div>`:''}<div class="tl-meta">${new Date(trap.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${trap.reporter?' · '+trap.reporter:''}</div></div>${trap.photoUrl?`<img class="tl-img" src="${trap.photoUrl}" onclick="event.stopPropagation();openLightbox('${trap.photoUrl}','הותקנה · ${trap.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;
+  const sl={low:'[[icon:circle-check]] ריקה',med:'[[icon:clock]] קצת מלאה',high:'[[icon:circle-alert]] מלאה',done:'[[icon:check]] הושלכה'}[currentSev]||currentSev;
+  const ub=!done&&days>=14?`<span class="badge bg-red">[[icon:circle-alert]] ${days}י׳ — דחוף</span>`:!done&&days>=10?`<span class="badge bg-yellow">[[icon:clock]] ${days} יום</span>`:!done?`<span class="badge bg-grey">${days} יום</span>`:'';
+  const tlHtml=updates.map(u=>{const uc={low:'var(--live)',med:'var(--warn)',high:'var(--danger)',done:'var(--muted)'}[u.severity]||'var(--muted)';const ul={low:'[[icon:circle-check]] ריקה',med:'[[icon:clock]] קצת מלאה',high:'[[icon:circle-alert]] מלאה',done:'[[icon:check]] הושלכה לפח'}[u.severity]||u.severity;const ds=new Date(u.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});return `<div class="tl-item"><div class="tl-icon">[[icon:camera]]</div><div class="tl-body"><div class="tl-sev" style="color:${uc}">${ul}</div>${u.note?`<div class="tl-note">${u.note}</div>`:''}<div class="tl-meta">${ds}${u.reporter?' · '+u.reporter:''}</div></div>${u.photoUrl?`<img class="tl-img" src="${u.photoUrl}" onclick="event.stopPropagation();openLightbox('${u.photoUrl}','${u.severity||''} · ${u.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;}).join('');
+  const fe=`<div class="tl-item"><div class="tl-icon">[[icon:package]]</div><div class="tl-body"><div class="tl-sev" style="color:var(--accent)">הותקנה</div>${trap.note?`<div class="tl-note">${trap.note}</div>`:''}<div class="tl-meta">${new Date(trap.date).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${trap.reporter?' · '+trap.reporter:''}</div></div>${trap.photoUrl?`<img class="tl-img" src="${trap.photoUrl}" onclick="event.stopPropagation();openLightbox('${trap.photoUrl}','הותקנה · ${trap.reporter||''}')" style="cursor:pointer" onerror="this.style.display='none'">`:''}</div>`;
   const est = estimateFlyCount(trap);
-  const flyBadge = est > 0 ? `<span class="badge" style="background:rgba(167,139,250,0.12);color:var(--trap);border:1px solid rgba(167,139,250,0.25)">🪰 ~${est.toLocaleString()}</span>` : '';
-  return `<div class="trap-card"><div class="trap-header" onclick="toggleTrapBody('${trap.id}')"><div class="trap-dot" style="background:${sc}"></div><div class="trap-info"><div class="trap-name">${trap.name}</div><div class="trap-meta" style="color:${sc}">${sl} ${ub} ${flyBadge}</div></div><div class="trap-chevron" id="chev-${trap.id}">▾</div></div><div class="trap-body" id="body-${trap.id}">${tlHtml}${fe}<button class="add-update-btn" data-action="add-update" data-trap-id="${trap.id}" data-trap-name="${trap.name}">📸 הוסף עדכון / שנה סטטוס</button>${done ? `<button class="add-update-btn" data-action="restore-trap" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--live);border-color:var(--live);margin-top:5px">♻️ שחזר כפעילה</button>` : ""}<button class="add-update-btn" data-action="delete-trap-choice" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--danger);border-color:var(--danger);margin-top:5px">🗑️ מחק מלכודת</button></div></div>`;
+  const flyBadge = est > 0 ? `<span class="badge" style="background:rgba(167,139,250,0.12);color:var(--trap);border:1px solid rgba(167,139,250,0.25)">[[icon:bug]] ~${est.toLocaleString()}</span>` : '';
+  return `<div class="trap-card"><div class="trap-header" onclick="toggleTrapBody('${trap.id}')"><div class="trap-dot" style="background:${sc}"></div><div class="trap-info"><div class="trap-name">${trap.name}</div><div class="trap-meta" style="color:${sc}">${sl} ${ub} ${flyBadge}</div></div><div class="trap-chevron" id="chev-${trap.id}">▾</div></div><div class="trap-body" id="body-${trap.id}">${tlHtml}${fe}<button class="add-update-btn" data-action="add-update" data-trap-id="${trap.id}" data-trap-name="${trap.name}">[[icon:camera]] הוסף עדכון / שנה סטטוס</button>${done ? `<button class="add-update-btn" data-action="restore-trap" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--live);border-color:var(--live);margin-top:5px">[[icon:rotate-ccw]] שחזר כפעילה</button>` : ""}<button class="add-update-btn" data-action="delete-trap-choice" data-trap-id="${trap.id}" data-trap-name="${trap.name}" style="color:var(--danger);border-color:var(--danger);margin-top:5px">[[icon:trash-2]] מחק מלכודת</button></div></div>`;
 }
 
 function toggleTrapBody(trapId){
@@ -1723,7 +1614,7 @@ function setStationFilter(filter, btn) {
 
 function renderStationsList(){
   const el=document.getElementById('stations-list');
-  if(!db.stations.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📍</div><div>אין עמדות — הוסף מהמפה</div></div>`;return;}
+  if(!db.stations.length){el.innerHTML=`<div class="empty"><div class="empty-icon">[[icon:map-pin]]</div><div>אין עמדות — הוסף מהמפה</div></div>`;return;}
 
   // חיפוש
   const searchEl = document.getElementById('station-search');
@@ -1732,7 +1623,7 @@ function renderStationsList(){
   if(clearBtn) clearBtn.style.display = q ? 'block' : 'none';
 
   const getEffectiveSev = t => {
-    const u = db.updates.filter(x=>x.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+    const u = db.updates.filter(x=>x.trapId===t.id).reverse().sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
     return u?.severity || t.severity || 'low';
   };
 
@@ -1745,8 +1636,8 @@ function renderStationsList(){
     const color=urgent>0||topSev==='high'?'var(--danger)':topSev==='med'?'var(--warn)':topSev==='low'?'var(--live)':'var(--muted)';
     const inactive=station.status!=='active';
     const grp=getStationGroup(station.id);
-    const grpTag=grp?`<span class="badge" style="background:rgba(56,189,248,0.1);color:var(--accent);border:1px solid rgba(56,189,248,0.25)">🏷️ ${grp}</span>`:'';
-    return `<div class="gcard ${inactive?'status-inactive':''}" onclick="openStationSite('${station.id}')"><div class="gcard-row"><div class="s-dot" style="background:${color}"></div><div class="s-info"><div class="s-name">${station.name}${inactive?' <span style="font-size:11px;color:var(--muted)">(מושהית)</span>':''}</div><div class="s-meta">${new Date(station.date).toLocaleDateString('he-IL')} · ${station.reporter||''}</div><div class="s-badges">${grpTag}${traps.length?`<span class="badge bg-blue">🪤 ${traps.length}</span>`:'<span class="badge bg-grey">אין</span>'}${urgent?`<span class="badge bg-red">🔴 ${urgent} דחוף</span>`:''}${soon?`<span class="badge bg-yellow">🟡 ${soon} בקרוב</span>`:''}</div></div><div class="s-arrow">›</div></div></div>`;
+    const grpTag=grp?`<span class="badge" style="background:rgba(56,189,248,0.1);color:var(--accent);border:1px solid rgba(56,189,248,0.25)">[[icon:tag]] ${grp}</span>`:'';
+    return `<div class="gcard ${inactive?'status-inactive':''}" onclick="openStationSite('${station.id}')"><div class="gcard-row"><div class="s-dot" style="background:${color}"></div><div class="s-info"><div class="s-name">${station.name}${inactive?' <span style="font-size:11px;color:var(--muted)">(מושהית)</span>':''}</div><div class="s-meta">${new Date(station.date).toLocaleDateString('he-IL')} · ${station.reporter||''}</div><div class="s-badges">${grpTag}${traps.length?`<span class="badge bg-blue">[[icon:package]] ${traps.length}</span>`:'<span class="badge bg-grey">אין</span>'}${urgent?`<span class="badge bg-red">[[icon:circle-alert]] ${urgent} דחוף</span>`:''}${soon?`<span class="badge bg-yellow">[[icon:clock]] ${soon} בקרוב</span>`:''}</div></div><div class="s-arrow">›</div></div></div>`;
   };
 
   // אם יש חיפוש — מצב חיפוש
@@ -1759,14 +1650,14 @@ function renderStationsList(){
       const trapMatches = stationTraps.filter(t=>t.name.toLowerCase().includes(q));
 
       if (stationMatch) {
-        results.push({type:'station', station, highlight: grp.toLowerCase().includes(q) && !station.name.toLowerCase().includes(q) ? `🏷️ ${grp}` : ''});
+        results.push({type:'station', station, highlight: grp.toLowerCase().includes(q) && !station.name.toLowerCase().includes(q) ? `[[icon:tag]] ${grp}` : ''});
       } else if (trapMatches.length) {
-        results.push({type:'station', station, highlight: `🪤 ${trapMatches.map(t=>t.name).join(', ')}`});
+        results.push({type:'station', station, highlight: `[[icon:package]] ${trapMatches.map(t=>t.name).join(', ')}`});
       }
     });
 
     if (!results.length) {
-      el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div>לא נמצאו תוצאות עבור "${q}"</div></div>`;
+      el.innerHTML=`<div class="empty"><div class="empty-icon">[[icon:search]]</div><div>לא נמצאו תוצאות עבור "${q}"</div></div>`;
       return;
     }
     el.innerHTML = `<div style="font-size:12px;color:var(--muted);margin-bottom:10px">נמצאו ${results.length} תוצאות</div>` +
@@ -1785,16 +1676,16 @@ function renderStationsList(){
       const traps = db.traps.filter(t=>t.stationId===s.id&&t.status==='active');
       return traps.some(t => getEffectiveSev(t) === 'high');
     });
-    title = `🔴 מלכודות מלאות (${filtered.length})`;
+    title = `[[icon:circle-alert]] מלכודות מלאות (${filtered.length})`;
   } else if (_stationFilter === 'empty') {
     filtered = active.filter(s => {
       const traps = db.traps.filter(t=>t.stationId===s.id&&t.status==='active');
       return traps.length > 0 && traps.every(t => getEffectiveSev(t) === 'low');
     });
-    title = `✅ מלכודות ריקות (${filtered.length})`;
+    title = `[[icon:check]] מלכודות ריקות (${filtered.length})`;
   } else if (_stationFilter === 'no-trap') {
     filtered = active.filter(s => db.traps.filter(t=>t.stationId===s.id&&t.status==='active').length === 0);
-    title = `❌ ללא מלכודת פעילה (${filtered.length})`;
+    title = `[[icon:x]] ללא מלכודת פעילה (${filtered.length})`;
   } else if (_stationFilter === 'urgent') {
     filtered = active.filter(s => {
       const traps = db.traps.filter(t=>t.stationId===s.id&&t.status==='active');
@@ -1803,16 +1694,16 @@ function renderStationsList(){
       const maxDays = s => Math.max(...db.traps.filter(t=>t.stationId===s.id&&t.status==='active').map(t=>getDaysOld(t)),0);
       return maxDays(b) - maxDays(a);
     });
-    title = `⏰ דחופות לפינוי (${filtered.length})`;
+    title = `[[icon:alarm-clock]] דחופות לפינוי (${filtered.length})`;
   } else if (_stationFilter === 'all') {
     filtered = active;
-    title = `📋 כל העמדות (${filtered.length})`;
+    title = `[[icon:clipboard-list]] כל העמדות (${filtered.length})`;
   }
 
   // flat list filters
   if (_stationFilter !== 'groups') {
     if (!filtered.length) {
-      el.innerHTML = `<div class="empty"><div class="empty-icon">${_stationFilter==='full'?'🔴':_stationFilter==='no-trap'?'❌':'✅'}</div><div>אין עמדות בקטגוריה זו</div></div>`;
+      el.innerHTML = `<div class="empty"><div class="empty-icon">${_stationFilter==='full'?'[[icon:circle-alert]]':_stationFilter==='no-trap'?'[[icon:x]]':'[[icon:check]]'}</div><div>אין עמדות בקטגוריה זו</div></div>`;
       return;
     }
     el.innerHTML = `<div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px">${title}</div>` + filtered.map(stationCard).join('');
@@ -1829,7 +1720,7 @@ function renderStationsList(){
   const groups=Object.keys(grouped).sort((a,b)=>a==='ללא קבוצה'?1:b==='ללא קבוצה'?-1:a.localeCompare(b,'he'));
   el.innerHTML=groups.map(g=>{
     const stations=grouped[g];
-    const header=groups.length>1||g!=='ללא קבוצה'?`<div class="station-group-title">${g==='ללא קבוצה'?'📍 כללי':'🏷️ '+g} <span style="font-size:11px;font-weight:400;color:var(--muted)">(${stations.length})</span></div>`:'';
+    const header=groups.length>1||g!=='ללא קבוצה'?`<div class="station-group-title">${g==='ללא קבוצה'?'[[icon:map-pin]] כללי':'[[icon:tag]] '+g} <span style="font-size:11px;font-weight:400;color:var(--muted)">(${stations.length})</span></div>`:'';
     return header+stations.map(stationCard).join('');
   }).join('');
 }
@@ -1838,10 +1729,10 @@ function renderReportsHistory() {
   if (!el) return;
   const all = [...db.reports].reverse();
   if (!all.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>אין דיווחים</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">[[icon:circle]]</div><div>אין דיווחים</div></div>';
     return;
   }
-  const typeLabel = {flies:'🪰 זבובים', bag:'🛍️ שקית'};
+  const typeLabel = {flies:'[[icon:bug]] זבובים', bag:'[[icon:circle]] שקית'};
   const sevLabel = {low:'קל', med:'מציק', high:'בלתי נסבל'};
   el.innerHTML = all.map(r => {
     const isDone = r.status === 'done';
@@ -1853,17 +1744,17 @@ function renderReportsHistory() {
       <div class="gcard-body" style="display:flex;align-items:flex-start;gap:10px">
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">
-            <span style="font-size:13px;font-weight:700">${typeLabel[r.subtype]||'🚨 דיווח'}</span>
-            <span class="badge ${isDone?'bg-green':'bg-red'}">${isDone?'✅ טופל':'⚠️ פעיל'}</span>
+            <span style="font-size:13px;font-weight:700">${typeLabel[r.subtype]||'[[icon:siren]] דיווח'}</span>
+            <span class="badge ${isDone?'bg-green':'bg-red'}">${isDone?'[[icon:check]] טופל':'[[icon:triangle-alert]] פעיל'}</span>
           </div>
           <div style="font-size:12px;color:var(--muted)">${sevLabel[r.severity]||''} ${r.reporter?'· '+r.reporter:''}</div>
           ${r.note?`<div style="font-size:12px;color:var(--text2);margin-top:2px">${r.note}</div>`:''}
           <div style="font-size:11px;color:var(--muted);margin-top:3px">${dateStr}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-          ${!isDone?`<button onclick="markReportDone('${r.id}')" style="background:var(--live);border:none;border-radius:8px;padding:6px 10px;color:#0f172a;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">✅ טופל</button>`:''}
-          <button onclick="open106FromMap('${safeNote}'${locArg},'${r.photoUrl||''}')" style="background:#ef4444;border:none;border-radius:8px;padding:6px 10px;color:#fff;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">📋 106</button>
-          <button onclick="deleteReport('${r.id}')" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--danger);font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑️</button>
+          ${!isDone?`<button onclick="markReportDone('${r.id}')" style="background:var(--live);border:none;border-radius:8px;padding:6px 10px;color:#0f172a;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">[[icon:check]] טופל</button>`:''}
+          <button onclick="open106FromMap('${safeNote}'${locArg},'${r.photoUrl||''}')" style="background:#ef4444;border:none;border-radius:8px;padding:6px 10px;color:#fff;font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">[[icon:clipboard-list]] 106</button>
+          <button onclick="deleteReport('${r.id}')" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--danger);font-family:Heebo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">[[icon:trash-2]]</button>
         </div>
       </div>
     </div>`;
@@ -1881,12 +1772,12 @@ function renderDashboard(){
   document.getElementById('d-urgent').textContent=urgent.length;
   document.getElementById('d-soon').textContent=soon.length;
 
-  // 🔥 Hotspot
+  // [[icon:circle]] Hotspot
   let hotspot='—';
-  if(active.length){const ranked=active.map(s=>({name:s.name,score:db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=14).length*2+db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=10).length})).sort((a,b)=>b.score-a.score);hotspot=ranked[0].score>0?`${ranked[0].name} (${ranked[0].score} נקודות)`:'הכל תקין ✅';}
+  if(active.length){const ranked=active.map(s=>({name:s.name,score:db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=14).length*2+db.traps.filter(t=>t.stationId===s.id&&getDaysOld(t)>=10).length})).sort((a,b)=>b.score-a.score);hotspot=ranked[0].score>0?`${ranked[0].name} (${ranked[0].score} נקודות)`:'הכל תקין [[icon:check]]';}
   document.getElementById('d-hotspot').textContent=hotspot;
 
-  // 🪰 Total flies estimated
+  // [[icon:bug]] Total flies estimated
   let totalFlies=0, bagFlies=0, stickyFlies=0, doneCount=0;
   allTraps.forEach(t=>{
     const est=estimateFlyCount(t);
@@ -1896,9 +1787,9 @@ function renderDashboard(){
     if(updates.some(u=>u.severity==='done')||t.status!=='active')doneCount++;
   });
   document.getElementById('d-flies').textContent=totalFlies.toLocaleString();
-  document.getElementById('d-flies-sub').textContent=`🪣 שקיות: ${bagFlies.toLocaleString()} · 🟨 מדבקות: ${stickyFlies.toLocaleString()} · ${doneCount} פונו`;
+  document.getElementById('d-flies-sub').textContent=`[[icon:package]] שקיות: ${bagFlies.toLocaleString()} · [[icon:sticky-note]] מדבקות: ${stickyFlies.toLocaleString()} · ${doneCount} פונו`;
 
-  // 🏆 Top volunteer
+  // [[icon:trophy]] Top volunteer
   const volCounts={};
   db.volunteers.filter(v=>v.severity==='pickup').forEach(v=>{
     if(v.reporter){volCounts[v.reporter]=(volCounts[v.reporter]||0)+((v.parentId||'').split(',').filter(Boolean).length||1);}
@@ -1908,9 +1799,9 @@ function renderDashboard(){
     volCounts[u.reporter]=(volCounts[u.reporter]||0)+1;
   });
   const topVol=Object.entries(volCounts).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('d-top-vol').textContent=topVol?`🥇 ${topVol[0]} — ${topVol[1]} פינויים`:'טרם נרשמו פינויים';
+  document.getElementById('d-top-vol').textContent=topVol?`[[icon:circle]] ${topVol[0]} — ${topVol[1]} פינויים`:'טרם נרשמו פינויים';
 
-  // 📅 Monthly chart + peak month
+  // [[icon:calendar]] Monthly chart + peak month
   const months=['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'];
   const counts=Array(12).fill(0);
   [...allTraps,...db.updates].forEach(d=>{if(d.date)counts[new Date(d.date).getMonth()]++;});
@@ -1933,7 +1824,7 @@ function estimateFlyCount(trap) {
   const isSticky = trap.note === 'sticky' || trap.name?.includes('מדבקה');
   const capacity = isSticky ? STICKY_CAPACITY : BAG_CAPACITY;
 
-  const updates = db.updates.filter(u=>u.trapId===trap.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const updates = db.updates.filter(u=>u.trapId===trap.id).reverse().sort((a,b)=>new Date(b.date)-new Date(a.date));
   const sev = updates[0]?.severity || trap.severity || 'low';
   const days = getDaysOld(trap);
 
@@ -1960,7 +1851,7 @@ function estimateFlyCount(trap) {
 function openGroupVolPick() {
   const groups = [...new Set(db.stations.map(s=>getStationGroup(s.id)).filter(Boolean))];
   if(!groups.length) {
-    showToast('⚠️ אין קבוצות מוגדרות — הוסף קבוצות לעמדות תחילה');
+    showToast('[[icon:triangle-alert]] אין קבוצות מוגדרות — הוסף קבוצות לעמדות תחילה');
     return;
   }
   const sheet = document.createElement('div');
@@ -1969,7 +1860,7 @@ function openGroupVolPick() {
   sheet.innerHTML = `
     <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
       <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
-      <div style="font-size:17px;font-weight:900;margin-bottom:6px">🏷️ פינוי לפי קבוצה</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:6px">[[icon:tag]] פינוי לפי קבוצה</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:16px">בחר אזור — כל המלכודות הדחופות בו ייבחרו אוטומטית</div>
       ${groups.map(g => {
         const stationsInGroup = db.stations.filter(s=>getStationGroup(s.id)===g);
@@ -1977,9 +1868,9 @@ function openGroupVolPick() {
         const needyCount = trapsInGroup.filter(t=>t.severity==='high'||getDaysOld(t)>=10).length;
         return `<button onclick="selectGroupForPickup('${g.replace(/'/g,'')}')"
           style="width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:Heebo,sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:right;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-          <span>🏷️ ${g}</span>
+          <span>[[icon:tag]] ${g}</span>
           <span style="font-size:12px;color:${needyCount>0?'var(--danger)':'var(--muted)'}">
-            ${needyCount > 0 ? `🔴 ${needyCount} מלכודות` : 'הכל תקין'}
+            ${needyCount > 0 ? `[[icon:circle-alert]] ${needyCount} מלכודות` : 'הכל תקין'}
           </span>
         </button>`;
       }).join('')}
@@ -1998,8 +1889,8 @@ function selectGroupForPickup(group) {
     db.traps.filter(t=>t.stationId===s.id&&t.status==='active'&&(t.severity==='high'||getDaysOld(t)>=10))
       .forEach(t=>selectedVolTraps.add(t.id));
   });
-  if(!selectedVolTraps.size) { showToast('✅ אין מלכודות דחופות בקבוצה זו'); return; }
-  showToast(`🏷️ ${selectedVolTraps.size} מלכודות נבחרו מ"${group}"`);
+  if(!selectedVolTraps.size) { showToast('[[icon:check]] אין מלכודות דחופות בקבוצה זו'); return; }
+  showToast(`[[icon:tag]] ${selectedVolTraps.size} מלכודות נבחרו מ"${group}"`);
   // open final confirmation
   startVolMapMode();
   setTimeout(()=>{
@@ -2012,7 +1903,7 @@ function openVolunteerPickupFinal() {
   const trapIds = [...selectedVolTraps];
   if(!trapIds.length) return;
   // Use existing final modal
-  document.getElementById('vpf-title').textContent = `🗑️ אישור פינוי — ${trapIds.length} מלכודות`;
+  document.getElementById('vpf-title').textContent = `[[icon:trash-2]] אישור פינוי — ${trapIds.length} מלכודות`;
   openOverlay('vol-pickup-final');
 }
 
@@ -2026,7 +1917,7 @@ function startVolMapMode() {
   document.querySelector('.map-controls').style.display = 'none';
   updateVolMapFooter();
   renderMap(); 
-  showToast('🗺️ בחר עמדות מהמפה כדי לפנות מלכודות');
+  showToast('[[icon:map]] בחר עמדות מהמפה כדי לפנות מלכודות');
 }
 
 function exitVolMapMode() {
@@ -2048,7 +1939,7 @@ function updateVolMapFooter() {
 function openVolStationPick(stationId) {
   const station = db.stations.find(s => s.id === stationId);
   if(!station) return;
-  document.getElementById('vsp-title').textContent = '📍 ' + station.name;
+  document.getElementById('vsp-title').textContent = '[[icon:map-pin]] ' + station.name;
   const traps = db.traps.filter(t => t.stationId === stationId && t.status === 'active');
   const needy = traps.filter(t => {
     const updates = db.updates.filter(u=>u.trapId===t.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -2075,7 +1966,7 @@ function openVolStationPick(stationId) {
       const claim = claimedTraps[t.id];
       const safeName = claim ? claim.name.replace(/"/g, '&quot;') : '';
       const claimAttrs = claim ? `data-claimed-by="${safeName}" data-claimed-date="${claim.date}"` : '';
-      const claimHtml = claim ? `<div style="font-size:11px;color:var(--warn);margin-top:3px;font-weight:700">🔒 מתוכנן לפינוי ע"י ${safeName}</div>` : '';
+      const claimHtml = claim ? `<div style="font-size:11px;color:var(--warn);margin-top:3px;font-weight:700">[[icon:circle]] מתוכנן לפינוי ע"י ${safeName}</div>` : '';
 
       return `
       <label class="vol-list-item" style="cursor:pointer; ${getDaysOld(t) >= 14 || t.severity === 'high' ? 'border:1px solid var(--danger);background:rgba(239,68,68,0.05);' : ''}">
@@ -2083,7 +1974,7 @@ function openVolStationPick(stationId) {
         <div style="flex:1">
           <div style="font-size:14px;font-weight:700">${t.name}</div>
           <div style="font-size:11px;color:var(--muted)">
-            ${t.severity === 'high' ? '🔴 מלאה' : t.severity === 'med' ? '🟡 קצת מלאה' : '🟢 ריקה'} · ${getDaysOld(t)} ימים בשטח
+            ${t.severity === 'high' ? '[[icon:circle-alert]] מלאה' : t.severity === 'med' ? '[[icon:clock]] קצת מלאה' : '[[icon:circle-check]] ריקה'} · ${getDaysOld(t)} ימים בשטח
           </div>
           ${claimHtml}
         </div>
@@ -2096,7 +1987,7 @@ function openVolStationPick(stationId) {
 function handleTrapCheck(cb, trapId) {
   if (cb.checked && cb.dataset.claimedBy) {
     cb.checked = false; // מונע בחירה מיידית
-    showConfirm('⚠️ מלכודת תפוסה',
+    showConfirm('[[icon:triangle-alert]] מלכודת תפוסה',
       `מלכודת זו כבר מתוכננת לפינוי ע"י ${cb.dataset.claimedBy} בתאריך ${new Date(cb.dataset.claimedDate).toLocaleDateString('he-IL')}.\nהאם ברצונך לקחת אחריות ולפנות במקומו?`,
       () => {
         const actualCb = document.getElementById('v-trap-' + trapId);
@@ -2121,7 +2012,7 @@ function toggleVolTrap(trapId, isChecked) {
 function proceedVolPickup() {
   if (selectedVolTraps.size === 0) return;
   document.getElementById('vol-pickup-summary').innerHTML = 'בחרת <strong>' + selectedVolTraps.size + '</strong> מלכודות (שקיות) לפינוי מהשטח.';
-  document.getElementById('vol-pickup-datetime').value = new Date().toISOString().split('T')[0];
+  document.getElementById('vol-pickup-datetime').value = localDate();
   openOverlay('vol-pickup-final');
 }
 
@@ -2137,7 +2028,7 @@ function openVolunteerForm(type) {
   if (type === 'hang') {
     const select = document.getElementById('vol-hang-station-select');
     select.innerHTML = '<option value="">בחר עמדה...</option>' + db.stations.filter(s=>s.status==='active').map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-    document.getElementById('vol-hang-datetime').value = new Date().toISOString().split('T')[0];
+    document.getElementById('vol-hang-datetime').value = localDate();
     setHangMode('existing', document.querySelector('#overlay-vol-hang .sev-btn'));
     openOverlay('vol-hang');
   }
@@ -2149,7 +2040,7 @@ async function saveVolPickup() {
   const note = document.getElementById('vol-pickup-note').value.trim();
   const selected = Array.from(selectedVolTraps);
 
-  if (!name || !date || selected.length === 0) { showToast('⚠️ נא למלא שם ותאריך'); return; }
+  if (!name || !date || selected.length === 0) { showToast('[[icon:triangle-alert]] נא למלא שם ותאריך'); return; }
 
   const btn = document.getElementById('vol-pickup-save-btn');
   btn.disabled = true; btn.innerHTML = '<span class="loading-spin"></span> רושם התנדבות...';
@@ -2159,10 +2050,10 @@ async function saveVolPickup() {
       reporter: name, extra: date, parentId: selected.join(','), status: 'בתהליך', severity: 'pickup'
   });
 
-  showToast('✅ תודה רבה! התנדבותך נרשמה.');
+  showToast('[[icon:check]] תודה רבה! התנדבותך נרשמה.');
   closeOverlay('vol-pickup-final');
   exitVolMapMode();
-  btn.disabled = false; btn.innerHTML = '🗑️ אשר התנדבות';
+  btn.disabled = false; btn.innerHTML = '[[icon:trash-2]] אשר התנדבות';
   loadData();
 }
 
@@ -2177,14 +2068,14 @@ async function saveVolHang() {
 
   if (mode === 'existing') {
       stationId = document.getElementById('vol-hang-station-select').value;
-      if (!stationId) { showToast('⚠️ נא לבחור עמדה להתנדבות'); return; }
+      if (!stationId) { showToast('[[icon:triangle-alert]] נא לבחור עמדה להתנדבות'); return; }
   } else {
       stationName = document.getElementById('vol-hang-new-name').value.trim();
-      if (!stationName) { showToast('⚠️ נא להכניס שם לעמדה החדשה'); return; }
+      if (!stationName) { showToast('[[icon:triangle-alert]] נא להכניס שם לעמדה החדשה'); return; }
       stationId = 'NEW|||' + stationName; 
   }
 
-  if (!name || !date) { showToast('⚠️ נא למלא שם ותאריך'); return; }
+  if (!name || !date) { showToast('[[icon:triangle-alert]] נא למלא שם ותאריך'); return; }
 
   const btn = document.getElementById('vol-hang-save-btn');
   btn.disabled = true; btn.innerHTML = '<span class="loading-spin"></span> רושם התנדבות...';
@@ -2200,16 +2091,16 @@ async function saveVolHang() {
       reporter: name, extra: date, parentId: stationId, status: 'בתהליך', severity: 'hang'
   });
 
-  showToast('✅ תודה רבה! התנדבותך נרשמה.');
+  showToast('[[icon:check]] תודה רבה! התנדבותך נרשמה.');
   closeOverlay('vol-hang');
-  btn.disabled = false; btn.innerHTML = '🪤 אני מתנדב לתלות';
+  btn.disabled = false; btn.innerHTML = '[[icon:package]] אני מתנדב לתלות';
   loadData();
 }
 
 function renderVolunteersList() {
   const list = document.getElementById('volunteers-list');
   if(!db.volunteers.length) {
-    list.innerHTML = '<div class="empty"><div class="empty-icon">🙋</div><div>אין התנדבויות עדיין. מי יהיה הראשון?</div></div>';
+    list.innerHTML = '<div class="empty"><div class="empty-icon">[[icon:hand]]</div><div>אין התנדבויות עדיין. מי יהיה הראשון?</div></div>';
     return;
   }
   
@@ -2252,17 +2143,17 @@ function renderVolunteersList() {
 
     return `
     <div class="gcard ${dimClass}" style="padding:15px">
-      <div style="font-size:12px;color:var(--accent);font-weight:900;text-transform:uppercase">${v.severity === 'pickup' ? '🗑️ פינוי מלכודות' : '🪤 תליית מלכודת'}</div>
+      <div style="font-size:12px;color:var(--accent);font-weight:900;text-transform:uppercase">${v.severity === 'pickup' ? '[[icon:trash-2]] פינוי מלכודות' : '[[icon:package]] תליית מלכודת'}</div>
       <div style="font-size:16px;font-weight:700;margin:4px 0">${v.reporter}</div>
       <div style="font-size:13px;color:var(--text2)">${v.name}</div>
       ${detailsHtml}
       <div style="font-size:11px;color:var(--muted);margin:8px 0">מתוכנן ל: ${new Date(v.extra || v.date).toLocaleDateString('he-IL')}</div>
       <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
         ${!isDone ? 
-          `<button class="btn btn-green" style="padding:8px;font-size:13px;margin:0" data-action="complete-vol" data-vol-id="${v.id}" data-vol-desc="${safeDesc}">סימנתי שביצעתי ✅</button>` 
-          : `<div style="font-weight:bold; color:var(--live); flex:1; font-size:13px;">✅ משימה בוצעה</div>`
+          `<button class="btn btn-green" style="padding:8px;font-size:13px;margin:0" data-action="complete-vol" data-vol-id="${v.id}" data-vol-desc="${safeDesc}">סימנתי שביצעתי [[icon:check]]</button>` 
+          : `<div style="font-weight:bold; color:var(--live); flex:1; font-size:13px;">[[icon:check]] משימה בוצעה</div>`
         }
-        <button class="btn btn-red" style="padding:8px;font-size:13px;flex:0 0 auto;width:auto;margin:0;background:transparent;border:1px solid var(--danger);color:var(--danger)" data-action="delete-vol" data-vol-id="${v.id}">🗑️ מחיקה</button>
+        <button class="btn btn-red" style="padding:8px;font-size:13px;flex:0 0 auto;width:auto;margin:0;background:transparent;border:1px solid var(--danger);color:var(--danger)" data-action="delete-vol" data-vol-id="${v.id}">[[icon:trash-2]] מחיקה</button>
       </div>
     </div>
   `}).join('');
@@ -2293,7 +2184,7 @@ async function confirmVolComplete() {
   
   let finalPhotoUrl = '';
   if (photoBase64 && photoBase64.length > 100) {
-      showToast('⏳ מעלה תמונה לענן...');
+      showToast('[[icon:loader]] מעלה תמונה לענן...');
       const dateStr = new Date().toLocaleDateString('he-IL');
       finalPhotoUrl = await uploadToCloudinary(photoBase64, 'התנדבות', dateStr);
   }
@@ -2325,25 +2216,25 @@ async function confirmVolComplete() {
       await postData({
           rowType: 'trap', id: 'TR'+Date.now(), parentId: stationId,
           name: newTrapName, severity: 'low', reporter: vol.reporter,
-          status: 'active', extra: new Date().toISOString().split('T')[0], photoUrl: finalPhotoUrl,
+          status: 'active', extra: localDate(), photoUrl: finalPhotoUrl,
           stationName: stationName
       });
   }
 
-  showToast('✅ כל הכבוד! הפעולה בוצעה והמערכת עודכנה.');
+  showToast('[[icon:check]] כל הכבוד! הפעולה בוצעה והמערכת עודכנה.');
   closeOverlay('vol-complete');
-  btn.disabled = false; btn.innerHTML = '✅ בוצע!';
+  btn.disabled = false; btn.innerHTML = '[[icon:check]] בוצע!';
   loadData();
 }
 
 async function permanentDeleteVol(id) {
-  showConfirm('⚠️ מחיקת התנדבות', 'האם למחוק התנדבות זו לצמיתות מיומן הרישום?', async () => {
+  showConfirm('[[icon:triangle-alert]] מחיקת התנדבות', 'האם למחוק התנדבות זו לצמיתות מיומן הרישום?', async () => {
     // עדכון חזותי מיידי במסך
     db.volunteers = db.volunteers.filter(v => v.id !== id);
     renderVolunteersList();
     
     await permanentDelete('volunteers', id);
-    showToast('🗑️ התנדבות נמחקה');
+    showToast('[[icon:trash-2]] התנדבות נמחקה');
     setTimeout(loadData, 1000);
   });
 }
@@ -2354,14 +2245,14 @@ async function saveStation(){
   const name=document.getElementById('ns-name').value.trim();
   const reporter=document.getElementById('ns-reporter').value.trim();
   const loc=pinData['ns'];
-  if(!name){showToast('⚠️ נא להכניס שם');return;}
-  if(!loc){showToast('⚠️ נא לבחור מיקום');return;}
-  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  if(!name){showToast('[[icon:triangle-alert]] נא להכניס שם');return;}
+  if(!loc){showToast('[[icon:triangle-alert]] נא לבחור מיקום');return;}
+  if(!reporter){showToast('[[icon:triangle-alert]] נא להכניס שמך');return;}
   const btn=document.getElementById('ns-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שומר...';
   await postData({rowType:'station',id:'ST'+Date.now(),parentId:'',name,lat:loc.lat,lng:loc.lng,severity:'',note:'',photoUrl:'',reporter,status:'active',extra:''});
-  showToast('✅ עמדה נוצרה!');closeOverlay('add-station');
+  showToast('[[icon:check]] עמדה נוצרה!');closeOverlay('add-station');
   document.getElementById('ns-name').value='';document.getElementById('ns-reporter').value='';pinData['ns']=null;
-  btn.disabled=false;btn.textContent='📍 שמור עמדה';setTimeout(loadData,1500);
+  btn.disabled=false;btn.textContent='[[icon:map-pin]] שמור עמדה';setTimeout(loadData,1500);
 }
 
 // Feature 2: trap type
@@ -2394,11 +2285,11 @@ function editStationGroup() {
   sheet.innerHTML=`
     <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
       <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
-      <div style="font-size:17px;font-weight:900;margin-bottom:6px">🏷️ קבוצה / אזור</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:6px">[[icon:tag]] קבוצה / אזור</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:12px">קבץ עמדות לאזורים: גן ילדים, בריכה, הרחבה...</div>
       ${existingGroups.length?`<div style="margin-bottom:12px;flex-wrap:wrap;display:flex">${groupOptions}</div>`:''}
       <input id="group-input" class="fi" value="${currentGroup}" placeholder="לדוגמה: גן ילדים" style="margin-bottom:12px">
-      <button onclick="saveStationGroup()" style="${btnStyle('var(--accent)')}margin-bottom:8px">✅ שמור</button>
+      <button onclick="saveStationGroup()" style="${btnStyle('var(--accent)')}margin-bottom:8px">[[icon:check]] שמור</button>
       <button onclick="document.getElementById('group-sheet').remove()" style="${btnStyle('transparent','1px solid var(--border)','var(--muted)')}">ביטול</button>
     </div>`;
   sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
@@ -2421,7 +2312,7 @@ async function saveStationGroup() {
   renderStationsList();
   // עדכן כותרת עמדה פתוחה אם פתוחה
   updateStationGroupBadge(currentStationId, group);
-  showToast(group ? `🏷️ קבוצה: ${group}` : '🏷️ קבוצה הוסרה');
+  showToast(group ? `[[icon:tag]] קבוצה: ${group}` : '[[icon:tag]] קבוצה הוסרה');
   setTimeout(loadData, 2000);
 }
 
@@ -2433,15 +2324,16 @@ function getStationGroup(stationId) {
 
 function updateStationGroupBadge(stationId, group) {
   const badge = document.getElementById('ss-group-badge');
-  if(badge) badge.textContent = group ? `🏷️ ${group}` : '';
+  if(badge) badge.textContent = group ? `[[icon:tag]] ${group}` : '';
 }
 
 function openAddTrap(stationId){
+  clearFormPhoto('at');
   currentStationId=stationId;
   _trapType='bag';
   const station=db.stations.find(s=>s.id===stationId);
-  document.getElementById('at-station-name').textContent='📍 '+(station?station.name:'');
-  document.getElementById('at-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('at-station-name').textContent='[[icon:map-pin]] '+(station?station.name:'');
+  document.getElementById('at-date').value=localDate();
   // reset type buttons
   document.querySelectorAll('#overlay-add-trap .sev-btn[id^="type-btn"]').forEach(b=>b.classList.remove('sel-low'));
   document.getElementById('type-btn-bag')?.classList.add('sel-low');
@@ -2465,15 +2357,15 @@ async function saveTrap(){
   const reporter=document.getElementById('at-reporter').value.trim();
   const dateVal=document.getElementById('at-date').value;
   const sev=formSev['at'];
-  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
-  if(!sev){showToast('⚠️ נא לבחור סטטוס');return;}
+  if(!reporter){showToast('[[icon:triangle-alert]] נא להכניס שמך');return;}
+  if(!sev){showToast('[[icon:triangle-alert]] נא לבחור סטטוס');return;}
   const station=db.stations.find(s=>s.id===currentStationId);
   const btn=document.getElementById('at-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שומר...';
   const photoBase64=(window._photoData&&window._photoData['at'])||'';
   if(window._photoData)delete window._photoData['at'];
   await postData({rowType:'trap',id:'TR'+Date.now(),parentId:currentStationId,name,lat:station?station.lat:'',lng:station?station.lng:'',severity:sev,note:_trapType,photoBase64,stationName:station?station.name:'',reporter,status:'active',extra:dateVal});
-  showToast('✅ מלכודת נוספה!');closeOverlay('add-trap');
-  document.getElementById('at-reporter').value='';btn.disabled=false;btn.textContent='🪤 הוסף מלכודת';
+  showToast('[[icon:check]] מלכודת נוספה!');closeOverlay('add-trap');
+  document.getElementById('at-reporter').value='';btn.disabled=false;btn.textContent='[[icon:package]] הוסף מלכודת';
   const savedStationId = currentStationId;
   const prevCb = window._cb;
   window._cb = function(raw) {
@@ -2485,11 +2377,13 @@ async function saveTrap(){
 }
 
 function openAddUpdate(trapId,trapName){
+  clearFormPhoto('au');
+  document.getElementById('au-ai-result-card')?.remove();
   currentTrapId=trapId;
-  document.getElementById('au-trap-name').textContent='🪤 '+trapName;
+  document.getElementById('au-trap-name').textContent='[[icon:package]] '+trapName;
   document.getElementById('au-note').value='';document.getElementById('au-reporter').value='';
   document.getElementById('au-photo-ph').style.display='';document.getElementById('au-photo-prev').style.display='none';
-  document.getElementById('au-analyze-btn').style.display='none';
+  
   formSev['au']=null;document.querySelectorAll('#overlay-add-update .sev-btn').forEach(b=>b.className='sev-btn');
   openOverlay('add-update');
 }
@@ -2497,8 +2391,8 @@ async function saveUpdate(){
   const reporter=document.getElementById('au-reporter').value.trim();
   const note=document.getElementById('au-note').value.trim();
   const sev=formSev['au'];
-  if(!sev){showToast('⚠️ נא לבחור סטטוס');return;}
-  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  if(!sev){showToast('[[icon:triangle-alert]] נא לבחור סטטוס');return;}
+  if(!reporter){showToast('[[icon:triangle-alert]] נא להכניס שמך');return;}
   const btn=document.getElementById('au-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שולח...';
   const photoBase64Au=(window._photoData&&window._photoData['au'])||'';if(window._photoData)delete window._photoData['au'];
   const trapForStation=db.traps.find(t=>t.id===currentTrapId);
@@ -2506,8 +2400,8 @@ async function saveUpdate(){
   const stationNameForPhoto=stationForPhoto?stationForPhoto.name:'כללי';
   if(sev==='done')await postData({rowType:'trapStatus',id:currentTrapId,parentId:'',name:'',lat:'',lng:'',severity:'done',note,photoUrl:'',reporter,status:'done',extra:''});
   await postData({rowType:'update',id:'UP'+Date.now(),parentId:currentTrapId,name:'',lat:'',lng:'',severity:sev,note,photoBase64:photoBase64Au,stationName:stationNameForPhoto,reporter,status:'',extra:''});
-  showToast('✅ עדכון נשלח!');closeOverlay('add-update');
-  btn.disabled=false;btn.textContent='✅ שלח עדכון';
+  showToast('[[icon:check]] עדכון נשלח!');closeOverlay('add-update');
+  btn.disabled=false;btn.textContent='[[icon:check]] שלח עדכון';
   setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
 }
 
@@ -2515,27 +2409,27 @@ async function saveReport(){
   const reporter=document.getElementById('rep-reporter').value.trim();
   const note=document.getElementById('rep-note').value.trim();
   const loc=pinData['rep'];const sev=formSev['rep'];const sev2=formSev2['rep'];
-  if(!sev){showToast('⚠️ נא לבחור סוג');return;}
-  if(!sev2){showToast('⚠️ נא לבחור חומרה');return;}
-  if(!loc){showToast('⚠️ נא לבחור מיקום');return;}
-  if(!reporter){showToast('⚠️ נא להכניס שמך');return;}
+  if(!sev){showToast('[[icon:triangle-alert]] נא לבחור סוג');return;}
+  if(!sev2){showToast('[[icon:triangle-alert]] נא לבחור חומרה');return;}
+  if(!loc){showToast('[[icon:triangle-alert]] נא לבחור מיקום');return;}
+  if(!reporter){showToast('[[icon:triangle-alert]] נא להכניס שמך');return;}
   const btn=document.getElementById('rep-save-btn');btn.disabled=true;btn.innerHTML='<span class="loading-spin"></span>שולח...';
   const photoBase64Rep=(window._photoData&&window._photoData['rep'])||'';if(window._photoData)delete window._photoData['rep'];
   const repEmail=(document.getElementById('rep-email')?.value||'').trim();
   await postData({rowType:'report',id:'RP'+Date.now(),parentId:'',name:repEmail,lat:loc.lat,lng:loc.lng,severity:sev2,note,photoBase64:photoBase64Rep,reporter,status:'',extra:sev});
-  showToast('✅ דיווח נשלח!');closeOverlay('report');
+  showToast('[[icon:check]] דיווח נשלח!');closeOverlay('report');
   document.getElementById('rep-reporter').value='';document.getElementById('rep-note').value='';
   if(document.getElementById('rep-email'))document.getElementById('rep-email').value='';
   pinData['rep']=null;
-  document.getElementById('rep-photo-prev').style.display='none'; document.getElementById('report-ai-btn').style.display='none';
-  btn.disabled=false;btn.textContent='🚨 שלח דיווח';setTimeout(loadData,1500);
+  document.getElementById('rep-photo-prev').style.display='none';
+  btn.disabled=false;btn.textContent='[[icon:siren]] שלח דיווח';setTimeout(loadData,1500);
 }
 
 function openManageStation(){
   const station=db.stations.find(s=>s.id===currentStationId);
   const grp=getStationGroup(currentStationId);
   document.getElementById('so-title').textContent=station?station.name:'עמדה';
-  document.getElementById('so-group-display').textContent=grp?`קבוצה נוכחית: 🏷️ ${grp}`:'';
+  document.getElementById('so-group-display').textContent=grp?`קבוצה נוכחית: [[icon:tag]] ${grp}`:'';
   const inactive=station&&station.status!=='active';
   document.getElementById('so-activate-btn').style.display=inactive?'block':'none';
   openOverlay('station-options');
@@ -2550,9 +2444,9 @@ function renameStation(){
   sheet.innerHTML=`
     <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
       <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
-      <div style="font-size:17px;font-weight:900;margin-bottom:14px">✏️ שנה שם עמדה</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:14px">[[icon:circle]] שנה שם עמדה</div>
       <input id="rename-input" class="fi" value="${station.name}" style="margin-bottom:12px;font-size:16px">
-      <button onclick="saveRename()" style="${btnStyle('var(--accent)')}margin-bottom:8px">✅ שמור</button>
+      <button onclick="saveRename()" style="${btnStyle('var(--accent)')}margin-bottom:8px">[[icon:check]] שמור</button>
       <button onclick="document.getElementById('rename-sheet').remove()" style="${btnStyle('transparent','1px solid var(--border)','var(--muted)')}">ביטול</button>
     </div>`;
   sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
@@ -2562,7 +2456,7 @@ function renameStation(){
 
 async function saveRename(){
   const newName=document.getElementById('rename-input')?.value?.trim();
-  if(!newName){showToast('⚠️ שם ריק');return;}
+  if(!newName){showToast('[[icon:triangle-alert]] שם ריק');return;}
   // שמור ב-localStorage מיידית
   const localNames=JSON.parse(localStorage.getItem('station_names')||'{}');
   localNames[currentStationId]=newName;
@@ -2577,7 +2471,7 @@ async function saveRename(){
   if(ssTitle)ssTitle.textContent=newName;
   document.getElementById('so-title').textContent=newName;
   renderStationsList(); renderMap();
-  showToast('✅ שם עודכן');
+  showToast('[[icon:check]] שם עודכן');
 }
 async function toggleStationStatus(action){
   const applyStatus = async (newStatus) => {
@@ -2590,13 +2484,13 @@ async function toggleStationStatus(action){
     localStorage.setItem('station_status',JSON.stringify(loc));
     closeOverlay('station-options'); closeOverlay('station');
     renderMap(); renderStationsList();
-    const msgs={deleted:'🗑️ עמדה הוסתרה',suspended:'⏸️ עמדה הושהתה',active:'✅ עמדה הופעלה'};
-    showToast(msgs[newStatus]||'✅ עודכן');
+    const msgs={deleted:'[[icon:trash-2]] עמדה הוסתרה',suspended:'⏸️ עמדה הושהתה',active:'[[icon:check]] עמדה הופעלה'};
+    showToast(msgs[newStatus]||'[[icon:check]] עודכן');
     setTimeout(loadData,2000);
   };
   if(action==='delete'){
     const station=db.stations.find(s=>s.id===currentStationId);
-    showConfirm('🗑️ הסתרת עמדה',`להסתיר את "${station?station.name:'העמדה'}"?`,()=>applyStatus('deleted'));
+    showConfirm('[[icon:trash-2]] הסתרת עמדה',`להסתיר את "${station?station.name:'העמדה'}"?`,()=>applyStatus('deleted'));
     return;
   }
   applyStatus(action==='suspend'?'suspended':'active');
@@ -2607,7 +2501,7 @@ function deleteTrapChoice(choice){
   if(choice==='trash'){
     saveUpdateForTrash();
   }else{
-    showConfirm('⚠️ מחיקה לצמיתות', `למחוק לצמיתות? לא ניתן לשחזר!`, async()=>{
+    showConfirm('[[icon:triangle-alert]] מחיקה לצמיתות', `למחוק לצמיתות? לא ניתן לשחזר!`, async()=>{
       await permanentDeleteTrap(currentTrapId, 'מלכודת');
     });
   }
@@ -2615,7 +2509,7 @@ function deleteTrapChoice(choice){
 async function saveUpdateForTrash(){
   const trap=db.traps.find(t=>t.id===currentTrapId);
   if(!trap)return;
-  showToast('⏳ מעדכן סטטוס...');
+  showToast('[[icon:loader]] מעדכן סטטוס...');
   await postData({rowType:'trapStatus',id:currentTrapId,parentId:'',name:'',lat:'',lng:'',severity:'done',note:'הושלכה לפח',photoUrl:'',reporter:'מערכת',status:'done',extra:''});
   setTimeout(()=>{loadData();setTimeout(()=>openStationSite(currentStationId),1600);},200);
 }
@@ -2629,13 +2523,13 @@ async function permanentDeleteTrap(trapId, trapName) {
   await permanentDelete('traps', trapId);
   const updates = db.updates.filter(u => u.trapId === trapId);
   for (const u of updates) await permanentDelete('updates', u.id);
-  showToast('🗑️ נמחק לצמיתות');
+  showToast('[[icon:trash-2]] נמחק לצמיתות');
   setTimeout(() => { loadData(); setTimeout(() => openStationSite(currentStationId), 1600); }, 200);
 }
 
 function confirmPermanentDeleteStation() {
   const station = db.stations.find(s => s.id === currentStationId);
-  showConfirm('⚠️ מחיקה לצמיתות', `למחוק את "${station?.name}" + כל המלכודות? פעולה זו אינה הפיכה!`, async () => {
+  showConfirm('[[icon:triangle-alert]] מחיקה לצמיתות', `למחוק את "${station?.name}" + כל המלכודות? פעולה זו אינה הפיכה!`, async () => {
     // שמור ב-localStorage מיידית
     const localStatus = JSON.parse(localStorage.getItem('station_status')||'{}');
     localStatus[currentStationId] = 'perm_deleted';
@@ -2645,7 +2539,7 @@ function confirmPermanentDeleteStation() {
     db.traps.filter(t => t.stationId === currentStationId).forEach(t => t.status = 'deleted');
     closeOverlay('station-options'); closeOverlay('station');
     renderMap(); renderStationsList();
-    showToast('🗑️ עמדה נמחקה לצמיתות');
+    showToast('[[icon:trash-2]] עמדה נמחקה לצמיתות');
     // נסה גם ב-GAS (אם מוגדר)
     await permanentDelete('stations', currentStationId);
   });
@@ -2661,26 +2555,26 @@ async function permanentDeleteStation(stationId) {
   }
   closeOverlay('station-options');
   closeOverlay('station');
-  showToast('🗑️ עמדה נמחקה לצמיתות');
+  showToast('[[icon:trash-2]] עמדה נמחקה לצמיתות');
   setTimeout(loadData, 1500);
 }
 
 async function restoreTrap(trapId, trapName) {
-  showConfirm('♻️ שחזור מלכודת', `לשחזר את "${trapName}" כפעילה?`, async () => {
+  showConfirm('[[icon:rotate-ccw]] שחזור מלכודת', `לשחזר את "${trapName}" כפעילה?`, async () => {
     await fetch(SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
       headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({rowType:'trapStatus', id:trapId, parentId:'', name:'', lat:'', lng:'', severity:'', note:'', photoUrl:'', reporter:'שחזור', status:'active', extra:''})
     });
-    showToast('♻️ מלכודת שוחזרה!');
+    showToast('[[icon:rotate-ccw]] מלכודת שוחזרה!');
     setTimeout(() => { loadData(); setTimeout(() => openStationSite(currentStationId), 1600); }, 200);
   });
 }
 
 async function deleteUpdate(updateId) {
-  showConfirm('🗑️ מחיקת עדכון', 'למחוק את העדכון לצמיתות?', async () => {
+  showConfirm('[[icon:trash-2]] מחיקת עדכון', 'למחוק את העדכון לצמיתות?', async () => {
     await permanentDelete('updates', updateId);
-    showToast('🗑️ עדכון נמחק');
+    showToast('[[icon:trash-2]] עדכון נמחק');
     setTimeout(() => { loadData(); setTimeout(() => openStationSite(currentStationId), 1600); }, 200);
   });
 }
@@ -2710,7 +2604,7 @@ async function uploadToCloudinary(base64Data, trapName, dateStr) {
   }
 }
 
-async function postData(data) {
+async function postData(data, strict = false) {
   try {
     const photoBase64 = data.photoBase64 || '';
     const payload = {
@@ -2718,7 +2612,7 @@ async function postData(data) {
     };
     if (photoBase64 && photoBase64.length > 100) {
       console.log('Uploading photo to Cloudinary...');
-      showToast('⏳ מעלה תמונה לענן...');
+      showToast('[[icon:loader]] מעלה תמונה לענן...');
       const dateStr = new Date().toLocaleDateString('he-IL');
       payload.photoUrl = await uploadToCloudinary(photoBase64, data.name || data.stationName, dateStr);
       console.log('Photo uploaded:', payload.photoUrl);
@@ -2729,15 +2623,15 @@ async function postData(data) {
       method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: body
     });
     console.log('POST sent');
-  } catch(e) { console.log('Post error:', e); }
+  } catch(e) { console.error('Post error:', e); if (strict) throw e; showToast('שליחה נכשלה. יש לבדוק את החיבור ולרענן לפני ניסיון נוסף.'); throw e; }
 }
 
 function getGPS(prefix){
   const btn=document.getElementById(prefix+'-gps-btn');const status=document.getElementById(prefix+'-loc-status');
-  btn.textContent='⏳...';btn.disabled=true;
+  btn.textContent='[[icon:loader]]...';btn.disabled=true;
   navigator.geolocation.getCurrentPosition(
-    pos=>{pinData[prefix]={lat:pos.coords.latitude,lng:pos.coords.longitude};status.textContent=`✅ מיקום נמצא (${Math.round(pos.coords.accuracy)}מ׳)`;status.className='loc-status ok';btn.textContent='📍 ✅';btn.disabled=false;btn.classList.add('ok');},
-    ()=>{status.textContent='❌ לא ניתן — נסה סמן על מפה';status.className='loc-status err';btn.textContent='📍 GPS';btn.disabled=false;},
+    pos=>{if(!nearTimorim(pos.coords.latitude,pos.coords.longitude)){status.textContent=`[[icon:x]] המיקום רחוק ${Math.round(kmFromTimorim(pos.coords.latitude,pos.coords.longitude))} ק״מ מתימורים — סמנו על מפה`;status.className='loc-status err';btn.textContent='[[icon:map-pin]] GPS';btn.disabled=false;return;}pinData[prefix]={lat:pos.coords.latitude,lng:pos.coords.longitude};status.textContent=`[[icon:check]] מיקום נמצא (${Math.round(pos.coords.accuracy)}מ׳)`;status.className='loc-status ok';btn.textContent='[[icon:map-pin]] [[icon:check]]';btn.disabled=false;btn.classList.add('ok');},
+    ()=>{status.textContent='[[icon:x]] לא ניתן — נסה סמן על מפה';status.className='loc-status err';btn.textContent='[[icon:map-pin]] GPS';btn.disabled=false;},
     {enableHighAccuracy:true,timeout:10000}
   );
 }
@@ -2745,9 +2639,9 @@ function getGPS(prefix){
 function togglePinMap(prefix){
   openMapPicker(loc=>{
     pinData[prefix]=loc;
-    const s=document.getElementById(prefix+'-loc-status');if(s){s.textContent='✅ מיקום נבחר מהמפה';s.className='loc-status ok';}
-    const btn=document.getElementById(prefix+'-map-btn');if(btn){btn.classList.add('ok');btn.textContent='🗺️ ✅';}
-    showToast('✅ מיקום אושר!');
+    const s=document.getElementById(prefix+'-loc-status');if(s){s.textContent='[[icon:check]] מיקום נבחר מהמפה';s.className='loc-status ok';}
+    const btn=document.getElementById(prefix+'-map-btn');if(btn){btn.classList.add('ok');btn.textContent='[[icon:map]] [[icon:check]]';}
+    showToast('[[icon:check]] מיקום אושר!');
   });
 }
 
@@ -2758,10 +2652,11 @@ function openMapPicker(callback){
     if(mapPickerMap){mapPickerMap.remove();mapPickerMap=null;}
     mapPickerMap=L.map('map-picker-map',{tap:true,dragging:true,touchZoom:true}).setView([31.7154,34.7586],17);
     const isDark=!document.body.classList.contains('light');
-    L.tileLayer(isDark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© CartoDB'}).addTo(mapPickerMap);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri',maxZoom:22,maxNativeZoom:18}).addTo(mapPickerMap);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:22,maxNativeZoom:18,opacity:0.9}).addTo(mapPickerMap);
     setTimeout(()=>mapPickerMap.invalidateSize(),100);
     mapPickerMap.on('move',()=>{const c=mapPickerMap.getCenter();document.getElementById('map-picker-coords').textContent=c.lat.toFixed(5)+', '+c.lng.toFixed(5);});
-    if(navigator.geolocation)navigator.geolocation.getCurrentPosition(pos=>mapPickerMap.setView([pos.coords.latitude,pos.coords.longitude],18),()=>{},{timeout:5000});
+    if(navigator.geolocation)navigator.geolocation.getCurrentPosition(pos=>{const la=pos.coords.latitude,ln=pos.coords.longitude;if(nearTimorim(la,ln))mapPickerMap.setView([la,ln],18);},()=>{},{timeout:5000});
   },50);
 }
 function closeMapPicker(){document.getElementById('map-picker-overlay').style.display='none';}
@@ -2786,15 +2681,6 @@ function handlePhoto(prefix,input){
       if(ph)ph.style.display='none';
       if(!window._photoData)window._photoData={};
       window._photoData[prefix]=compressed;
-      
-      if(prefix === 'au') {
-          const aiBtn = document.getElementById('au-analyze-btn');
-          if(aiBtn) aiBtn.style.display = 'flex';
-      }
-      if(prefix === 'rep') {
-          const aiBtn = document.getElementById('report-ai-btn');
-          if(aiBtn) aiBtn.style.display = 'flex';
-      }
       
       console.log('Photo compressed:',Math.round(compressed.length/1024),'KB');
     };
@@ -2838,7 +2724,7 @@ async function confirmYes(){closeOverlay('confirm');if(confirmCallback){await co
 
 function toggleTheme(){
   const isLight=document.body.classList.toggle('light');
-  document.getElementById('theme-btn').textContent=isLight?'☀️':'🌙';
+  document.getElementById('theme-btn').textContent=isLight?'[[icon:sun]]':'[[icon:moon]]';
   localStorage.setItem('theme',isLight?'light':'dark');
   haptic('light');
   if(map){ setMapStyle(currentMapStyle); }
@@ -2846,7 +2732,7 @@ function toggleTheme(){
 
 function haptic(type){if(!navigator.vibrate)return;const p={light:[10],medium:[20],success:[10,50,10],error:[50,30,50]};if(p[type])navigator.vibrate(p[type]);}
 function getDaysOld(trap){const d=trap.extra||trap.date;if(!d)return 0;return Math.floor((Date.now()-new Date(d))/86400000);}
-function copyLink(lat,lng){navigator.clipboard.writeText(`https://maps.google.com/?q=${lat},${lng}`).then(()=>showToast('🔗 קישור הועתק!'));}
+function copyLink(lat,lng){navigator.clipboard.writeText(`https://maps.google.com/?q=${lat},${lng}`).then(()=>showToast('[[icon:link]] קישור הועתק!'));}
 function openLightbox(src, caption) {
   const lb = document.getElementById('photo-lightbox');
   document.getElementById('lightbox-img').src = src;
@@ -2857,19 +2743,19 @@ function openLightbox(src, caption) {
 function closeLightbox() {
   document.getElementById('photo-lightbox').style.display = 'none';
 }
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');if(msg.includes('✅'))haptic('success');setTimeout(()=>t.classList.remove('show'),2500);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');if(msg.includes('[[icon:check]]'))haptic('success');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── GUIDED TOUR ───────────────────────────────────────────────────────────
 const TOUR_STEPS = [
-  { title:'👋 ברוכים הבאים!', body:'האפליקציה עוזרת לנהל את מלכודות הזבובים במושב.\nהסיור הזה יראה לך הכל תוך שתי דקות.' },
-  { title:'🗺️ המפה', body:'כל נקודה היא עמדת מלכודת.\n🔴 אדום = מלאה / דחוף\n🟡 צהוב = קצת מלאה\n🟢 ירוק = תקין\nלחץ על עמדה לפרטים.', navTo:'map', sel:'#map' },
-  { title:'🛰️ סוג מפה', body:'לחץ כאן כדי לעבור בין לוויין, רחובות, כהה וטופוגרפי.', navTo:'map', sel:'.map-style-picker' },
-  { title:'📍 שכבות המפה', body:'📍 עמדות — הצג/הסתר\n🚨 מפגעים — דיווחי תושבים\n🙋 מתנדבים — מי לקח אחריות\n❓ סיור — הפעל מחדש', navTo:'map', sel:'.map-controls' },
-  { title:'🎯 כפתורי פעולה', body:'🙋 התנדב לפנות מלכודת\n🚨 דווח על מפגע זבובים\n📍 מיקומי (מעקב בזמן אמת)\n＋ הוסף עמדה חדשה', navTo:'map', sel:'.map-fabs', boxPos:'top' },
-  { title:'📍 רשימת עמדות', body:'מסנן לפי אזור, מלאות ועוד.\nכשיש מלכודת מלאה — כפתור ירוק בולט מופיע.', navTo:'list', sel:'#stations-filter-bar' },
-  { title:'🙋 התנדבות', body:'רשום שאתה מפנה מלכודת.\nהכי מומלץ — רביעי בערב לפני פינוי הזבל ביום חמישי.', navTo:'volunteers', sel:'#page-volunteers .btn-sparkle' },
-  { title:'📊 דוח מצב', body:'סיכום כולל: זבובים שנתפסו, מי פינה הכי הרבה, החודש הכי עמוס.', navTo:'stats', sel:'.stats-grid' },
-  { title:'✅ זהו!', body:'אם אתה רואה שקית מלאה — צלם ועדכן.\nאם אתה יכול לפנות — לחץ על הכפתור הירוק.\n\nתודה שעוזר! 🙏' }
+  { title:'[[icon:circle]] ברוכים הבאים!', body:'האפליקציה עוזרת לנהל את מלכודות הזבובים במושב.\nהסיור הזה יראה לך הכל תוך שתי דקות.' },
+  { title:'[[icon:map]] המפה', body:'כל נקודה היא עמדת מלכודת.\n[[icon:circle-alert]] אדום = מלאה / דחוף\n[[icon:clock]] צהוב = קצת מלאה\n[[icon:circle-check]] ירוק = תקין\nלחץ על עמדה לפרטים.', navTo:'map', sel:'#map' },
+  { title:'[[icon:satellite]] סוג מפה', body:'לחץ כאן כדי לעבור בין לוויין, רחובות, כהה וטופוגרפי.', navTo:'map', sel:'.map-style-picker' },
+  { title:'[[icon:map-pin]] שכבות המפה', body:'[[icon:map-pin]] עמדות — הצג/הסתר\n[[icon:siren]] מפגעים — דיווחי תושבים\n[[icon:hand]] מתנדבים — מי לקח אחריות\n[[icon:circle-help]] סיור — הפעל מחדש', navTo:'map', sel:'.map-controls' },
+  { title:'[[icon:target]] כפתורי פעולה', body:'[[icon:hand]] התנדב לפנות מלכודת\n[[icon:siren]] דווח על מפגע זבובים\n[[icon:map-pin]] מיקומי (מעקב בזמן אמת)\n＋ הוסף עמדה חדשה', navTo:'map', sel:'.map-fabs', boxPos:'top' },
+  { title:'[[icon:map-pin]] רשימת עמדות', body:'מסנן לפי אזור, מלאות ועוד.\nכשיש מלכודת מלאה — כפתור ירוק בולט מופיע.', navTo:'list', sel:'#stations-filter-bar' },
+  { title:'[[icon:hand]] התנדבות', body:'רשום שאתה מפנה מלכודת.\nהכי מומלץ — רביעי בערב לפני פינוי הזבל ביום חמישי.', navTo:'volunteers', sel:'#page-volunteers button[onclick*="vol-type"]' },
+  { title:'[[icon:chart-column]] דוח מצב', body:'סיכום כולל: זבובים שנתפסו, מי פינה הכי הרבה, החודש הכי עמוס.', navTo:'stats', sel:'.stats-grid' },
+  { title:'[[icon:check]] זהו!', body:'אם אתה רואה שקית מלאה — צלם ועדכן.\nאם אתה יכול לפנות — לחץ על הכפתור הירוק.\n\nתודה שעוזר! [[icon:circle]]' }
 ];
 let _tourStep=0, _tourEl=null, _tourHighlight=null, _tourArrowSvg=null;
 
@@ -2899,9 +2785,9 @@ function renderTourStep(){
     <div class="tour-title">${step.title}</div>
     <div class="tour-body">${step.body.replace(/\n/g,'<br>')}</div>
     <div class="tour-footer">
-      <button class="tour-skip" onclick="endTour()">✕ דלג</button>
+      <button class="tour-skip" onclick="endTour()">[[icon:circle]] דלג</button>
       <div class="tour-dots">${dots}</div>
-      <button class="tour-next" onclick="nextTourStep()">${isLast?'✅ סיום':'הבא ›'}</button>
+      <button class="tour-next" onclick="nextTourStep()">${isLast?'[[icon:check]] סיום':'הבא ›'}</button>
     </div>
   </div>`;
   document.body.appendChild(el); _tourEl=el;
@@ -2942,7 +2828,7 @@ function endTour(){
   if(_tourHighlight){_tourHighlight.remove();_tourHighlight=null;}
   if(_tourArrowSvg){_tourArrowSvg.remove();_tourArrowSvg=null;}
   const nav=document.querySelector('.nav-item');if(nav)navigate('map',nav);
-  showToast('✅ סיור הסתיים');
+  showToast('[[icon:check]] סיור הסתיים');
 }
 
 // ── PWA Install ─────────────────────────────────────────────────────────
@@ -2955,44 +2841,15 @@ window.addEventListener('beforeinstallprompt', e => {
 window.addEventListener('appinstalled', () => {
   const btn = document.getElementById('pwa-install-btn');
   if(btn) btn.style.display = 'none';
-  showToast('🪰 האפליקציה הותקנה!');
+  showToast('[[icon:bug]] האפליקציה הותקנה!');
 });
 function installPWA() {
   if (_pwaPrompt) {
     _pwaPrompt.prompt();
-    _pwaPrompt.userChoice.then(r => { if(r.outcome==='accepted') showToast('🪰 מותקן!'); _pwaPrompt=null; });
-    return;
+    _pwaPrompt.userChoice.then(r => { if(r.outcome==='accepted') showToast('[[icon:bug]] מותקן!'); _pwaPrompt=null; });
+  } else {
+    showToast('iOS: לחץ שתף ← "הוסף למסך הבית"');
   }
-  // iOS / Safari
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  const sheet = document.createElement('div');
-  sheet.style.cssText='position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)';
-  const steps = isIOS
-    ? `<div style="display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px">
-          <span style="font-size:24px">1️⃣</span><span>לחץ על כפתור <strong>שתף</strong> <span style="font-size:18px">⎙</span> בתחתית הדפדפן</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px">
-          <span style="font-size:24px">2️⃣</span><span>בחר <strong>"הוסף למסך הבית"</strong></span>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px">
-          <span style="font-size:24px">3️⃣</span><span>לחץ <strong>"הוסף"</strong> ✅</span>
-        </div>
-      </div>`
-    : `<div style="padding:14px;background:var(--card2);border-radius:10px;text-align:center">
-        בתפריט הדפדפן ⋮ בחר <strong>"הוסף למסך הבית"</strong>
-      </div>`;
-  sheet.innerHTML=`<div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;font-family:Heebo,sans-serif;direction:rtl">
-    <div style="width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 20px"></div>
-    <div style="font-size:28px;text-align:center;margin-bottom:8px">🪰</div>
-    <div style="font-size:17px;font-weight:900;text-align:center;margin-bottom:4px">הוסף למסך הבית</div>
-    <div style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px">מלכודות זבובים — תימורים</div>
-    ${steps}
-    <button onclick="this.closest('div[style*=fixed]').remove()" style="width:100%;padding:13px;margin-top:16px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:Heebo,sans-serif;font-size:13px;cursor:pointer">סגור</button>
-  </div>`;
-  sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.remove();});
-  document.body.appendChild(sheet);
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
@@ -3001,14 +2858,401 @@ window.addEventListener('load',()=>{
   const saved = localStorage.getItem('theme');
   if(saved === 'dark'){ /* keep dark */ } else {
     document.body.classList.add('light');
-    document.getElementById('theme-btn').textContent='☀️';
+    document.getElementById('theme-btn').textContent='[[icon:sun]]';
   }
   initMap();
-  if(!localStorage.getItem('tour_done')){
+  if(false){ // Tour remains available from the map; no unsolicited first-run popup.
     setTimeout(()=>{startTour();localStorage.setItem('tour_done','1');},1500);
   }
 });
-setInterval(loadData,90000);
+setInterval(()=>loadData(),90000);
+</script>
+<div class="overlay" id="overlay-bulk" role="dialog" aria-modal="true" aria-labelledby="bulk-title">
+ <div class="sheet bulk-sheet">
+  <div class="bulk-header"><h2 id="bulk-title">פעולה מרוכזת</h2><button class="sheet-close" onclick="closeBulk()" aria-label="סגירה"><i data-lucide="x"></i></button></div>
+  <div id="bulk-editor">
+   <p class="bulk-help" id="bulk-help"></p>
+   <div class="bulk-grid filters">
+    <label>חיפוש עמדה או מלכודת<input id="bulk-search" class="fi" type="search" oninput="renderBulkList()" placeholder="הקלידו שם…"></label>
+    <label>אזור<select id="bulk-region" class="fi" onchange="renderBulkList()"></select></label>
+    <label>מצב מלכודת<select id="bulk-filter" class="fi" onchange="renderBulkList()"><option value="all">כל הפעילות</option><option value="high">מלאות</option><option value="med">קצת מלאות</option><option value="low">ריקות</option></select></label>
+   </div>
+   <div class="bulk-select-actions"><button onclick="selectBulkVisible(true)">בחרו את המוצגות</button><button onclick="selectBulkVisible(false)">נקו את הבחירה</button><span id="bulk-count" aria-live="polite">0 נבחרו</span></div>
+   <div class="bulk-state" id="bulk-dispose-fields">
+    <span class="fl">סמנו את כל הנבחרות כ־</span>
+    <div class="sev-group" id="bulk-state-group"><button type="button" class="sev-btn" data-state="low">ריקה</button><button type="button" class="sev-btn" data-state="med">קצת מלאה</button><button type="button" class="sev-btn" data-state="high">מלאה</button><button type="button" class="sev-btn" data-state="none">לא תועד</button></div>
+    <small>אפשר לשנות מצב של מלכודת בודדת ברשימה עצמה.</small>
+   </div>
+   <div class="bulk-list" id="bulk-list"></div>
+   <div class="bulk-grid" id="bulk-add-fields">
+    <label>סוג משותף<select class="fi" id="bulk-type"><option value="bag">שקית FLY IN</option><option value="sticky">מדבקה</option></select></label>
+    <label>תאריך הצבה משותף<input class="fi" id="bulk-date" type="date" required></label>
+    <label>מצב התחלתי משותף<select class="fi" id="bulk-severity"><option value="low">ריקה</option><option value="med">קצת מלאה</option><option value="high">מלאה</option></select></label>
+   </div>
+   <label class="bulk-reporter">שם המדווח/ת (חובה)<input class="fi" id="bulk-reporter" autocomplete="name" maxlength="120" required></label>
+   <div class="bulk-footer"><button class="btn btn-primary" id="bulk-review-btn" onclick="reviewBulk()" disabled>המשך לסיכום ואישור</button></div>
+  </div>
+  <div id="bulk-review" hidden>
+   <div class="bulk-warning" id="bulk-summary-text"></div><ol class="bulk-summary" id="bulk-summary-list"></ol>
+   <button class="btn btn-primary" id="bulk-commit-btn" onclick="runBulk()">אישור וביצוע</button>
+   <button class="btn btn-grey" id="bulk-back-btn" onclick="backBulk()">חזרה לעריכה</button>
+   <div class="bulk-bar" id="bulk-bar" hidden><span id="bulk-bar-fill"></span></div><div id="bulk-progress" role="status" aria-live="polite"></div><div id="bulk-results"></div>
+   <button class="btn btn-grey" id="bulk-finish-btn" onclick="finishBulk()" hidden>סיום</button>
+  </div>
+ </div>
+</div>
+
+<script>
+// UI-only enhancements; all writes use the original postData payload contract.
+function escapeHTML(value) { return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function localDate() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function uniqueId(prefix) { return prefix+Date.now()+'_'+(globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)); }
+function effectiveSeverity(trap) { return db.updates.filter(u=>u.trapId===trap.id).reverse().sort((a,b)=>new Date(b.date)-new Date(a.date))[0]?.severity || trap.severity || 'low'; }
+function clearFormPhoto(prefix){if(window._photoData)delete window._photoData[prefix];const image=document.getElementById(prefix+'-photo-prev');if(image){image.removeAttribute('src');image.style.display='none';}const ph=document.getElementById(prefix+'-photo-ph');if(ph)ph.style.display='';document.querySelectorAll(`#overlay-${prefix==='at'?'add-trap':'add-update'} input[type=file]`).forEach(input=>input.value='');}
+const severityLabel={low:'ריקה',med:'קצת מלאה',high:'מלאה',done:'הושלכה לפח'};
+const BULK_STORAGE='timorim_bulk_pending_v1';
+let bulkSev=new Map(),bulkDefaultSev='';
+const BULK_PARALLEL=3;
+const stateLabel={low:'ריקה',med:'קצת מלאה',high:'מלאה',none:'לא תועד'};
+let bulkMode='add',bulkSelected=new Set(),bulkVisible=[],bulkJob=null,bulkBusy=false,bulkDraft=null;
+const $bulk=id=>document.getElementById('bulk-'+id);
+function storeBulk() { try{sessionStorage.setItem(BULK_STORAGE,JSON.stringify(bulkJob));}catch{showToast('לא ניתן לשמור התקדמות מקומית. השאירו את החלון פתוח עד לסיום.');} }
+function savedBulk() { try{return JSON.parse(sessionStorage.getItem(BULK_STORAGE)||'null');}catch{return null;} }
+function bulkStation(item) { return bulkMode==='add'?item:db.stations.find(s=>s.id===item.stationId); }
+function bulkCandidates() { return bulkMode==='add'?db.stations.filter(s=>s.status==='active'):db.traps.filter(t=>t.status==='active'); }
+async function openBulk(mode) {
+  if(bulkBusy){openOverlay('bulk');return;}
+  bulkJob=bulkJob || savedBulk();
+  openOverlay('bulk');
+  if(bulkJob){bulkMode=bulkJob.mode;showBulkReview();renderBulkResults();return;}
+  bulkMode=mode;bulkSelected=new Set();bulkSev=new Map();bulkDefaultSev='';bulkDraft=null;paintStateGroup();
+  $bulk('title').textContent=mode==='add'?'הוספת מלכודות מרוכזת':'פינוי מלכודות מרוכז';
+  $bulk('help').textContent=mode==='add'?'בחרו עמדות. לכל עמדה תתווסף מלכודת אחת עם הפרטים המשותפים.':'בחרו מלכודות פעילות וציינו באיזה מצב כל אחת נמצאה. באישור, כל מצב יתועד ואז המלכודת תסומן כהושלכה לפח.';
+  $bulk('editor').hidden=false;$bulk('review').hidden=true;
+  $bulk('search').value='';$bulk('filter').value='all';
+  $bulk('filter').closest('label').hidden=mode==='add';$bulk('add-fields').hidden=mode!=='add';$bulk('dispose-fields').hidden=mode==='add';
+  $bulk('date').value=localDate();$bulk('date').max=localDate();
+  $bulk('list').textContent='טוען נתונים עדכניים…';$bulk('review-btn').disabled=true;
+  try { await refreshData(); }
+  catch { $bulk('list').textContent='לא ניתן לטעון נתונים. בדקו את החיבור ופתחו שוב את הפעולה.';return; }
+  const regions=[...new Set(bulkCandidates().map(item=>bulkStation(item)?.group||''))].sort((a,b)=>a.localeCompare(b,'he'));
+  $bulk('region').innerHTML='<option value="*">כל האזורים</option>'+regions.map(g=>`<option value="${escapeHTML(g)}">${escapeHTML(g||'ללא אזור')}</option>`).join('');
+  renderBulkList();
+}
+function itemState(id){ return bulkSev.get(id)||bulkDefaultSev||''; }
+function paintStateGroup(){
+  document.querySelectorAll('#bulk-state-group .sev-btn').forEach(b=>{
+    const on=b.dataset.state===bulkDefaultSev;
+    b.className='sev-btn'+(on?' sel-'+b.dataset.state:'');b.setAttribute('aria-pressed',String(on));
+  });
+}
+function renderBulkList() {
+  const q=$bulk('search').value.trim().toLocaleLowerCase(),region=$bulk('region').value,sev=$bulk('filter').value;
+  const dispose=bulkMode!=='add';
+  bulkVisible=bulkCandidates().filter(item=>{
+    const station=bulkStation(item),group=station?.group||'';
+    return (region==='*'||group===region) && (!dispose||sev==='all'||effectiveSeverity(item)===sev) &&
+      (!q||[item.name,station?.name,group,item.id].join(' ').toLocaleLowerCase().includes(q));
+  });
+  $bulk('list').innerHTML=bulkVisible.length?bulkVisible.map(item=>{
+    const station=bulkStation(item),group=station?.group||'ללא אזור';
+    const detail=!dispose?`${group} · ${db.traps.filter(t=>t.stationId===item.id&&t.status==='active').length} מלכודות פעילות`:
+      `${station?.name||'עמדה לא זמינה'} · ${group} · אחרון: ${severityLabel[effectiveSeverity(item)]||''} · ${Math.max(0,getDaysOld(item))} ימים`;
+    const chosen=dispose?itemState(item.id):'';
+    const select=dispose?`<select class="fi bulk-sev${chosen?'':' missing'}" data-bulk-sev="${escapeHTML(item.id)}" aria-label="מצב ${escapeHTML(item.name||item.id)}"><option value="" disabled ${chosen?'':'selected'}>מצב?</option>${Object.entries(stateLabel).map(([v,l])=>`<option value="${v}" ${chosen===v?'selected':''}>${l}</option>`).join('')}</select>`:'';
+    return `<div class="bulk-row"><label><input type="checkbox" data-bulk-id="${escapeHTML(item.id)}" ${bulkSelected.has(item.id)?'checked':''}><span><strong>${escapeHTML(item.name||item.id)}</strong><small>${escapeHTML(detail)}</small></span></label>${select}</div>`;
+  }).join(''):'<div class="bulk-empty">אין תוצאות לסינון הנוכחי</div>';
+  updateBulkCount();
+}
+function updateBulkCount(){
+  const hidden=[...bulkSelected].filter(id=>!bulkVisible.some(t=>t.id===id)).length;
+  const missing=bulkMode==='add'?0:[...bulkSelected].filter(id=>!itemState(id)).length;
+  $bulk('count').textContent=`${bulkSelected.size} נבחרו${hidden?` (${hidden} מחוץ לסינון)`:''}${missing?` · ${missing} בלי מצב`:''}`;
+  $bulk('review-btn').disabled=!bulkSelected.size;
+}
+$bulk('list').addEventListener('change',e=>{
+  const id=e.target.dataset.bulkId;
+  if(id){e.target.checked?bulkSelected.add(id):bulkSelected.delete(id);updateBulkCount();return;}
+  const sid=e.target.dataset.bulkSev;
+  if(sid){bulkSev.set(sid,e.target.value);e.target.classList.remove('missing');updateBulkCount();}
+});
+document.getElementById('bulk-state-group').addEventListener('click',e=>{
+  const b=e.target.closest('.sev-btn');if(!b)return;
+  bulkDefaultSev=b.dataset.state;bulkSev.clear();paintStateGroup();renderBulkList();
+});
+function selectBulkVisible(on){if(on)bulkVisible.forEach(item=>bulkSelected.add(item.id));else bulkSelected.clear();renderBulkList();}
+function reviewBulk(){
+  const reporter=$bulk('reporter').value.trim(),date=$bulk('date').value;
+  if(!bulkSelected.size)return;
+  if(!reporter){$bulk('reporter').reportValidity();return;}
+  if(bulkMode==='add'&&(!date||!$bulk('date').checkValidity())){$bulk('date').reportValidity();return;}
+  const items=bulkCandidates().filter(item=>bulkSelected.has(item.id));
+  if(items.length!==bulkSelected.size){showToast('חלק מהבחירה אינה זמינה. פתחו מחדש ורעננו את הבחירה.');return;}
+  if(bulkMode!=='add'){
+    const missing=items.filter(item=>!itemState(item.id)).length;
+    if(missing){showToast(`חסר מצב ל־${missing} מלכודות. סמנו מצב לכולן, או לכל אחת ברשימה.`);renderBulkList();return;}
+  }
+  bulkDraft={mode:bulkMode,reporter,date,type:$bulk('type').value,severity:$bulk('severity').value,
+    items:items.map(item=>({id:item.id,label:item.name||item.id,station:bulkStation(item)?{...bulkStation(item)}:null,state:bulkMode==='add'?'':itemState(item.id)}))};
+  showBulkReview();
+}
+function showBulkReview(){
+  const p=bulkJob||bulkDraft;if(!p)return;
+  $bulk('editor').hidden=true;$bulk('review').hidden=false;
+  $bulk('title').textContent=bulkJob?'תוצאות והתקדמות':'בדיקה לפני אישור';
+  if(p.mode==='add'){
+    $bulk('summary-text').textContent=`הוספת מלכודת אחת לכל אחת מ־${p.items.length} עמדות. סוג: ${p.type==='bag'?'שקית FLY IN':'מדבקה'}; תאריך: ${p.date}; מצב: ${severityLabel[p.severity]}; מדווח/ת: ${p.reporter}.`;
+  }else{
+    const counts={};p.items.forEach(i=>{if(i.state)counts[i.state]=(counts[i.state]||0)+1;});
+    const breakdown=Object.keys(stateLabel).filter(k=>counts[k]).map(k=>`${counts[k]} ${stateLabel[k]}`).join(' · ');
+    $bulk('summary-text').textContent=`פינוי ${p.items.length} מלכודות${breakdown?` (${breakdown})`:''}. לכל מלכודת יתועד המצב שבחרתם, ואחריו ״הושלכה לפח״. מדווח/ת: ${p.reporter}. ודאו שהמלכודות פונו בפועל — אין ביטול אוטומטי.`;
+  }
+  $bulk('summary-list').innerHTML=p.items.map(item=>`<li>${escapeHTML(item.label)}${p.mode==='dispose'?' — '+escapeHTML(item.station?.name||'עמדה לא זמינה')+(item.state?' — <strong>'+escapeHTML(stateLabel[item.state])+'</strong>':''):''}</li>`).join('');
+  $bulk('back-btn').hidden=!!bulkJob;$bulk('commit-btn').hidden=false;$bulk('commit-btn').disabled=false;
+  $bulk('commit-btn').textContent=bulkJob?'בדיקה והשלמה':'אישור וביצוע';
+  $bulk('progress').textContent='';$bulk('results').replaceChildren();$bulk('finish-btn').hidden=true;$bulk('bar').hidden=!bulkJob;
+}
+function backBulk(){if(bulkBusy||bulkJob)return;$bulk('editor').hidden=false;$bulk('review').hidden=true;}
+function blankPayload(data){return {parentId:'',name:'',lat:'',lng:'',severity:'',note:'',photoUrl:'',reporter:'',status:'',extra:'',...data};}
+function makeBulkJob(draft){
+  return {...draft,items:draft.items.map(item=>{
+    let steps;
+    if(draft.mode==='add'){
+      const name=`${draft.type==='bag'?'שקית':'מדבקה'} ${item.label} ${draft.date}`;
+      steps=[{label:'הוספת מלכודת',sheet:'traps',payload:blankPayload({rowType:'trap',id:uniqueId('TR'),parentId:item.id,name,
+        lat:Number.isFinite(item.station?.lat)?item.station.lat:'',lng:Number.isFinite(item.station?.lng)?item.station.lng:'',
+        severity:draft.severity,note:draft.type,reporter:draft.reporter,status:'active',extra:draft.date,stationName:item.label})}];
+    }else{
+      steps=[];
+      if(item.state&&item.state!=='none')steps.push({label:'תיעוד '+stateLabel[item.state],sheet:'updates',payload:blankPayload({rowType:'update',id:uniqueId('UP'),parentId:item.id,severity:item.state,note:'מצב בעת פינוי מרוכז',reporter:draft.reporter})});
+      steps.push({label:'תיעוד הושלכה לפח',sheet:'updates',payload:blankPayload({rowType:'update',id:uniqueId('UP'),parentId:item.id,severity:'done',note:'הושלכה לפח בפינוי מרוכז',reporter:draft.reporter})});
+      steps.push({label:'עדכון סטטוס פינוי',sheet:'traps',payload:blankPayload({rowType:'trapStatus',id:item.id,severity:'done',status:'done',note:'הושלכה לפח בפינוי מרוכז',reporter:draft.reporter})});
+    }
+    return {...item,steps,complete:false,error:''};
+  })};
+}
+function stepExists(raw,step){
+  const rows=raw?.[step.sheet];if(!Array.isArray(rows))return false;
+  return rows.slice(1).some(r=>String(r[2])===step.payload.id && (step.payload.rowType==='trapStatus'?r[11]==='done':
+    String(r[3])===step.payload.parentId&&r[7]===step.payload.severity));
+}
+const bulkSleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function bulkProgress(text){
+  const steps=bulkJob.items.flatMap(i=>i.steps),total=steps.length||1;
+  const score=steps.filter(s=>s.sent).length+steps.filter(s=>s.verified).length;
+  $bulk('bar').hidden=false;$bulk('bar-fill').style.width=Math.round(score/(total*2)*100)+'%';
+  if(text)$bulk('progress').textContent=text;
+}
+function markVerified(raw){
+  let changed=false;
+  for(const item of bulkJob.items)for(const step of item.steps)
+    if(step.sent&&!step.verified&&stepExists(raw,step)){step.verified=true;changed=true;}
+  if(changed)storeBulk();
+}
+// One server read verifies every pending record at once, instead of one read per record.
+async function verifyPending(rounds){
+  for(let r=0;r<rounds;r++){
+    if(!bulkJob.items.some(i=>i.steps.some(s=>s.sent&&!s.verified)))return;
+    if(r>0)await bulkSleep(1500*r);
+    bulkProgress(`מאמת שמירה בשרת${r?` (ניסיון ${r+1})`:''}…`);
+    markVerified(await readServerSnapshot());
+  }
+}
+// Items run in parallel; steps inside an item always run in order.
+async function bulkPool(list,limit,fn){
+  let next=0;
+  await Promise.all(Array.from({length:Math.min(limit,list.length)},async()=>{while(next<list.length)await fn(list[next++]);}));
+}
+async function sendBulkItem(item,fresh){
+  item.error='';
+  if(!item.steps.some(s=>s.sent)){
+    const sheet=bulkJob.mode==='add'?'stations':'traps';
+    const row=fresh[sheet]?.slice(1).find(r=>String(r[2])===item.id);
+    if(!row||(row[11]||'active')!=='active'){item.skipped=true;item.error='הפריט כבר אינו פעיל. לא נשלח שינוי.';storeBulk();return;}
+  }
+  for(const step of item.steps){
+    if(step.sent)continue;
+    step.sent=true;storeBulk(); // persisted before sending, so an interrupted request is never replayed blindly
+    try{await postData(step.payload,true);}
+    catch{item.error='השליחה נקטעה. לחצו ״בדיקה והשלמה״.';storeBulk();return;} // stop this item to keep the order
+    const steps=bulkJob.items.flatMap(i=>i.steps);
+    bulkProgress(`שולח ${steps.filter(s=>s.sent).length} מתוך ${steps.length} רשומות…`);
+  }
+}
+// After a fresh check: resend only what is provably missing, and never out of order.
+function prepareBulkResume(){
+  for(const item of bulkJob.items){
+    // Order only matters inside the same sheet (the history). A missing record is resent unless a later one in that sheet already exists.
+    item.steps.forEach((s,i)=>{if(s.verified)return;const later=item.steps.slice(i+1).some(x=>x.verified&&x.sheet===s.sheet);if(later){s.verified=true;s.gap=true;}else s.sent=false;});
+  }
+  storeBulk();
+}
+async function runBulk(){
+  if(bulkBusy)return;
+  const resuming=!!bulkJob;
+  if(!bulkJob){if(!bulkDraft)return;bulkJob=makeBulkJob(bulkDraft);storeBulk();}
+  bulkBusy=true;$bulk('commit-btn').disabled=true;$bulk('back-btn').hidden=true;$bulk('finish-btn').hidden=true;
+  try{
+    bulkProgress('קורא נתונים עדכניים…');
+    const fresh=await readServerSnapshot();
+    if(resuming){markVerified(fresh);await verifyPending(2);prepareBulkResume();}
+    const todo=bulkJob.items.filter(i=>!i.complete&&!i.skipped);
+    bulkProgress('שולח…');
+    await bulkPool(todo,BULK_PARALLEL,item=>sendBulkItem(item,fresh));
+    await verifyPending(4);
+    for(const item of bulkJob.items){
+      if(item.skipped)continue;
+      item.complete=item.steps.every(s=>s.verified);
+      if(item.complete)item.error='';
+      else if(!item.error)item.error='טרם התקבל אישור שמירה מהשרת. לחצו ״בדיקה והשלמה״ — מה שכבר נשמר לא יישלח שוב.';
+    }
+    storeBulk();
+  }catch(error){
+    $bulk('progress').textContent='לא ניתן לקרוא מהשרת. ההתקדמות נשמרה בלשונית הזו; בדקו חיבור ולחצו ״בדיקה והשלמה״.';
+  }finally{
+    bulkBusy=false;$bulk('commit-btn').disabled=false;renderBulkResults();await refreshData().catch(()=>{});
+  }
+}
+function renderBulkResults(){
+  if(!bulkJob)return;
+  $bulk('title').textContent='תוצאות והתקדמות';
+  const items=bulkJob.items,completed=items.filter(i=>i.complete).length,skipped=items.filter(i=>i.skipped).length;
+  const all=items.every(i=>i.complete||i.skipped);
+  $bulk('results').innerHTML=items.map(item=>{
+    const status=item.complete?'נשמר ואומת':item.skipped?'לא בוצע':item.steps.some(s=>s.verified)?'הושלם חלקית':'ממתין';
+    const note=item.error||[item.state?'מצב: '+(stateLabel[item.state]||item.state):'',item.steps.some(s=>s.gap)?'לא נשמר: '+item.steps.filter(s=>s.gap).map(s=>s.label).join(', '):''].filter(Boolean).join(' · ');
+    return `<div class="bulk-step"><strong>${escapeHTML(item.label)}</strong> — ${status}<small>${escapeHTML(note)}</small></div>`;
+  }).join('');
+  $bulk('commit-btn').textContent='בדיקה והשלמה';$bulk('commit-btn').hidden=all;
+  if(!bulkBusy){
+    bulkProgress(`${completed} מתוך ${items.length} נשמרו ואומתו.${skipped?` ${skipped} דולגו כי כבר לא היו פעילות.`:''}${all?'':' ההתקדמות שמורה בלשונית הזו.'}`);
+    if(all)$bulk('bar-fill').style.width='100%';
+    $bulk('finish-btn').hidden=false;$bulk('finish-btn').textContent=all?'סיום':'סגירה ושמירת התקדמות';
+  }
+}
+function closeBulk(){if(bulkBusy){showToast('הפעולה מתבצעת. המתינו עד לסיום הבדיקה.');return;}closeOverlay('bulk');}
+function finishBulk(){if(bulkBusy)return;if(bulkJob?.items.every(i=>i.complete||i.skipped)){bulkJob=null;bulkDraft=null;sessionStorage.removeItem(BULK_STORAGE);}closeOverlay('bulk');}
+window.addEventListener('beforeunload',e=>{if(bulkBusy){e.preventDefault();e.returnValue='';}});
+
+// Existing JSONP read contract, isolated callbacks and explicit errors.
+function readServerSnapshot(strict=true){
+  return new Promise((resolve,reject)=>{
+    const callback='_bulkRead_'+uniqueId('R').replace(/[^a-zA-Z0-9_]/g,''),script=document.createElement('script');
+    let timer;
+    const cleanup=()=>{clearTimeout(timer);script.remove();delete window[callback];};
+    window[callback]=raw=>{cleanup();
+      if(!raw||typeof raw!=='object'){reject(new Error('השרת החזיר תשובה ריקה'));return;}
+      if(raw.error){reject(new Error('שגיאת שרת: '+raw.error));return;}
+      const missing=['stations','traps','updates'].filter(k=>!Array.isArray(raw[k]));
+      if(strict&&missing.length){reject(new Error('חסרים גיליונות בתשובה: '+missing.join(', ')));return;}
+      // Normal loading stays as tolerant as the original app: a missing or empty sheet is treated as empty.
+      ['stations','traps','updates','reports','volunteers'].forEach(k=>{if(!Array.isArray(raw[k]))raw[k]=[];});
+      if(missing.length)console.warn('Sheets missing from server response:',missing);
+      resolve(raw);};
+    script.onerror=()=>{cleanup();reject(new Error('החיבור לשרת נכשל'));};
+    timer=setTimeout(()=>{cleanup();reject(new Error('השרת לא השיב תוך 30 שניות'));},30000);
+    script.src=SCRIPT_URL+'?callback='+callback+'&t='+Date.now();document.body.appendChild(script);
+  });
+}
+let refreshSequence=0;
+async function refreshData(){
+  const seq=++refreshSequence,raw=await readServerSnapshot(false);
+  if(seq!==refreshSequence)return;
+  parseSheets(raw);if(map)renderMap();renderStationsList();renderDashboard();
+  if(document.getElementById('page-volunteers').classList.contains('active'))renderVolunteersList();
+  document.getElementById('last-sync').textContent='עודכן '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+  if(document.getElementById('overlay-station').classList.contains('open'))openStationSite(currentStationId);
+}
+loadData=function(){if(bulkBusy)return;refreshData().catch(e=>{console.error('Load failed:',e);document.getElementById('last-sync').textContent='אין חיבור ('+(e?.message||'שגיאה')+') · לחצו לרענון';});};
+const sync=document.getElementById('last-sync');sync.setAttribute('role','button');sync.tabIndex=0;sync.title='רענון נתונים';sync.onclick=()=>loadData();sync.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();loadData();}};
+// The legacy interval retains its original function reference; replace it at source in build.py.
+
+// Replace static UI icon markers, never user data or stored names.
+const APP_ICON_SHAPES = {"fly": "\n  <path d=\"m12 10-5-3 1-4-2-1m14 8 5-3-1-4 2-1M11 13l-7 2-2 5m19-7 7 2 2 5\"/>\n  <path d=\"M13 13C9 15 5 22 5 26c0 3 5 2 9-1m5-12c4 2 8 9 8 13 0 3-5 2-9-1\"/>\n  <path d=\"M14 18c-1 4-2 6-2 8 0 2 2 4 4 5 2-1 4-3 4-5 0-2-1-4-2-8\" fill=\"currentColor\" stroke=\"none\"/>\n  <ellipse cx=\"16\" cy=\"13\" rx=\"4\" ry=\"6\" fill=\"currentColor\" stroke=\"none\"/>\n  <ellipse cx=\"13.5\" cy=\"6\" rx=\"3\" ry=\"2.8\" fill=\"currentColor\" stroke=\"none\"/>\n  <ellipse cx=\"18.5\" cy=\"6\" rx=\"3\" ry=\"2.8\" fill=\"currentColor\" stroke=\"none\"/>\n  <path d=\"m14 4 1-2m3 2-1-2\"/>\n", "fly-trap-bag": "\n  <path d=\"M16 1v3\"/>\n  <ellipse cx=\"16\" cy=\"5\" rx=\"5.5\" ry=\"1.3\"/>\n  <path d=\"M12 6v5m8-5v5\"/>\n  <path d=\"m5 11 7 1h8l7-1-2 9 2 9c-3 1.4-7 1.7-11 .8C12 30.7 8 30.4 5 29l2-9-2-9Z\"/>\n  <path d=\"m12 12 3 7h2l3-7\"/>\n  <path d=\"M7 22c6 1.5 12 1.5 18 0M7 27c6 1.3 12 1.3 18 0\"/>\n  <path d=\"M8.5 14 10 19m13.5-5L22 19\" opacity=\".55\"/>\n"};
+function customAppIcon(name,source){
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 32 32');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');
+  svg.setAttribute('stroke-width','1.7');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');
+  svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');svg.setAttribute('data-app-icon',name);
+  svg.setAttribute('class',source?.getAttribute('class')||'ui-icon');
+  if(source?.getAttribute('style'))svg.setAttribute('style',source.getAttribute('style'));
+  svg.innerHTML=APP_ICON_SHAPES[name];return svg;
+}
+function polishUI(root=document.body){
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];
+  while(walker.nextNode()){const n=walker.currentNode;if(n.parentElement&&!n.parentElement.closest('script,style,textarea,input,option,svg')&&n.nodeValue.includes('[[icon:'))nodes.push(n);}
+  for(const node of nodes){
+    const parts=node.nodeValue.split(/(\[\[icon:[a-z0-9-]+\]\])/g),fragment=document.createDocumentFragment();
+    for(const part of parts){const match=part.match(/^\[\[icon:([a-z0-9-]+)\]\]$/);if(match){const icon=document.createElement('i');icon.dataset.lucide=match[1];icon.className='ui-icon';icon.setAttribute('aria-hidden','true');fragment.append(icon);}else fragment.append(document.createTextNode(part));}
+    node.replaceWith(fragment);
+  }
+  root.querySelectorAll('option,[placeholder],[title]').forEach(el=>{
+    for(const attr of ['placeholder','title'])if(el.hasAttribute(attr)&&el.getAttribute(attr).includes('[[icon:'))el.setAttribute(attr,el.getAttribute(attr).replace(/\[\[icon:[a-z0-9-]+\]\]\s*/g,''));
+    if(el.tagName==='OPTION'&&el.textContent.includes('[[icon:'))el.textContent=el.textContent.replace(/\[\[icon:[a-z0-9-]+\]\]\s*/g,'');
+  });
+  root.querySelectorAll('button').forEach(button=>{if(!button.getAttribute('aria-label')&&!button.textContent.trim()){const label=button.title||(button.classList.contains('sheet-close')?'סגירה':button.id==='theme-btn'?'החלפת מצב תצוגה':null);if(label)button.setAttribute('aria-label',label);}});
+  root.querySelectorAll('label.fl').forEach(label=>{const input=label.parentElement.querySelector('input[id],select[id],textarea[id]');if(input)label.htmlFor=input.id;});
+  root.querySelectorAll('.trap-header').forEach(el=>{el.setAttribute('role','button');el.tabIndex=0;el.setAttribute('aria-expanded',String(!!el.parentElement.querySelector('.trap-body.open')));});
+  root.querySelectorAll('.nav-item,.gcard[onclick],#search-clear').forEach(el=>{el.setAttribute('role','button');el.tabIndex=0;if(el.id==='search-clear')el.setAttribute('aria-label','ניקוי חיפוש');});
+  document.getElementById('station-search').setAttribute('aria-label','חיפוש עמדה, מלכודת או אזור');
+  root.querySelectorAll('[data-lucide="bug"],[data-lucide="package"]').forEach(el=>{const name=el.getAttribute('data-lucide')==='bug'?'fly':'fly-trap-bag';el.replaceWith(customAppIcon(name,el));});
+  if(window.lucide&&root.querySelector('[data-lucide]:not(svg)'))lucide.createIcons();
+}
+let polishScheduled=false;
+const uiObserver=new MutationObserver(()=>{if(polishScheduled)return;polishScheduled=true;requestAnimationFrame(()=>{uiObserver.disconnect();polishUI();polishScheduled=false;uiObserver.observe(document.body,{childList:true,subtree:true,characterData:true});});});
+polishUI();uiObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+
+// Keyboard dialog navigation, close protection during bulk writes, and focus return.
+const originalOpenOverlay=openOverlay,originalCloseOverlay=closeOverlay,dialogStack=[];
+openOverlay=function(name){
+  const el=document.getElementById('overlay-'+name);if(!el)return;
+  if(!el.classList.contains('open'))dialogStack.push({name,previous:document.activeElement});
+  originalOpenOverlay(name);el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+  const title=el.querySelector('.sheet-title,h2');if(title){if(!title.id)title.id='dialog-title-'+name;el.setAttribute('aria-labelledby',title.id);}
+  document.body.style.overflow='hidden';requestAnimationFrame(()=>{el.querySelector('button:not(:disabled),input,select,[tabindex]')?.focus();});
+};
+closeOverlay=function(name){
+  if(name==='bulk'&&bulkBusy)return;
+  originalCloseOverlay(name);const index=dialogStack.findLastIndex(x=>x.name===name);const entry=index>=0?dialogStack.splice(index,1)[0]:null;
+  if(!document.querySelector('.overlay.open'))document.body.style.overflow='';entry?.previous?.focus();
+};
+document.addEventListener('click',e=>{if(e.target.classList.contains('overlay')){e.stopImmediatePropagation();if(e.target.id==='overlay-bulk')closeBulk();else closeOverlay(e.target.id.replace('overlay-',''));}},true);
+document.addEventListener('keydown',e=>{
+  const entry=dialogStack.at(-1),el=entry&&document.getElementById('overlay-'+entry.name);
+  if(e.key==='Escape'&&el){e.preventDefault();if(entry.name==='bulk')closeBulk();else closeOverlay(entry.name);return;}
+  if(e.key==='Tab'&&el){const focusable=[...el.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex="0"]')].filter(x=>x.getClientRects().length);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('.trap-header')){e.preventDefault();e.target.click();e.target.setAttribute('aria-expanded',String(!!e.target.parentElement.querySelector('.trap-body.open')));}
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('.nav-item,.gcard[onclick],#search-clear')){e.preventDefault();e.target.click();}
+});
+document.getElementById('toast').setAttribute('role','status');document.getElementById('toast').setAttribute('aria-live','polite');
+window.addEventListener('offline',()=>{sync.textContent='אין חיבור לרשת';});
+window.addEventListener('online',()=>loadData());
+
+// Remember the reporter's name on this device (survives closing the app, going offline and reloads).
+// Test names are never remembered, so a test run does not overwrite the real name.
+const NAME_KEY='timorim_reporter_name';
+const NAME_FIELDS=['ns-reporter','at-reporter','au-reporter','rep-reporter','vol-pickup-name','vol-hang-name','bulk-reporter'];
+const isTestName=v=>/טסט|בדיקה|test/i.test(v);
+function savedName(){try{return localStorage.getItem(NAME_KEY)||'';}catch{return '';}}
+function rememberName(value){
+  const v=String(value||'').trim();
+  if(!v||isTestName(v))return;
+  try{localStorage.setItem(NAME_KEY,v);}catch{}
+}
+function fillNames(){
+  const name=savedName();if(!name)return;
+  NAME_FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&!el.value.trim())el.value=name;});
+}
+NAME_FIELDS.forEach(id=>{const el=document.getElementById(id);if(el){el.setAttribute('autocomplete','name');el.addEventListener('change',()=>rememberName(el.value));}});
+const openOverlayBeforeNames=openOverlay;
+openOverlay=function(name){openOverlayBeforeNames(name);fillNames();requestAnimationFrame(()=>setTimeout(fillNames,60));};
+fillNames();
+// Restore legacy save buttons after network failures; no false success or stuck spinner.
+for(const name of ['saveTrap','saveStation','saveUpdate','saveReport','saveVolPickup','saveVolHang','confirmVolComplete']){
+  const original=window[name];if(typeof original!=='function')continue;
+  window[name]=async function(...args){const buttons=[...document.querySelectorAll('.overlay.open button')].map(b=>({b,html:b.innerHTML,disabled:b.disabled}));try{return await original(...args);}catch(error){showToast('הפעולה לא הושלמה. רעננו ובדקו מה נשמר לפני ניסיון נוסף.');}finally{buttons.forEach(({b,html,disabled})=>{b.disabled=disabled;if(b.querySelector('.loading-spin'))b.innerHTML=html;});}};
+}
+
 </script>
 </body>
 </html>
